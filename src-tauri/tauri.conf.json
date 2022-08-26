@@ -54,11 +54,15 @@
     },
     "windows": [
       {
+          "title": "HirakeGoma",
         "fullscreen": false,
         "height": 600,
+        "width": 800,
         "resizable": true,
-        "title": "HirakeGoma",
-        "width": 800
+        "fileDropEnabled": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true
       }
     ]
   }
