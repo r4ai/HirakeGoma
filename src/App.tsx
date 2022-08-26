@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
-import { Form } from "./components/Form";
+import { Form } from "./components/main_window/Form";
 
 function App() {
   return (
