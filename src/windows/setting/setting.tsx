@@ -5,5 +5,5 @@ import { Router } from "../../components/setting_window/Router";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Router />
-  </React.StrictMode>,
+  </React.StrictMode>
 );
