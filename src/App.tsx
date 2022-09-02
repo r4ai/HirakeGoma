@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { FC } from "react";
 import { Form } from "./components/main_window/Form";
 
-function App() {
+const App: FC = () => {
   return (
     <>
       <div>Hello</div>
       <Form />
     </>
   );
-}
+};
 
 export default App;
