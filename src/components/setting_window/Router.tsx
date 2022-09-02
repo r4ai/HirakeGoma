@@ -1,10 +1,10 @@
-import React from "react";
+import { FC } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 
 import { General } from "./pages/general";
 import { CorePlugins } from "./pages/core_plugins";
 
-export const Router = () => {
+export const Router: FC = () => {
   return (
     <>
       <HashRouter>
