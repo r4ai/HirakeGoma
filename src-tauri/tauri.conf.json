@@ -55,7 +55,7 @@
         "height": 600,
         "width": 800,
         "center": true,
-        "resizable": true,
+        "resizable": false,
         "fileDropEnabled": false,
         "transparent": true,
         "alwaysOnTop": true
