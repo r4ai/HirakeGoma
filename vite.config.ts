@@ -3,7 +3,14 @@ import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      jsxImportSource: "@emotion/react",
+      babel: {
+        plugins: ["@emotion/babel-plugin"]
+      }
+    })
+  ],
 
   // Vite optons tailored for Tauri developemnt and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
@@ -23,5 +30,8 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG
+  },
+  esbuild: {
+    logOverride: { "this-is-undefined-in-esm": "silent" }
   }
 });
