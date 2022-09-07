@@ -9,3 +9,9 @@ pub fn get_project_dir() -> Option<ProjectDirs> {
 pub fn get_cargo_toml_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
 }
+
+pub fn get_error_icon_path() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("resources")
+        .join("icon.ico")
+}

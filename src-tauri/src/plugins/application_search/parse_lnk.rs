@@ -1,4 +1,5 @@
 use crate::core::db::kv_store::SearchDatabaseItem;
+use crate::core::utils::get_error_icon_path;
 use configparser::ini::Ini;
 use lnk::ShellLink;
 use std::{any, fs};
@@ -23,10 +24,14 @@ use std::{
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
 pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> {
-    let lnk_file = ShellLink::open(file_path)?;
-    let lnk_file_name = lnk_file.name().clone().unwrap();
-    let lnk_file_icon_path = lnk_file.icon_location().clone().unwrap();
-    let lnk_file_path = lnk_file.relative_path().clone().unwrap();
+    let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
+    let lnk_file_path = file_path.to_str().unwrap().to_string();
+    let lnk_file = ShellLink::open(&file_path)?;
+    dbg!(lnk_file.icon_location());
+    let lnk_file_icon_path = lnk_file
+        .icon_location()
+        .clone()
+        .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
     Ok(SearchDatabaseItem::newApplication(
         lnk_file_name,
         lnk_file_icon_path,
@@ -38,7 +43,9 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
 pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Error>> {
     let mut config = Ini::new();
     let map = config.load(file_path)?;
-    let file_icon_path = config.get("InternetShortcut", "IconFile").unwrap();
+    let file_icon_path = config
+        .get("InternetShortcut", "IconFile")
+        .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
     let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     dbg!(&file_icon_path, &file_name, &file_path);
     Ok(SearchDatabaseItem::newApplication(
@@ -46,7 +53,6 @@ pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Erro
         file_icon_path,
         file_path.to_str().unwrap().to_string(),
     ))
-    // Ok(content)
 }
 
 #[cfg(test)]
@@ -62,10 +68,10 @@ mod tests {
 
     #[test]
     fn parse_lnk_test() {
-        let lnk_file_name = "Zoom";
+        let lnk_file_name = "Zoom.lnk";
         let root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let data_path = root_path.join("tests/resources/fake_data");
-        let zoom_data_path = data_path.join("Zoom.lnk");
+        let zoom_data_path = data_path.join(lnk_file_name);
         let parse_res = parse_lnk(&zoom_data_path).expect("Failed to parse .lnk file.");
         dbg!(&parse_res);
         assert_eq!(parse_res.name, lnk_file_name);

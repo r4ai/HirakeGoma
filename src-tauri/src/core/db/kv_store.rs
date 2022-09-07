@@ -14,10 +14,10 @@ pub struct SearchDatabaseItem {
 }
 
 pub struct SearchDatabase<'a> {
-    config: Config,
-    store: Store,
-    bucket: Bucket<'a, String, Json<SearchDatabaseItem>>,
-    folder_path: PathBuf,
+    pub config: Config,
+    pub store: Store,
+    pub bucket: Bucket<'a, String, Json<SearchDatabaseItem>>,
+    pub folder_path: PathBuf,
 }
 
 impl SearchDatabaseItem {
@@ -67,11 +67,11 @@ impl SearchDatabase<'_> {
                 .data_dir()
                 .join("search_database")
         };
-        dbg!(&db_path.exists());
+        // dbg!(&db_path.exists());
         let db_cfg = Config::new(db_path.clone());
-        dbg!(&db_cfg);
+        // dbg!(&db_cfg);
         let db_store = Store::new(db_cfg.clone()).expect("Failed to create store");
-        dbg!(&db_store);
+        // dbg!(&db_store);
         let db_bucket: Bucket<String, Json<SearchDatabaseItem>> =
             db_store.bucket(Some("search")).unwrap();
         Self {
