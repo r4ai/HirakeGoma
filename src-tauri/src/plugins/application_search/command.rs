@@ -1,5 +1,6 @@
 use crate::core::db::kv_store::{SearchDatabase, SearchDatabaseItem};
 use crate::plugins::application_search::parse_lnk::{parse_lnk, parse_url};
+use kv::Json;
 use std::error::Error;
 use std::path::PathBuf;
 use walkdir::WalkDir;
@@ -36,6 +37,20 @@ pub fn generate_index(path: &PathBuf) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[tauri::command]
+pub fn dbg_read_db() -> Result<(), Box<dyn Error>> {
+    let db = SearchDatabase::init(false);
+    for item in db.bucket.iter() {
+        let item_i = item.unwrap();
+        let key_i: String = item_i.key().unwrap();
+        let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+        let value = value_i.to_string();
+        dbg!(key_i, value);
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -48,7 +63,7 @@ mod tests {
     }
 
     #[test]
-    fn generate_index_test() {
+    fn generate_index_dbg() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
             .join("resources")
@@ -63,5 +78,10 @@ mod tests {
             dbg!(value_i.unwrap().0);
         }
         assert_eq!(0, 0);
+    }
+
+    #[test]
+    fn dbg_read_db_dbg() {
+        let _ = read_db_as_json();
     }
 }

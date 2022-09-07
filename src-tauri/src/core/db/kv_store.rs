@@ -67,8 +67,13 @@ impl SearchDatabase<'_> {
                 .data_dir()
                 .join("search_database")
         };
-        // dbg!(&db_path.exists());
+        dbg!(&db_path);
         let db_cfg = Config::new(db_path.clone());
+        // let db_cfg = if db_path.exists() {
+        //     Config::load(db_path.clone()).expect("Failed to load DATA_DIR/search_database")
+        // } else {
+        //     Config::new(db_path.clone())
+        // };
         // dbg!(&db_cfg);
         let db_store = Store::new(db_cfg.clone()).expect("Failed to create store");
         // dbg!(&db_store);
