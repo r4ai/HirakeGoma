@@ -7,14 +7,10 @@ mod core;
 mod plugins;
 
 use crate::core::db::kv_store::SearchDatabase;
-
-use crate::plugins::application_search;
+use crate::core::ui;
 
 fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![application_search::command::greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    ui::init();
 }
 
 #[cfg(test)] // cargo test時にtestsモジュールが実行されるように指定
