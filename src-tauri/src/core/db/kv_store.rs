@@ -1,7 +1,7 @@
 use crate::core::utils::get_project_dir;
 use kv::{Bucket, Config, Json, Store};
 use serde_urlencoded::de::Error;
-use std::{fmt::Debug, fs, path::PathBuf};
+use std::{fmt::Debug, fs, path::PathBuf, sync::Mutex};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct SearchDatabaseItem {
@@ -14,10 +14,10 @@ pub struct SearchDatabaseItem {
 }
 
 pub struct SearchDatabase<'a> {
-    pub config: Config,
-    pub store: Store,
-    pub bucket: Bucket<'a, String, Json<SearchDatabaseItem>>,
-    pub folder_path: PathBuf,
+    pub config: Mutex<Config>,
+    pub store: Mutex<Store>,
+    pub bucket: Mutex<Bucket<'a, String, Json<SearchDatabaseItem>>>,
+    pub folder_path: Mutex<PathBuf>,
 }
 
 impl SearchDatabaseItem {
@@ -52,6 +52,20 @@ impl SearchDatabaseItem {
 }
 
 impl SearchDatabase<'_> {
+    fn new(
+        config: Config,
+        store: Store,
+        bucket: Bucket<String, Json<SearchDatabaseItem>>,
+        folder_path: PathBuf,
+    ) -> Self {
+        Self {
+            config: Mutex::new(config),
+            store: Mutex::new(store),
+            bucket: Mutex::new(bucket),
+            folder_path: Mutex::new(folder_path),
+        }
+    }
+
     pub fn init(isTest: bool) -> Self {
         let db_path = if isTest {
             let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -79,27 +93,26 @@ impl SearchDatabase<'_> {
         // dbg!(&db_store);
         let db_bucket: Bucket<String, Json<SearchDatabaseItem>> =
             db_store.bucket(Some("search")).unwrap();
-        Self {
-            config: db_cfg,
-            store: db_store,
-            bucket: db_bucket,
-            folder_path: db_path,
-        }
+
+        Self::new(db_cfg, db_store, db_bucket, db_path)
     }
 
     pub fn insert(&self, key: String, value: SearchDatabaseItem) -> Result<(), kv::Error> {
         let json_value = Json(value);
-        self.bucket.set(&key, &json_value)?;
+        let mut bucket = self.bucket.lock()?;
+        bucket.set(&key, &json_value)?;
         Ok(())
     }
 
     pub fn get(&self, key: &String) -> Result<SearchDatabaseItem, kv::Error> {
-        let res = self.bucket.get(key)?.unwrap().0;
+        let mut bucket = self.bucket.lock()?;
+        let res = bucket.get(key)?.unwrap().0;
         Ok(res)
     }
 
     pub fn print_all_item(&self) {
-        for item_i in self.bucket.iter() {
+        let mut bucket = self.bucket.lock().unwrap();
+        for item_i in bucket.iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
             let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
@@ -120,30 +133,30 @@ mod tests {
     use std::time;
 
     // #[test]     // 原因不明だがテストでエラーが出る。
-    fn search_database_init_test() {
-        sleep(time::Duration::from_millis(100));
-        let db = SearchDatabase::init(true);
+    // fn search_database_init_test() {
+    //     sleep(time::Duration::from_millis(100));
+    //     let db = SearchDatabase::init(true);
 
-        let appname_0 = "After Effects".to_string();
-        let appdata_0 = SearchDatabaseItem::newApplication(
-            appname_0.clone(),
-            "./icons/ae.png".to_string(),
-            "./tests/data/ae.exe".to_string(),
-        );
-        let key_0 = appname_0;
-        let value_0 = Json(appdata_0.clone());
-        db.bucket.set(&key_0, &value_0);
-        for item in db.bucket.iter() {
-            let item_i = item.unwrap();
-            let key_i: String = item_i.key().unwrap();
-            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
-            dbg!(&key_i, &value_i.0);
-            assert_eq!(key_0, key_i);
-            assert_eq!(appdata_0, value_i.0);
-        }
-        let is_removed_end = fs::remove_dir_all("./tests/database/search_database")
-            .expect("Failed to remove db folder.");
-    }
+    //     let appname_0 = "After Effects".to_string();
+    //     let appdata_0 = SearchDatabaseItem::newApplication(
+    //         appname_0.clone(),
+    //         "./icons/ae.png".to_string(),
+    //         "./tests/data/ae.exe".to_string(),
+    //     );
+    //     let key_0 = appname_0;
+    //     let value_0 = Json(appdata_0.clone());
+    //     db.bucket.set(&key_0, &value_0);
+    //     for item in db.bucket.iter() {
+    //         let item_i = item.unwrap();
+    //         let key_i: String = item_i.key().unwrap();
+    //         let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+    //         dbg!(&key_i, &value_i.0);
+    //         assert_eq!(key_0, key_i);
+    //         assert_eq!(appdata_0, value_i.0);
+    //     }
+    //     let is_removed_end = fs::remove_dir_all("./tests/database/search_database")
+    //         .expect("Failed to remove db folder.");
+    // }
 
     #[test]
     fn search_database_insert_get_test() {

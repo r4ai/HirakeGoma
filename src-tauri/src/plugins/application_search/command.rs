@@ -40,7 +40,8 @@ pub fn generate_index(path: &PathBuf) -> Result<(), Box<dyn Error>> {
 #[tauri::command]
 pub fn dbg_read_db() -> Result<(), Box<dyn Error>> {
     let db = SearchDatabase::init(false);
-    for item in db.bucket.iter() {
+    let bucket = db.bucket.lock().unwrap();
+    for item in bucket.iter() {
         let item_i = item.unwrap();
         let key_i: String = item_i.key().unwrap();
         let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
@@ -70,7 +71,8 @@ mod tests {
             .join("fake_data");
         let _ = generate_index(&path);
         let db = SearchDatabase::init(false);
-        for item in db.bucket.iter() {
+        let bucket = db.bucket.lock().unwrap();
+        for item in bucket.iter() {
             let item_i = item.unwrap();
             let key_i: String = item_i.key().unwrap();
             let value_i: Result<Json<SearchDatabaseItem>, kv::Error> = item_i.value();
@@ -82,6 +84,6 @@ mod tests {
 
     #[test]
     fn dbg_read_db_dbg() {
-        let _ = read_db_as_json();
+        let _ = dbg_read_db();
     }
 }
