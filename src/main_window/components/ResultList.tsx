@@ -1,5 +1,6 @@
 import { useTheme, css } from "@emotion/react";
 import { FC } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
 
 interface ResultListProps {
   searchResults: SearchResults;
@@ -41,7 +42,8 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
           key={item.id}
           css={resultListCss.item}
           onClick={() => {
-            alert("clicked");
+            invoke("dbg_search_database_items");
+            // alert("clicked");
           }}
         >
           <div css={resultListCss.itemTitle}>{item.name}</div>

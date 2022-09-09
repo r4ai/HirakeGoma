@@ -10,7 +10,12 @@ use crate::core::db::kv_store::SearchDatabase;
 use crate::core::ui;
 
 fn main() {
-    ui::init();
+    ui::init_app();
+    // let search_window = tauri::WindowBuilder::new(
+    //     &app,
+    //     "search_window",
+    //     tauri::WindowUrl::App("index.html".into()),
+    // );
 }
 
 #[cfg(test)] // cargo test時にtestsモジュールが実行されるように指定

@@ -98,6 +98,15 @@ impl SearchDatabase<'_> {
         Ok(res)
     }
 
+    pub fn print_all_item(&self) {
+        for item_i in self.bucket.iter() {
+            let item_i = item_i.unwrap();
+            let key_i: String = item_i.key().unwrap();
+            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            dbg!(&key_i, &value_i.0);
+        }
+    }
+
     pub fn search(&self, keyword: &String) {}
 }
 

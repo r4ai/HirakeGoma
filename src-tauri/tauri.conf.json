@@ -63,7 +63,7 @@
       {
         "title": "setting widow",
         "label": "setting_window",
-        "url": "setting.html",
+        "url": "src/setting_window/setting.html",
         "height": 600,
         "width": 800,
         "resizable": true
