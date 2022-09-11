@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::Mutex;
 
 use crate::core::db::kv_store::SearchDatabase;
@@ -31,6 +32,13 @@ fn dbg_search_database_items(db: State<'_, SearchDatabase>) -> Result<(), String
 }
 
 #[tauri::command]
+fn get_all_search_database_items(
+    db: State<'_, SearchDatabase>,
+) -> HashMap<String, SearchDatabaseItem> {
+    db.get_all_items()
+}
+
+#[tauri::command]
 fn add_search_database_item(db: State<'_, SearchDatabase>) -> Result<(), String> {
     let key = "Night Taxi".to_string();
     let value = SearchDatabaseItem::newApplication(
@@ -48,7 +56,8 @@ pub fn init_app() {
             application_search::command::greet,
             get_my_state,
             dbg_search_database_items,
-            add_search_database_item
+            add_search_database_item,
+            get_all_search_database_items
         ])
         .setup(|app| {
             let state = MyState {

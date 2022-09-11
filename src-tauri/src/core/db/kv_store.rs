@@ -1,6 +1,8 @@
 use crate::core::utils::get_project_dir;
 use kv::{Bucket, Config, Json, Store};
 use serde_urlencoded::de::Error;
+use std::collections::HashMap;
+use std::hash::Hash;
 use std::{fmt::Debug, fs, path::PathBuf};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -105,6 +107,17 @@ impl SearchDatabase<'_> {
             let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
             dbg!(&key_i, &value_i.0);
         }
+    }
+
+    pub fn get_all_items(&self) -> HashMap<String, SearchDatabaseItem> {
+        let mut result: HashMap<String, SearchDatabaseItem> = HashMap::new();
+        for item_i in self.bucket.iter() {
+            let item_i = item_i.unwrap();
+            let key_i: String = item_i.key().unwrap();
+            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            result.insert(key_i, value_i.0);
+        }
+        result
     }
 
     pub fn search(&self, keyword: &String) {}
