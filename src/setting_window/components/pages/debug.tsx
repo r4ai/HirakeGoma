@@ -1,12 +1,26 @@
 import { FC, useState } from "react";
 import { SettingItem } from "../parts/SettingItem";
 import { SettingHeading } from "../parts/SettingHeading";
-import { Collapse, Button, IconButton, Box, Heading, Text, Divider, useDisclosure } from "@chakra-ui/react";
+import {
+  Collapse,
+  Button,
+  IconButton,
+  Box,
+  Stack,
+  Input,
+  FormErrorMessage,
+  Heading,
+  Text,
+  Divider,
+  useDisclosure
+} from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api";
 import Editor from "@monaco-editor/react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { message } from "@tauri-apps/api/dialog";
 
 export const Debug: FC = () => {
+  //* --- PRINT
   const { isOpen: isOpenPrintConsole, onToggle: onTogglePrintConsole } = useDisclosure();
   const [printDatabaseValue, setPrintDatabaseValue] = useState("");
 
@@ -19,6 +33,32 @@ export const Debug: FC = () => {
       setPrintDatabaseValue(JSON.stringify(items, null, "\t"))
     );
     console.log(printDatabaseValue);
+  }
+
+  //* --- INSERT
+  const [appTitle, setAppName] = useState("");
+  const [appPath, setAppPath] = useState("");
+  const [appIconPath, setAppIconPath] = useState("");
+
+  function handleInsertDatabase(): void {
+    console.log(appTitle);
+    console.log(appPath);
+    console.log(appIconPath);
+    const res = invoke("add_app_to_search_database", {
+      appTitle,
+      appIconPath,
+      appPath
+    })
+      .then((message) => {
+        console.log("Succeeded");
+      })
+      .catch((message) => {
+        console.log("ERROR");
+        console.log(message);
+      });
+    setAppName("");
+    setAppPath("");
+    setAppIconPath("");
   }
 
   return (
@@ -64,8 +104,34 @@ export const Debug: FC = () => {
       </SettingItem>
 
       <SettingItem title="INSERT" description="Insert an application item to the search_database manually.">
-        <Button colorScheme="red" variant="outline" size="sm" h={6}>
-          Run
+        <Stack my={2} spacing={2}>
+          <Input
+            value={appTitle}
+            size="sm"
+            placeholder="Application Name"
+            onChange={(e) => {
+              setAppName(e.target.value);
+            }}
+          ></Input>
+          <Input
+            value={appPath}
+            size="sm"
+            placeholder="Application File Path"
+            onChange={(e) => {
+              setAppPath(e.target.value);
+            }}
+          ></Input>
+          <Input
+            value={appIconPath}
+            size="sm"
+            placeholder="Application Icon Path"
+            onChange={(e) => {
+              setAppIconPath(e.target.value);
+            }}
+          ></Input>
+        </Stack>
+        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleInsertDatabase}>
+          Insert
         </Button>
       </SettingItem>
     </>

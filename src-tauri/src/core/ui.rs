@@ -39,13 +39,14 @@ fn get_all_search_database_items(
 }
 
 #[tauri::command]
-fn add_search_database_item(db: State<'_, SearchDatabase>) -> Result<(), String> {
-    let key = "Night Taxi".to_string();
-    let value = SearchDatabaseItem::newApplication(
-        "Night Taxi".to_string(),
-        "C:/hoge.png".to_string(),
-        "C:/hoge.exe".to_string(),
-    );
+fn add_app_to_search_database(
+    db: State<'_, SearchDatabase>,
+    app_title: String,
+    app_icon_path: String,
+    app_path: String,
+) -> Result<(), String> {
+    let key = app_title.clone();
+    let value = SearchDatabaseItem::newApplication(app_title, app_icon_path, app_path);
     let _ = db.insert(key, value);
     Ok(())
 }
@@ -56,7 +57,7 @@ pub fn init_app() {
             application_search::command::greet,
             get_my_state,
             dbg_search_database_items,
-            add_search_database_item,
+            add_app_to_search_database,
             get_all_search_database_items
         ])
         .setup(|app| {
