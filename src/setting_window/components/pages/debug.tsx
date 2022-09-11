@@ -134,6 +134,13 @@ export const Debug: FC = () => {
           Insert
         </Button>
       </SettingItem>
+
+      <SettingItem title="RESET" description="Remove all items in search_database.">
+        <Text>TODO</Text>
+        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleInsertDatabase}>
+          Run
+        </Button>
+      </SettingItem>
     </>
   );
 };
