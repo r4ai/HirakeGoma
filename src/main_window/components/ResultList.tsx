@@ -1,6 +1,7 @@
 import { useTheme, css } from "@emotion/react";
 import { FC } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
+import { red } from "@mui/material/colors";
 
 interface ResultListProps {
   searchResults: SearchResults;
@@ -36,20 +37,29 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
   };
 
   return (
-    <div css={resultListCss.self}>
-      {searchResults.map((item) => (
-        <div
-          key={item.id}
-          css={resultListCss.item}
-          onClick={() => {
-            invoke("dbg_search_database_items");
-            // alert("clicked");
-          }}
-        >
-          <div css={resultListCss.itemTitle}>{item.name}</div>
-          <div css={resultListCss.itemDescription}>{item.file_path}</div>
-        </div>
-      ))}
-    </div>
+    <>
+      <div css={resultListCss.self}>
+        {searchResults.map((item) => (
+          <div
+            key={item.id}
+            css={resultListCss.item}
+            onClick={() => {
+              invoke("dbg_search_database_items");
+            }}
+          >
+            <div css={resultListCss.itemTitle}>{item.name}</div>
+            <div css={resultListCss.itemDescription}>{item.file_path}</div>
+          </div>
+        ))}
+      </div>
+      <div
+        css={{ color: "red", cursor: "pointer" }}
+        onClick={() => {
+          invoke("add_search_database_item");
+        }}
+      >
+        InsertDB
+      </div>
+    </>
   );
 };

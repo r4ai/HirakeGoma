@@ -1,5 +1,10 @@
-import React from "react";
+import { FC } from "react";
+import { Layout } from "../Layout";
 
-export const General = () => {
-  return <div>search</div>;
+export const General: FC = () => {
+  return (
+    <>
+      <div>Fuga-</div>
+    </>
+  );
 };

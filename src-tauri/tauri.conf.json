@@ -58,7 +58,7 @@
         "resizable": false,
         "fileDropEnabled": false,
         "transparent": true,
-        "alwaysOnTop": true
+        "alwaysOnTop": false
       },
       {
         "title": "setting widow",

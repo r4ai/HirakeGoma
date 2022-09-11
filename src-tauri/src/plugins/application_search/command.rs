@@ -82,6 +82,6 @@ mod tests {
 
     #[test]
     fn dbg_read_db_dbg() {
-        let _ = read_db_as_json();
+        let _ = dbg_read_db();
     }
 }

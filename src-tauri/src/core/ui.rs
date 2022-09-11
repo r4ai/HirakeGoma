@@ -32,6 +32,13 @@ fn dbg_search_database_items(db: State<'_, SearchDatabase>) -> Result<(), String
 
 #[tauri::command]
 fn add_search_database_item(db: State<'_, SearchDatabase>) -> Result<(), String> {
+    let key = "Night Taxi".to_string();
+    let value = SearchDatabaseItem::newApplication(
+        "Night Taxi".to_string(),
+        "C:/hoge.png".to_string(),
+        "C:/hoge.exe".to_string(),
+    );
+    let _ = db.insert(key, value);
     Ok(())
 }
 
@@ -40,7 +47,8 @@ pub fn init_app() {
         .invoke_handler(tauri::generate_handler![
             application_search::command::greet,
             get_my_state,
-            dbg_search_database_items
+            dbg_search_database_items,
+            add_search_database_item
         ])
         .setup(|app| {
             let state = MyState {
@@ -49,8 +57,8 @@ pub fn init_app() {
             };
             app.manage(state);
 
-            let searchDatabaseState = Mutex::new(SearchDatabase::init(false));
-            app.manage(searchDatabaseState);
+            let search_database_state = SearchDatabase::init(false);
+            app.manage(search_database_state);
 
             #[cfg(debug_assertions)]
             app.get_window("search_window").unwrap().open_devtools();
