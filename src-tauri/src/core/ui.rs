@@ -39,6 +39,13 @@ fn add_app_to_search_database(
     Ok(())
 }
 
+fn init_states(app: App) {
+    let search_database_state = SearchDatabase::init(false);
+    app.manage(search_database_state);
+}
+
+fn init_window(app: &mut App<Wry>) {}
+
 pub fn init_app() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -48,16 +55,13 @@ pub fn init_app() {
             get_all_search_database_items
         ])
         .setup(|app| {
-            let search_database_state = SearchDatabase::init(false);
-            app.manage(search_database_state);
+            init_states(app);
 
             #[cfg(debug_assertions)]
-            app.get_window("search_window").unwrap().open_devtools();
+            app.get_window("setting_window").unwrap().open_devtools();
 
             Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-fn init_window(app: &mut App<Wry>) {}
