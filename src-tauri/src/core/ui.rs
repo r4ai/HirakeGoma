@@ -39,7 +39,7 @@ fn add_app_to_search_database(
     Ok(())
 }
 
-fn init_states(app: App) {
+fn init_states(app: &mut App) {
     let search_database_state = SearchDatabase::init(false);
     app.manage(search_database_state);
 }
