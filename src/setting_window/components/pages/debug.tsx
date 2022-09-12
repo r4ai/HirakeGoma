@@ -32,7 +32,6 @@ export const Debug: FC = () => {
     const res = invoke("get_all_search_database_items").then((items) =>
       setPrintDatabaseValue(JSON.stringify(items, null, "\t"))
     );
-    console.log(printDatabaseValue);
   }
 
   //* --- INSERT
