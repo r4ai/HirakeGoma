@@ -1,8 +1,6 @@
 use crate::core::utils::get_project_dir;
 use kv::{Bucket, Config, Json, Store};
-use serde_urlencoded::de::Error;
 use std::collections::HashMap;
-use std::hash::Hash;
 use std::{fmt::Debug, fs, path::PathBuf};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -118,6 +116,10 @@ impl SearchDatabase<'_> {
             result.insert(key_i, value_i.0);
         }
         result
+    }
+
+    pub fn clear(&self) -> Result<(), kv::Error> {
+        self.bucket.clear()
     }
 
     pub fn search(&self, keyword: &String) {}

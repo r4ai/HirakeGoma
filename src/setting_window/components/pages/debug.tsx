@@ -12,7 +12,8 @@ import {
   Heading,
   Text,
   Divider,
-  useDisclosure
+  useDisclosure,
+  useToast
 } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api";
 import Editor from "@monaco-editor/react";
@@ -58,6 +59,35 @@ export const Debug: FC = () => {
     setAppName("");
     setAppPath("");
     setAppIconPath("");
+  }
+
+  //* --- RESET
+  const clearDatabaseToast = useToast();
+  function handleResetDatabase(): void {
+    const res = invoke<string>("clear_search_database").then((msg) => {
+      switch (msg) {
+        case "SUCCESS":
+          clearDatabaseToast({
+            title: "Search database cleared",
+            description: "All database items has been removed successfully.",
+            position: "top",
+            status: "success",
+            isClosable: true,
+            duration: 5000
+          });
+          break;
+        case "ERROR":
+          clearDatabaseToast({
+            title: "ERROR",
+            description: "Couldn't clear the database.",
+            position: "top",
+            status: "error",
+            isClosable: true,
+            duration: 5000
+          });
+          break;
+      }
+    });
   }
 
   return (
@@ -135,9 +165,8 @@ export const Debug: FC = () => {
       </SettingItem>
 
       <SettingItem title="RESET" description="Remove all items in search_database.">
-        <Text>TODO</Text>
-        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleInsertDatabase}>
-          Run
+        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleResetDatabase}>
+          Clear DB
         </Button>
       </SettingItem>
     </>

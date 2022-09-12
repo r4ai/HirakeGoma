@@ -39,6 +39,16 @@ fn add_app_to_search_database(
     Ok(())
 }
 
+#[tauri::command]
+fn clear_search_database(db: State<'_, SearchDatabase>) -> String {
+    let res = db.clear();
+    let result_msg: String = match res {
+        Ok(_) => String::from("SUCCESS"),
+        Err(_) => String::from("ERROR"),
+    };
+    result_msg
+}
+
 fn init_states(app: &mut App) {
     let search_database_state = SearchDatabase::init(false);
     app.manage(search_database_state);
@@ -52,7 +62,8 @@ pub fn init_app() {
             application_search::command::greet,
             dbg_search_database_items,
             add_app_to_search_database,
-            get_all_search_database_items
+            get_all_search_database_items,
+            clear_search_database
         ])
         .setup(|app| {
             init_states(app);
