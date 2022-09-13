@@ -23,7 +23,7 @@ export const Layout: FC = () => {
           TitleBar
         </GridItem>
         <GridItem area={"nav"} bg="pink.300">
-          <SideBar />
+          <SideBar navSize="large" />
         </GridItem>
         <GridItem area={"main"} bg="green.300" px={5} py={2}>
           <Outlet />

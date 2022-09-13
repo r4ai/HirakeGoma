@@ -1,5 +1,5 @@
 import { FC } from "react";
 
-export const Hotkey: FC = () => {
+export const Plugin: FC = () => {
   return <></>;
 };

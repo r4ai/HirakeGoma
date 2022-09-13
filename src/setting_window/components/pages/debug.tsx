@@ -105,7 +105,7 @@ export const Debug: FC = () => {
             theme="vs-dark"
           />
         </Collapse>
-        <Box m>
+        <Box>
           <Button
             colorScheme="red"
             variant="outline"
