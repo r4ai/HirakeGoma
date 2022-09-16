@@ -13,7 +13,8 @@ import {
   Text,
   Divider,
   useDisclosure,
-  useToast
+  useToast,
+  useColorMode
 } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api";
 import Editor from "@monaco-editor/react";
@@ -89,6 +90,9 @@ export const Debug: FC = () => {
       }
     });
   }
+
+  //* --- COLOR_MODE
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <>
@@ -167,6 +171,14 @@ export const Debug: FC = () => {
       <SettingItem title="RESET" description="Remove all items in search_database.">
         <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleResetDatabase}>
           Clear DB
+        </Button>
+      </SettingItem>
+
+      <SettingHeading title="Theme" />
+
+      <SettingItem title="COLOR MODE" description="Toggle between dark and light modes.">
+        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={toggleColorMode}>
+          Toggle {colorMode === "light" ? "dark" : "light"}
         </Button>
       </SettingItem>
     </>
