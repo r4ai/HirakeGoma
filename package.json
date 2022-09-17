@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "eslint --ext ts,tsx --fix .",
+    "react-devtools": "react-devtools",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
