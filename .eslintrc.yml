@@ -34,6 +34,9 @@ rules:
   react/jsx-uses-react: off
   react/react-in-jsx-scope: off
   import/no-unresolved: "error"
+  "@typescript-eslint/no-misused-promises":
+    - "error"
+    - checksVoidReturn: false
   import/named: 2
   import/namespace: 2
   import/default: 2
