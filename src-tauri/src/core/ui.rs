@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+use window_shadows::set_shadow;
+
 use crate::core::db::kv_store::SearchDatabase;
 use kv::Json;
 use tauri;
@@ -67,6 +69,9 @@ pub fn init_app() {
         ])
         .setup(|app| {
             init_states(app);
+
+            let window = app.get_window("setting_window").unwrap();
+            set_shadow(&window, true).expect("Unsupported platform!");
 
             #[cfg(debug_assertions)]
             app.get_window("setting_window").unwrap().open_devtools();
