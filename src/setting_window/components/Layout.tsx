@@ -24,12 +24,13 @@ export const Layout: FC = () => {
                         "nav main"`}
         gridTemplateRows={"20px 1fr"}
         gridTemplateColumns={`${navSize === "large" ? "150px" : "30px"} 1fr`}
+        alignItems="start"
         h="100vh"
       >
-        <GridItem area={"title"} bgColor={titleBg}>
+        <GridItem area={"title"} bgColor={titleBg} position="sticky" top="0" zIndex="sticky">
           TitleBar
         </GridItem>
-        <GridItem area={"nav"} bgColor={navBg}>
+        <GridItem area={"nav"} bgColor={navBg} position="fixed" top="0" zIndex="sticky">
           <SideBar navSize="large" />
         </GridItem>
         <GridItem area={"main"} bgColor={mainBg} px={5} py={2}>
