@@ -18,9 +18,27 @@ export const TitleBar: FC = () => {
           </BreadcrumbItem>
         </Breadcrumb>
         <HStack alignSelf="start" spacing={0}>
-          <SystemIconButton aria-label="minimize" icon={<FiMinus />} />
-          <SystemIconButton aria-label="minimize" icon={<FiMaximize />} />
-          <SystemIconButton aria-label="minimize" icon={<FiX />} />
+          <SystemIconButton
+            aria-label="minimize"
+            icon={<FiMinus />}
+            onClick={async () => {
+              await appWindow.minimize();
+            }}
+          />
+          <SystemIconButton
+            aria-label="maximize"
+            icon={<FiMaximize />}
+            onClick={async () => {
+              await appWindow.maximize();
+            }}
+          />
+          <SystemIconButton
+            aria-label="close"
+            icon={<FiX />}
+            onClick={async () => {
+              await appWindow.close();
+            }}
+          />
         </HStack>
       </Flex>
     </>
