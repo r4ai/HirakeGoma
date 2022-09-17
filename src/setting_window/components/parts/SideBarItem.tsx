@@ -1,5 +1,5 @@
-import { FC } from "react";
 import { Button } from "@chakra-ui/react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 
 interface Props {

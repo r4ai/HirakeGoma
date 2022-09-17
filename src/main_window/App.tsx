@@ -1,6 +1,7 @@
-import { FC } from "react";
-import { InputBox } from "./components/InputBox";
 import { css, useTheme } from "@emotion/react";
+import { FC } from "react";
+
+import { InputBox } from "./components/InputBox";
 import { ResultList } from "./components/ResultList";
 
 const App: FC = () => {

@@ -1,5 +1,6 @@
-import { FC } from "react";
 import { Heading } from "@chakra-ui/react";
+import { FC } from "react";
+
 import { SettingItemBase } from "./SettingItemBase";
 
 interface Props {

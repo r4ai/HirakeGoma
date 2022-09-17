@@ -1,5 +1,5 @@
-import { FC } from "react";
 import { Flex, Text, Icon, Link, Menu, MenuButton, MenuList } from "@chakra-ui/react";
+import { FC } from "react";
 
 interface Props {
   navSize: string;
