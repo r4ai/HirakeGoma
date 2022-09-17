@@ -5,10 +5,6 @@ import {
   Box,
   Stack,
   Input,
-  FormErrorMessage,
-  Heading,
-  Text,
-  Divider,
   useDisclosure,
   useToast,
   useColorMode
@@ -180,6 +176,12 @@ export const Debug: FC = () => {
       <SettingItem title="COLOR MODE" description="Toggle between dark and light modes.">
         <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={toggleColorMode}>
           Toggle {colorMode === "light" ? "dark" : "light"}
+        </Button>
+      </SettingItem>
+
+      <SettingItem title="TOGGLE SIDEBAR" description="Toggle sideBar width between small and large. TODO:">
+        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={() => {}}>
+          Toggle width(currently, this is FAKE button)
         </Button>
       </SettingItem>
     </>

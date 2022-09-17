@@ -16,8 +16,8 @@ interface Props {
 export const SideBar: FC<Props> = ({ navSize }) => {
   return (
     <>
-      <Flex alignItems="start" direction="column" h="100%">
-        <VStack spacing={0.5}>
+      <Flex alignItems="start" direction="column" h="100%" w="100%">
+        <VStack spacing={0.5} w="100%">
           <SideBarItem icon={<FiHome />} title="General" link="/general" />
           <SideBarItem icon={<MdOutlineColorLens />} title="Theme" link="/theme" />
           <SideBarItem icon={<HiOutlinePuzzle />} title="Plugin" link="/plugin" />
