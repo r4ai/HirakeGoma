@@ -1,7 +1,7 @@
 import { useTheme, css } from "@emotion/react";
-import { FC } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
 import { red } from "@mui/material/colors";
+import { invoke } from "@tauri-apps/api/tauri";
+import { FC } from "react";
 
 interface ResultListProps {
   searchResults: SearchResults;

@@ -1,9 +1,11 @@
-import { FC, ReactNode, useState } from "react";
-import { VStack, Grid, GridItem, Box, useColorModeValue } from "@chakra-ui/react";
-import { TitleBar } from "./organisms/TitleBar";
-import { SideBar } from "./organisms/SideBar";
-import { Outlet } from "react-router-dom";
 import { title } from "process";
+
+import { VStack, Grid, GridItem, Box, useColorModeValue } from "@chakra-ui/react";
+import { FC, ReactNode, useState } from "react";
+import { Outlet } from "react-router-dom";
+
+import { SideBar } from "./organisms/SideBar";
+import { TitleBar } from "./organisms/TitleBar";
 
 export type navSize = "small" | "large";
 

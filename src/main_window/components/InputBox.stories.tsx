@@ -1,5 +1,6 @@
-import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
+import React from "react";
+
 import { InputBox } from "./InputBox";
 
 const meta: ComponentMeta<typeof InputBox> = {

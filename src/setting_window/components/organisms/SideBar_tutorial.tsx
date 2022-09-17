@@ -1,7 +1,8 @@
-import { useState, FC } from "react";
 import { Flex, Text, IconButton, Divider, Avatar, Heading } from "@chakra-ui/react";
+import { useState, FC } from "react";
 import { FiMenu, FiHome, FiCalendar, FiUser, FiDollarSign, FiBriefcase, FiSettings } from "react-icons/fi";
 import { IoPawOutline } from "react-icons/io5";
+
 import { NavItem } from "../parts/NavItem";
 
 export const SideBar: FC = () => {

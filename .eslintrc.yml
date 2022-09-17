@@ -14,8 +14,6 @@ extends:
 overrides: []
 settings:
   import/resolver:
-    # You will also need to install and configure the TypeScript resolver
-    # See also https://github.com/import-js/eslint-import-resolver-typescript#configuration
     typescript: true
     node: true
 parserOptions:
@@ -40,6 +38,18 @@ rules:
   import/namespace: 2
   import/default: 2
   import/export: 2
+  import/order:
+    - warn
+    - groups:
+        - builtin
+        - external
+        - internal
+      newlines-between: always
+      pathGroupsExcludedImportTypes:
+        - builtin
+      alphabetize:
+        order: asc
+        caseInsensitive: true
 ignorePatterns:
   - ".eslintrc.yml"
   - "dist/"

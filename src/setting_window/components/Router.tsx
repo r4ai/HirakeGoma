@@ -1,14 +1,14 @@
 import { FC } from "react";
 import { HashRouter, Routes, Route, BrowserRouter } from "react-router-dom";
 
-import { General } from "./pages/general";
-import { CorePlugins } from "./pages/core_plugins";
-import { Debug } from "./pages/debug";
 import { Layout } from "./Layout";
-import { Hotkey } from "./pages/hotkey";
-import { Theme } from "./pages/theme";
-import { Plugin } from "./pages/plugin";
+import { CorePlugins } from "./pages/core_plugins";
 import { Database } from "./pages/database";
+import { Debug } from "./pages/debug";
+import { General } from "./pages/general";
+import { Hotkey } from "./pages/hotkey";
+import { Plugin } from "./pages/plugin";
+import { Theme } from "./pages/theme";
 
 export const Router: FC = () => {
   return (

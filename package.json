@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "lint": "eslint --ext ts,tsx --fix .",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },

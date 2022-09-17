@@ -1,5 +1,5 @@
-import { FC } from "react";
 import { css, useTheme } from "@emotion/react";
+import { FC } from "react";
 
 interface InputBoxProps {
   text: string;

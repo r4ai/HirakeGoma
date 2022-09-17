@@ -1,12 +1,13 @@
-import { useState, FC } from "react";
 import { VStack, Box, LinkBox, Button, LinkOverlay, Center, Grid } from "@chakra-ui/react";
-import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
-import { FiHome, FiTool, FiDatabase } from "react-icons/fi";
+import { useState, FC } from "react";
 import { FaRegKeyboard } from "react-icons/fa";
+import { FiHome, FiTool, FiDatabase } from "react-icons/fi";
 import { HiOutlinePuzzle } from "react-icons/hi";
-import { SideBarItem } from "../parts/SideBarItem";
 import { MdOutlineColorLens } from "react-icons/md";
+import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
+
 import { navSize } from "../Layout";
+import { SideBarItem } from "../parts/SideBarItem";
 
 interface Props {
   navSize: navSize;

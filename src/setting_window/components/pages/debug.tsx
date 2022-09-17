@@ -1,6 +1,3 @@
-import { FC, useState } from "react";
-import { SettingItem } from "../parts/SettingItem";
-import { SettingHeading } from "../parts/SettingHeading";
 import {
   Collapse,
   Button,
@@ -16,10 +13,14 @@ import {
   useToast,
   useColorMode
 } from "@chakra-ui/react";
-import { invoke } from "@tauri-apps/api";
 import Editor from "@monaco-editor/react";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { invoke } from "@tauri-apps/api";
 import { message } from "@tauri-apps/api/dialog";
+import { FC, useState } from "react";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+
+import { SettingHeading } from "../parts/SettingHeading";
+import { SettingItem } from "../parts/SettingItem";
 
 export const Debug: FC = () => {
   //* --- PRINT
