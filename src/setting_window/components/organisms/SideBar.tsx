@@ -7,7 +7,7 @@ import { MdOutlineColorLens } from "react-icons/md";
 import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
 
 import { navSize } from "../Layout";
-import { SideBarItem } from "../parts/SideBarItem";
+import { SideBarItem } from "../parts/nav/SideBarItem";
 
 interface Props {
   navSize: navSize;

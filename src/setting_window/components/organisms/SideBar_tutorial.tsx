@@ -3,7 +3,7 @@ import { useState, FC } from "react";
 import { FiMenu, FiHome, FiCalendar, FiUser, FiDollarSign, FiBriefcase, FiSettings } from "react-icons/fi";
 import { IoPawOutline } from "react-icons/io5";
 
-import { NavItem } from "../parts/NavItem";
+import { NavItem } from "../parts/nav/NavItem";
 
 export const SideBar: FC = () => {
   const [navSize, changeNavSize] = useState<string>("large");

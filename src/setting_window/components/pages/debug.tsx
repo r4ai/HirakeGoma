@@ -16,8 +16,8 @@ import { message } from "@tauri-apps/api/dialog";
 import { FC, useState } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
-import { SettingHeading } from "../parts/SettingHeading";
-import { SettingItem } from "../parts/SettingItem";
+import { SettingHeading } from "../parts/main/SettingHeading";
+import { SettingItem } from "../parts/main/SettingItem";
 
 export const Debug: FC = () => {
   //* --- PRINT
