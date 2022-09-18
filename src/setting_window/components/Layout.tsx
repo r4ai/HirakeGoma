@@ -1,7 +1,5 @@
-import { title } from "process";
-
-import { VStack, Grid, GridItem, Box, useColorModeValue } from "@chakra-ui/react";
-import { FC, ReactNode, useState } from "react";
+import { Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { SideBar } from "./organisms/SideBar";

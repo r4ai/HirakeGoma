@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { HashRouter, Routes, Route, BrowserRouter } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import { Layout } from "./Layout";
 import { Debug, Database, General, Hotkey, Plugin, Theme } from "./pages";

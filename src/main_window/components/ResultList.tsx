@@ -1,5 +1,4 @@
 import { useTheme, css } from "@emotion/react";
-import { red } from "@mui/material/colors";
 import { invoke } from "@tauri-apps/api/tauri";
 import { FC } from "react";
 

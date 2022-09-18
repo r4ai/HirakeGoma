@@ -1,9 +1,11 @@
-import { VStack, Box, LinkBox, Button, LinkOverlay, Center, Grid, Spacer, Flex } from "@chakra-ui/react";
-import { useState, FC } from "react";
+import { VStack, Flex } from "@chakra-ui/react";
+import { FC } from "react";
 import { FaRegKeyboard } from "react-icons/fa";
 import { FiHome, FiTool, FiDatabase } from "react-icons/fi";
 import { HiOutlinePuzzle } from "react-icons/hi";
 import { MdOutlineColorLens } from "react-icons/md";
+
+// eslint-disable-next-line
 import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
 
 import { navSize } from "../Layout";
