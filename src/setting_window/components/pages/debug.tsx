@@ -18,6 +18,8 @@ import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 import { SettingHeading } from "../parts/main/SettingHeading";
 import { SettingItem } from "../parts/main/SettingItem";
+import { SettingItemButton } from "../parts/main/SettingItemButton";
+import { SettingItemIconButton } from "../parts/main/SettingItemIconButton";
 
 export const Debug: FC = () => {
   //* --- PRINT
@@ -125,31 +127,22 @@ export const Debug: FC = () => {
             theme="vs-dark"
           />
         </Collapse>
-        <Box>
-          <Button
-            colorScheme="red"
-            variant="outline"
-            size="sm"
-            h={6}
+        <HStack>
+          <SettingItemButton
             onClick={() => {
               handlePrintDatabase();
             }}
           >
             Run
-          </Button>
-          <IconButton
+          </SettingItemButton>
+          <SettingItemIconButton
             aria-label="collapse console"
             icon={isOpenPrintConsole ? <FiChevronUp /> : <FiChevronDown />}
-            colorScheme="orange"
-            size="sm"
-            variant="outline"
-            ml={2}
-            h={6}
             onClick={() => {
               onTogglePrintConsole();
             }}
           />
-        </Box>
+        </HStack>
       </SettingItem>
 
       <SettingItem title="INSERT" description="Insert an application item to the search_database manually.">
@@ -179,15 +172,11 @@ export const Debug: FC = () => {
             }}
           ></Input>
         </Stack>
-        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleInsertDatabase}>
-          Insert
-        </Button>
+        <SettingItemButton onClick={handleInsertDatabase}>Insert</SettingItemButton>
       </SettingItem>
 
       <SettingItem title="RESET" description="Remove all items in search_database.">
-        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleResetDatabase}>
-          Clear DB
-        </Button>
+        <SettingItemButton onClick={handleResetDatabase}>Clear DB</SettingItemButton>
       </SettingItem>
 
       <SettingItem title="SEARCH" description="Search given keyword.">
@@ -200,30 +189,18 @@ export const Debug: FC = () => {
           }}
         />
         <HStack>
-          <Button
-            colorScheme="red"
-            variant="outline"
-            size="sm"
-            w="-webkit-fit-content"
-            h={6}
+          <SettingItemButton
             onClick={() => {
               search(keyword);
             }}
           >
             Search
-          </Button>
-          <IconButton
+          </SettingItemButton>
+          <SettingItemIconButton
             aria-label="collapse search results"
             icon={isOpenSearchResults ? <FiChevronUp /> : <FiChevronDown />}
+            onClick={onToggleSearchResults}
             colorScheme="orange"
-            size="sm"
-            variant="outline"
-            ml={2}
-            w="-webkit-fit-content"
-            h={6}
-            onClick={() => {
-              onToggleSearchResults();
-            }}
           />
         </HStack>
         <Collapse in={isOpenSearchResults} animateOpacity>
@@ -241,15 +218,13 @@ export const Debug: FC = () => {
       <SettingHeading title="Theme" />
 
       <SettingItem title="COLOR MODE" description="Toggle between dark and light modes.">
-        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={toggleColorMode}>
+        <SettingItemButton onClick={toggleColorMode}>
           Toggle {colorMode === "light" ? "dark" : "light"}
-        </Button>
+        </SettingItemButton>
       </SettingItem>
 
       <SettingItem title="TOGGLE SIDEBAR" description="Toggle sideBar width between small and large. TODO:">
-        <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={() => {}}>
-          Toggle width(currently, this is FAKE button)
-        </Button>
+        <SettingItemButton onClick={() => {}}>Toggle width(currently, this is FAKE button)</SettingItemButton>
       </SettingItem>
     </>
   );
