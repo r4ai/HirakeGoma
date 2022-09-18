@@ -137,27 +137,22 @@ impl SearchDatabase<'_> {
             value_i.score = score;
             if score >= min_score {
                 let res_len = result.len();
-                dbg!(&score);
                 if res_len == 0 {
                     result.push(value_i);
                     continue;
                 }
                 for (i, res_item_i) in result.iter().enumerate() {
                     let res_item_i_score = res_item_i.score;
-                    dbg!(&res_item_i_score);
                     if score > res_item_i_score {
-                        dbg!(&value_i);
                         result.insert(i, value_i);
                         break;
                     } else if i == res_len {
-                        dbg!(&value_i);
                         result.push(value_i);
                         break;
                     }
                 }
             }
         }
-        dbg!(&result);
         result
     }
 }

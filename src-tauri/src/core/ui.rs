@@ -57,9 +57,7 @@ fn search(
     keyword: String,
     min_score: i64,
 ) -> Vec<SearchDatabaseItem> {
-    let res = db.search(&keyword, min_score);
-    dbg!(&res);
-    res
+    db.search(&keyword, min_score)
 }
 
 fn init_states(app: &mut App) {

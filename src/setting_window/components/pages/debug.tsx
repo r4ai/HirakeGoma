@@ -96,9 +96,14 @@ export const Debug: FC = () => {
   function search(keyword: string): void {
     const minScore = 10;
     const res = invoke("search", { keyword, minScore }).then((items) => {
-      console.log(items);
       setResult(JSON.stringify(items, null, "\t"));
     });
+  }
+  function handleInputBoxChange(targetValue: string): void {
+    setKeyword(targetValue);
+    // console.log(`targetValue: ${targetValue}`);
+    // console.log(`keyword: ${keyword}`);
+    search(targetValue);
   }
 
   //* --- COLOR_MODE
@@ -190,8 +195,7 @@ export const Debug: FC = () => {
           size="sm"
           placeholder=""
           onChange={(e) => {
-            setKeyword(e.target.value);
-            search(keyword);
+            handleInputBoxChange(e.target.value);
           }}
         />
         <HStack>
