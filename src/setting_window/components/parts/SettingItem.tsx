@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Stack, Heading, Text } from "@chakra-ui/react";
 import { FC, ReactNode } from "react";
 
 import { SettingItemBase } from "./SettingItemBase";
@@ -16,7 +16,9 @@ export const SettingItem: FC<Props> = ({ children, title, description }) => {
         {title}
       </Heading>
       <Text>{description}</Text>
-      <Box>{children}</Box>
+      <Stack my={2} spacing={2}>
+        {children}
+      </Stack>
     </SettingItemBase>
   );
 };

@@ -1,4 +1,6 @@
 use crate::core::utils::get_project_dir;
+use fuzzy_matcher::skim::SkimMatcherV2;
+use fuzzy_matcher::FuzzyMatcher;
 use kv::{Bucket, Config, Json, Store};
 use std::collections::HashMap;
 use std::{fmt::Debug, fs, path::PathBuf};
@@ -122,7 +124,22 @@ impl SearchDatabase<'_> {
         self.bucket.clear()
     }
 
-    pub fn search(&self, keyword: &String) {}
+    pub fn search(&self, keyword: &String, min_score: i64) -> HashMap<String, SearchDatabaseItem> {
+        let mut result: HashMap<String, SearchDatabaseItem> = HashMap::new();
+        let matcher = SkimMatcherV2::default();
+        for item_i in self.bucket.iter() {
+            let item_i = item_i.unwrap();
+            let key_i: String = item_i.key().unwrap();
+            let mut value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            let mut value_i = value_i.0;
+            let score = matcher.fuzzy_match(key_i.as_str(), keyword).unwrap_or(0);
+            value_i.score = score;
+            if score >= min_score {
+                result.insert(key_i, value_i);
+            }
+        }
+        result
+    }
 }
 
 #[cfg(test)]

@@ -51,6 +51,15 @@ fn clear_search_database(db: State<'_, SearchDatabase>) -> String {
     result_msg
 }
 
+#[tauri::command]
+fn search(
+    db: State<'_, SearchDatabase>,
+    keyword: String,
+    minScore: i64,
+) -> HashMap<String, SearchDatabaseItem> {
+    db.search(&keyword, minScore)
+}
+
 fn init_states(app: &mut App) {
     let search_database_state = SearchDatabase::init(false);
     app.manage(search_database_state);
@@ -65,7 +74,8 @@ pub fn init_app() {
             dbg_search_database_items,
             add_app_to_search_database,
             get_all_search_database_items,
-            clear_search_database
+            clear_search_database,
+            search
         ])
         .setup(|app| {
             init_states(app);
