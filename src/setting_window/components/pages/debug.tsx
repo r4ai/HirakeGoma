@@ -100,9 +100,10 @@ export const Debug: FC = () => {
     });
   }
   function handleInputBoxChange(targetValue: string): void {
+    if (!isOpenSearchResults) {
+      onToggleSearchResults();
+    }
     setKeyword(targetValue);
-    // console.log(`targetValue: ${targetValue}`);
-    // console.log(`keyword: ${keyword}`);
     search(targetValue);
   }
 
