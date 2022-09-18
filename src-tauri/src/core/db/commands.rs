@@ -19,8 +19,3 @@ struct Sear {
 //     state.t.lock().unwrap().insert("key".into(), "value".into());
 //     Ok(())
 // }
-
-#[tauri::command]
-fn get_search_result(db: State<'_, SearchDatabase>) -> Result<(), String> {
-    Ok(())
-}

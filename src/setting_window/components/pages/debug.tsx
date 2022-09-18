@@ -7,7 +7,8 @@ import {
   Input,
   useDisclosure,
   useToast,
-  useColorMode
+  useColorMode,
+  HStack
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { invoke } from "@tauri-apps/api";
@@ -86,6 +87,24 @@ export const Debug: FC = () => {
           break;
       }
     });
+  }
+
+  //* --- SEARCH
+  const { isOpen: isOpenSearchResults, onToggle: onToggleSearchResults } = useDisclosure();
+  const [result, setResult] = useState(""); // TODO: SearchDatabaseの型
+  const [keyword, setKeyword] = useState("");
+  function search(keyword: string): void {
+    const minScore = 10;
+    const res = invoke("search", { keyword, minScore }).then((items) => {
+      setResult(JSON.stringify(items, null, "\t"));
+    });
+  }
+  function handleInputBoxChange(targetValue: string): void {
+    if (!isOpenSearchResults) {
+      onToggleSearchResults();
+    }
+    setKeyword(targetValue);
+    search(targetValue);
   }
 
   //* --- COLOR_MODE
@@ -169,6 +188,54 @@ export const Debug: FC = () => {
         <Button colorScheme="red" variant="outline" size="sm" h={6} onClick={handleResetDatabase}>
           Clear DB
         </Button>
+      </SettingItem>
+
+      <SettingItem title="SEARCH" description="Search given keyword.">
+        <Input
+          value={keyword}
+          size="sm"
+          placeholder=""
+          onChange={(e) => {
+            handleInputBoxChange(e.target.value);
+          }}
+        />
+        <HStack>
+          <Button
+            colorScheme="red"
+            variant="outline"
+            size="sm"
+            w="-webkit-fit-content"
+            h={6}
+            onClick={() => {
+              search(keyword);
+            }}
+          >
+            Search
+          </Button>
+          <IconButton
+            aria-label="collapse search results"
+            icon={isOpenSearchResults ? <FiChevronUp /> : <FiChevronDown />}
+            colorScheme="orange"
+            size="sm"
+            variant="outline"
+            ml={2}
+            w="-webkit-fit-content"
+            h={6}
+            onClick={() => {
+              onToggleSearchResults();
+            }}
+          />
+        </HStack>
+        <Collapse in={isOpenSearchResults} animateOpacity>
+          <Editor
+            css={{ marginBottom: "4px" }}
+            height="70vh"
+            value={result}
+            defaultLanguage="json"
+            defaultValue=""
+            theme="vs-dark"
+          />
+        </Collapse>
       </SettingItem>
 
       <SettingHeading title="Theme" />
