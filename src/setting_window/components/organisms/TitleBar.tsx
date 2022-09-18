@@ -1,11 +1,41 @@
-import { HStack, Flex, Box, IconButton, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
+import { HStack, Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
 import { appWindow } from "@tauri-apps/api/window";
-import { FC } from "react";
-import { FiX, FiMaximize, FiMinus } from "react-icons/fi";
+import { FC, useEffect, useState } from "react";
+import { FiX, FiMaximize, FiMinimize, FiMinus } from "react-icons/fi";
 
 import { SystemIconButton } from "../parts/SystemIconButton";
 
 export const TitleBar: FC = () => {
+  const [maximizeIcon, setMaximizeIcon] = useState(<FiMaximize />);
+  async function toggleMaximizeIcon(): Promise<void> {
+    await appWindow.isMaximized().then((isMaximized) => {
+      if (isMaximized) {
+        setMaximizeIcon(<FiMinimize />);
+      } else {
+        setMaximizeIcon(<FiMaximize />);
+      }
+    });
+  }
+  async function handleToggleMaximize(): Promise<void> {
+    await appWindow.toggleMaximize();
+    await toggleMaximizeIcon();
+  }
+
+  useEffect(() => {
+    const unlistenPromise = appWindow.onResized(async ({ payload: size }) => {
+      await toggleMaximizeIcon();
+      // console.log(size);
+    });
+    return () => {
+      async function unlisten(): Promise<void> {
+        await unlistenPromise.then((fn) => {
+          fn();
+        });
+      }
+      void unlisten();
+    };
+  }, []);
+
   return (
     <>
       <Flex data-tauri-drag-region justifyContent="space-between" h="100%" userSelect="none">
@@ -25,13 +55,7 @@ export const TitleBar: FC = () => {
               await appWindow.minimize();
             }}
           />
-          <SystemIconButton
-            aria-label="maximize"
-            icon={<FiMaximize />}
-            onClick={async () => {
-              await appWindow.maximize();
-            }}
-          />
+          <SystemIconButton aria-label="maximize" icon={maximizeIcon} onClick={handleToggleMaximize} />
           <SystemIconButton
             aria-label="close"
             icon={<FiX />}
