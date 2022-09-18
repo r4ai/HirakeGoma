@@ -55,9 +55,11 @@ fn clear_search_database(db: State<'_, SearchDatabase>) -> String {
 fn search(
     db: State<'_, SearchDatabase>,
     keyword: String,
-    minScore: i64,
-) -> HashMap<String, SearchDatabaseItem> {
-    db.search(&keyword, minScore)
+    min_score: i64,
+) -> Vec<SearchDatabaseItem> {
+    let res = db.search(&keyword, min_score);
+    dbg!(&res);
+    res
 }
 
 fn init_states(app: &mut App) {

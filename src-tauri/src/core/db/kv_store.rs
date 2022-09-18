@@ -3,6 +3,7 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 use kv::{Bucket, Config, Json, Store};
 use std::collections::HashMap;
+use std::vec;
 use std::{fmt::Debug, fs, path::PathBuf};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -124,20 +125,39 @@ impl SearchDatabase<'_> {
         self.bucket.clear()
     }
 
-    pub fn search(&self, keyword: &String, min_score: i64) -> HashMap<String, SearchDatabaseItem> {
-        let mut result: HashMap<String, SearchDatabaseItem> = HashMap::new();
+    pub fn search(&self, keyword: &String, min_score: i64) -> Vec<SearchDatabaseItem> {
+        let mut result: Vec<SearchDatabaseItem> = vec![];
         let matcher = SkimMatcherV2::default();
         for item_i in self.bucket.iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
-            let mut value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
             let mut value_i = value_i.0;
             let score = matcher.fuzzy_match(key_i.as_str(), keyword).unwrap_or(0);
             value_i.score = score;
             if score >= min_score {
-                result.insert(key_i, value_i);
+                let res_len = result.len();
+                dbg!(&score);
+                if res_len == 0 {
+                    result.push(value_i);
+                    continue;
+                }
+                for (i, res_item_i) in result.iter().enumerate() {
+                    let res_item_i_score = res_item_i.score;
+                    dbg!(&res_item_i_score);
+                    if score > res_item_i_score {
+                        dbg!(&value_i);
+                        result.insert(i, value_i);
+                        break;
+                    } else if i == res_len {
+                        dbg!(&value_i);
+                        result.push(value_i);
+                        break;
+                    }
+                }
             }
         }
+        dbg!(&result);
         result
     }
 }
