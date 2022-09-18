@@ -8,7 +8,7 @@ import { SettingItem, SettingItemButton, SettingItemIconButton } from "../../../
 
 export const Search: FC = () => {
   const { isOpen: isOpenSearchResults, onToggle: onToggleSearchResults } = useDisclosure();
-  const [result, setResult] = useState(""); // TODO: SearchDatabaseの型
+  const [result, setResult] = useState("");
   const [keyword, setKeyword] = useState("");
   function search(keyword: string): void {
     const minScore = 10;
