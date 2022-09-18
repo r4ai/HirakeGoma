@@ -1,18 +1,6 @@
-import {
-  Collapse,
-  Button,
-  IconButton,
-  Box,
-  Stack,
-  Input,
-  useDisclosure,
-  useToast,
-  useColorMode,
-  HStack
-} from "@chakra-ui/react";
+import { Collapse, Stack, Input, useDisclosure, useToast, useColorMode, HStack } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { invoke } from "@tauri-apps/api";
-import { message } from "@tauri-apps/api/dialog";
 import { FC, useState } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
@@ -31,7 +19,7 @@ export const Debug: FC = () => {
     if (!isOpenPrintConsole) {
       onTogglePrintConsole();
     }
-    const res = invoke("get_all_search_database_items").then((items) =>
+    void invoke("get_all_search_database_items").then((items) =>
       setPrintDatabaseValue(JSON.stringify(items, null, "\t"))
     );
   }
@@ -45,7 +33,7 @@ export const Debug: FC = () => {
     console.log(appTitle);
     console.log(appPath);
     console.log(appIconPath);
-    const res = invoke("add_app_to_search_database", {
+    void invoke("add_app_to_search_database", {
       appTitle,
       appIconPath,
       appPath
@@ -65,7 +53,7 @@ export const Debug: FC = () => {
   //* --- RESET
   const clearDatabaseToast = useToast();
   function handleResetDatabase(): void {
-    const res = invoke<string>("clear_search_database").then((msg) => {
+    void invoke<string>("clear_search_database").then((msg) => {
       switch (msg) {
         case "SUCCESS":
           clearDatabaseToast({
@@ -97,7 +85,7 @@ export const Debug: FC = () => {
   const [keyword, setKeyword] = useState("");
   function search(keyword: string): void {
     const minScore = 10;
-    const res = invoke("search", { keyword, minScore }).then((items) => {
+    void invoke("search", { keyword, minScore }).then((items) => {
       setResult(JSON.stringify(items, null, "\t"));
     });
   }
