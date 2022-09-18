@@ -1,10 +1,14 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { FC, ReactElement } from "react";
+import { FC, ReactNode } from "react";
 
 interface Props extends ButtonProps {
-  children?: ReactElement;
+  children?: ReactNode;
 }
 
 export const SettingItemButton: FC<Props> = ({ children, ...props }) => {
-  return <Button {...props}>{children}</Button>;
+  return (
+    <Button colorScheme="red" variant="outline" size="sm" w="-webkit-fit-content" h={6} {...props}>
+      {children}
+    </Button>
+  );
 };
