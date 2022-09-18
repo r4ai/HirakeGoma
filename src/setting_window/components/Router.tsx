@@ -4,7 +4,7 @@ import { HashRouter, Routes, Route, BrowserRouter } from "react-router-dom";
 import { Layout } from "./Layout";
 import { CorePlugins } from "./pages/core_plugins";
 import { Database } from "./pages/database";
-import { Debug } from "./pages/debug";
+import { Debug } from "./pages/debug/debug";
 import { General } from "./pages/general";
 import { Hotkey } from "./pages/hotkey";
 import { Plugin } from "./pages/plugin";
