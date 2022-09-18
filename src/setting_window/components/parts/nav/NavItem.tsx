@@ -1,4 +1,4 @@
-import { Flex, Text, Icon, Link, Menu, MenuButton, MenuList } from "@chakra-ui/react";
+import { Flex, Text, Icon, Link, Menu, MenuButton } from "@chakra-ui/react";
 import { FC } from "react";
 
 interface Props {

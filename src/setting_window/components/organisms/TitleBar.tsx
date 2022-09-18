@@ -3,7 +3,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { FC, useEffect, useState } from "react";
 import { FiX, FiMaximize, FiMinimize, FiMinus } from "react-icons/fi";
 
-import { SystemIconButton } from "../parts/SystemIconButton";
+import { SystemIconButton } from "../parts/title/SystemIconButton";
 
 export const TitleBar: FC = () => {
   const [maximizeIcon, setMaximizeIcon] = useState(<FiMaximize />);

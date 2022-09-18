@@ -27,6 +27,7 @@ plugins:
   - jsx-a11y
   - prettier
   - import
+  - unused-imports
 rules:
   react-hooks/rules-of-hooks: "error"
   react-hooks/exhaustive-deps: "warn"
@@ -53,6 +54,7 @@ rules:
       alphabetize:
         order: asc
         caseInsensitive: true
+  unused-imports/no-unused-imports: error
 ignorePatterns:
   - ".eslintrc.yml"
   - "dist/"
