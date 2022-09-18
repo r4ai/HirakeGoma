@@ -2,6 +2,7 @@ import { FC } from "react";
 
 import { SettingHeading } from "../../parts/main";
 import { Print, Insert, Reset, Search } from "./database";
+import { ColorMode, ToggleSideBar } from "./theme";
 
 export const Debug: FC = () => {
   return (
@@ -12,6 +13,8 @@ export const Debug: FC = () => {
       <Insert />
       <Reset />
       <SettingHeading title="Theme" />
+      <ColorMode />
+      <ToggleSideBar />
     </>
   );
 };
