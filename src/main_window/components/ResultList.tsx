@@ -1,5 +1,4 @@
 import { useTheme, css } from "@emotion/react";
-import { invoke } from "@tauri-apps/api/tauri";
 import { FC } from "react";
 
 interface ResultListProps {
@@ -39,25 +38,11 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
     <>
       <div css={resultListCss.self}>
         {searchResults.map((item) => (
-          <div
-            key={item.id}
-            css={resultListCss.item}
-            onClick={() => {
-              invoke("dbg_search_database_items");
-            }}
-          >
+          <div key={item.name} css={resultListCss.item} onClick={() => {}}>
             <div css={resultListCss.itemTitle}>{item.name}</div>
             <div css={resultListCss.itemDescription}>{item.file_path}</div>
           </div>
         ))}
-      </div>
-      <div
-        css={{ color: "red", cursor: "pointer" }}
-        onClick={() => {
-          invoke("add_search_database_item");
-        }}
-      >
-        InsertDB
       </div>
     </>
   );

@@ -146,7 +146,7 @@ impl SearchDatabase<'_> {
                     if score > res_item_i_score {
                         result.insert(i, value_i);
                         break;
-                    } else if i == res_len {
+                    } else if i == res_len - 1 {
                         result.push(value_i);
                         break;
                     }

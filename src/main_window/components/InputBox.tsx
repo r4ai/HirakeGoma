@@ -1,11 +1,11 @@
 import { css, useTheme } from "@emotion/react";
 import { FC } from "react";
 
-interface InputBoxProps {
-  text: string;
-}
+type Props = JSX.IntrinsicElements["input"] & {
+  keyword: string;
+};
 
-export const InputBox: FC<InputBoxProps> = ({ text }) => {
+export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
   const theme = useTheme();
 
   const inputBoxCss = {
@@ -27,7 +27,7 @@ export const InputBox: FC<InputBoxProps> = ({ text }) => {
 
   return (
     <div css={inputBoxCss.self}>
-      <input css={inputBoxCss.input} type="text" value={text} />
+      <input css={inputBoxCss.input} type="text" {...inputProps} />
     </div>
   );
 };
