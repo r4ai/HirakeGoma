@@ -1,28 +1,19 @@
 import { css, useTheme } from "@emotion/react";
-import { invoke } from "@tauri-apps/api";
 import { FC, useState } from "react";
 
+import { search } from "../commands/main/search";
 import { InputBox } from "./components/InputBox";
 import { ResultList } from "./components/ResultList";
 
 const App: FC = () => {
   const theme = useTheme();
-
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
 
-  function search(keyword: string): void {
-    const minScore = 1;
-    void invoke<SearchResults>("search", { keyword, minScore }).then((res) => {
-      console.log(res);
-      setSearchResults(res);
-    });
-  }
-
-  function handleInputBoxChange(keyword: string): void {
+  async function handleInputBoxChange(keyword: string): Promise<void> {
     if (keyword === "") {
       setSearchResults([]);
     } else {
-      search(keyword);
+      await search(keyword).then((res) => setSearchResults(res));
     }
   }
 
@@ -39,7 +30,7 @@ const App: FC = () => {
       <InputBox
         keyword=""
         onChange={(e) => {
-          handleInputBoxChange(e.target.value);
+          void handleInputBoxChange(e.target.value);
         }}
       />
       <ResultList searchResults={searchResults} />
