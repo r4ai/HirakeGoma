@@ -115,6 +115,11 @@ impl ThemeState<'_> {
         Ok(())
     }
 
+    pub fn remove(&self, key: String) -> CommandResult<()> {
+        self.bucket.remove(&key)?;
+        Ok(())
+    }
+
     pub fn get(&self, key: &String) -> CommandResult<Option<Theme>> {
         let result: Option<Theme> = match self.bucket.get(key)? {
             None => None,
@@ -153,7 +158,14 @@ pub fn setting_theme_create(db: State<'_, ThemeState>, key: String) -> CommandRe
         codeFont: "".into(),
     };
     let value = Theme::new(mode, colors, fonts);
-    db.insert(key, value)
+    db.insert(key, value)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn setting_theme_remove(db: State<'_, ThemeState>, key: String) -> CommandResult<()> {
+    db.remove(key)?;
+    Ok(())
 }
 
 #[tauri::command]

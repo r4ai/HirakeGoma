@@ -16,8 +16,8 @@ use crate::plugins::application_search;
 use super::db::kv_store::SearchDatabaseItem;
 use super::setting::theme::ThemeState;
 use super::setting::theme::{
-    __cmd__setting_theme_create, __cmd__setting_theme_get_all, setting_theme_create,
-    setting_theme_get_all,
+    __cmd__setting_theme_create, __cmd__setting_theme_get_all, __cmd__setting_theme_remove,
+    setting_theme_create, setting_theme_get_all, setting_theme_remove,
 };
 
 #[tauri::command]
@@ -84,6 +84,7 @@ pub fn init_app() {
             clear_search_database,
             search,
             setting_theme_create,
+            setting_theme_remove,
             setting_theme_get_all
         ])
         .setup(|app| {
