@@ -1,18 +1,16 @@
-import { invoke } from "@tauri-apps/api";
 import { FC } from "react";
 
+import { getAllTheme } from "../../../../../commands/setting/theme/getAllTheme";
 import { SettingItem, SettingItemButton } from "../../../parts/main";
 
 export const GetAll: FC = () => {
   async function handleClick(): Promise<void> {
-    void invoke("setting_theme_get_all").then((msg) => {
-      console.log(msg);
-    });
+    await getAllTheme().then((msg) => console.log(msg));
   }
 
   return (
     <>
-      <SettingItem title="GET ALL PRESETS" description="Print presets list.">
+      <SettingItem title="PRINT PRESETS" description="Print presets list.">
         <SettingItemButton onClick={handleClick}>Print</SettingItemButton>
       </SettingItem>
     </>

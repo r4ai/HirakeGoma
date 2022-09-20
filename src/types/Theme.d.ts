@@ -23,3 +23,7 @@ interface Fonts {
   descriptionFont: string;
   codeFont: string;
 }
+
+interface Themes {
+  [index: string]: Theme;
+}

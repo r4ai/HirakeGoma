@@ -12,7 +12,7 @@ interface Props {
 export const SettingItem: FC<Props> = ({ children, title, description }) => {
   return (
     <SettingItemBase>
-      <Heading as="h2" size="sm">
+      <Heading as="h2" size="md">
         {title}
       </Heading>
       <Text>{description}</Text>

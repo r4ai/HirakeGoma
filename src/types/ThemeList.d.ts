@@ -1,1 +1,0 @@
-type ThemeList = "carbon" | "paper";
