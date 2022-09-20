@@ -1,4 +1,4 @@
-use crate::core::utils::get_project_dir;
+use crate::core::utils::path::get_project_dir;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 use kv::{Bucket, Config, Json, Store};

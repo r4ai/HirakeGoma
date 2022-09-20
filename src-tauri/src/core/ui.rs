@@ -14,6 +14,11 @@ use tauri::Wry;
 use crate::plugins::application_search;
 
 use super::db::kv_store::SearchDatabaseItem;
+use super::setting::theme::ThemeState;
+use super::setting::theme::{
+    __cmd__setting_theme_create, __cmd__setting_theme_get_all, setting_theme_create,
+    setting_theme_get_all,
+};
 
 #[tauri::command]
 fn dbg_search_database_items(db: State<'_, SearchDatabase>) -> Result<(), String> {
@@ -62,7 +67,9 @@ fn search(
 
 fn init_states(app: &mut App) {
     let search_database_state = SearchDatabase::init(false);
+    let theme_state = ThemeState::init();
     app.manage(search_database_state);
+    app.manage(theme_state);
 }
 
 fn init_window(app: &mut App<Wry>) {}
@@ -75,7 +82,9 @@ pub fn init_app() {
             add_app_to_search_database,
             get_all_search_database_items,
             clear_search_database,
-            search
+            search,
+            setting_theme_create,
+            setting_theme_get_all
         ])
         .setup(|app| {
             init_states(app);
