@@ -72,7 +72,12 @@ fn init_states(app: &mut App) {
     app.manage(theme_state);
 }
 
-fn init_window(app: &mut App<Wry>) {}
+fn init_window(app: &mut App) {
+    let setting_window = app.get_window("setting_window").unwrap();
+    set_shadow(&setting_window, true).expect("Unsupported platform!");
+}
+
+fn init_events(app: &mut App) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -89,9 +94,7 @@ pub fn init_app() {
         ])
         .setup(|app| {
             init_states(app);
-
-            let window = app.get_window("setting_window").unwrap();
-            set_shadow(&window, true).expect("Unsupported platform!");
+            init_window(app);
 
             #[cfg(debug_assertions)]
             app.get_window("setting_window").unwrap().open_devtools();
