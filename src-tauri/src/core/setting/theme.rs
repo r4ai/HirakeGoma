@@ -1,5 +1,7 @@
+use crate::core::db::kv_store::SearchDatabaseItem;
 use crate::core::utils::path::get_project_dir;
-use crate::core::utils::result::CommandResult;
+use crate::core::utils::result::{CommandError, CommandResult};
+use anyhow::Context;
 use kv::{Bucket, Config, Json, Store};
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{Manager, State};
@@ -7,6 +9,7 @@ use tauri::{Manager, State};
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct Theme {
     pub mode: String,
+    pub activated: bool,
     pub colors: ThemeColors,
     pub fonts: ThemeFonts,
 }
@@ -40,6 +43,7 @@ impl Theme {
     pub fn new(mode: String, colors: ThemeColors, fonts: ThemeFonts) -> Self {
         Self {
             mode,
+            activated: false,
             colors,
             fonts,
         }
@@ -138,6 +142,20 @@ impl ThemeState<'_> {
         }
         Ok(result)
     }
+
+    pub fn change(&self, key: String, value: Theme) -> CommandResult<()> {
+        // TODO: 過去のvalueと新しく置き換えるvalueを比較し、差分のみをDBに反映させる
+        let pre_value: Theme = match self.get(&key)? {
+            None => {
+                return Err(CommandError::KvError(kv::Error::Message(String::from(
+                    "Failed to find the item associated to the key.",
+                ))))
+            }
+            Some(res) => res,
+        };
+        self.bucket.set(&key, &Json(value));
+        Ok(())
+    }
 }
 
 #[tauri::command]
@@ -169,6 +187,66 @@ pub fn setting_theme_remove(db: State<'_, ThemeState>, key: String) -> CommandRe
 }
 
 #[tauri::command]
+pub fn setting_theme_get(db: State<'_, ThemeState>, key: String) -> CommandResult<Option<Theme>> {
+    db.get(&key)
+}
+
+#[tauri::command]
 pub fn setting_theme_get_all(db: State<'_, ThemeState>) -> CommandResult<HashMap<String, Theme>> {
     db.get_all()
+}
+
+#[tauri::command]
+pub fn setting_theme_change(
+    db: State<'_, ThemeState>,
+    key: String,
+    value: Theme,
+) -> CommandResult<()> {
+    db.change(key, value)
+}
+
+#[tauri::command]
+pub fn setting_theme_activate(db: State<'_, ThemeState>, key: String) -> CommandResult<()> {
+    // * DEACTIVATE CURRENT THEME
+    for item_i in db.bucket.iter() {
+        let item_i = item_i?;
+        let key_i: String = item_i.key()?;
+        let value_json_i: Json<Theme> = item_i.value()?;
+        let value_i: Theme = value_json_i.0;
+        if value_i.activated {
+            let new_value_i = Theme {
+                activated: false,
+                ..value_i
+            };
+            let _ = db.change(key_i, new_value_i);
+        }
+    }
+
+    // * ACTIVATE NEW THEME
+    let value: Theme = match db.get(&key)? {
+        None => {
+            return Err(CommandError::KvError(kv::Error::Message(String::from(
+                "Failed to find the item associated to the key.",
+            ))))
+        }
+        Some(res) => Theme {
+            activated: true,
+            ..res
+        },
+    };
+    db.change(key, value)
+}
+
+#[tauri::command]
+pub fn setting_theme_get_activated(db: State<'_, ThemeState>) -> CommandResult<Option<Theme>> {
+    for item_i in db.bucket.iter() {
+        let item_i = item_i?;
+        let key_i: String = item_i.key()?;
+        let value_json_i: Json<Theme> = item_i.value()?;
+        let value_i: Theme = value_json_i.0;
+        if value_i.activated {
+            return db.get(&key_i);
+        }
+    }
+    Ok(None)
 }
