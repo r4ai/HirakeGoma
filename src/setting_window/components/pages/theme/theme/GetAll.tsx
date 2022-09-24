@@ -1,11 +1,17 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 
 import { getAllTheme } from "../../../../../commands/setting/theme/getAllTheme";
+import { Themes } from "../../../../../types/Theme";
 import { SettingItem, SettingItemButton } from "../../../parts/main";
 
 export const GetAll: FC = () => {
-  async function handleClick(): Promise<void> {
-    await getAllTheme().then((msg) => console.log(msg));
+  const [themeList, setThemeList] = useState<Themes>({});
+
+  function handleClick(): void {
+    void getAllTheme().then((res) => {
+      setThemeList(res);
+      console.log(res);
+    });
   }
 
   return (

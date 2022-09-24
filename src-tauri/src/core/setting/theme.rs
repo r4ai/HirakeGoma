@@ -2,7 +2,7 @@ use crate::core::utils::path::get_project_dir;
 use crate::core::utils::result::CommandResult;
 use kv::{Bucket, Config, Json, Store};
 use std::{collections::HashMap, path::PathBuf};
-use tauri::State;
+use tauri::{Manager, State};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct Theme {

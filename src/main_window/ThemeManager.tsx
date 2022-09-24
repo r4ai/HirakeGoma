@@ -14,13 +14,17 @@ export const ThemeManager: FC<Props> = ({ children }) => {
   const ThemeContext = createContext({ themeName, setThemeName });
 
   useEffect(() => {
-    void getAllTheme().then((res) => {
-      setTheme(res[themeName]);
-    });
+    /* 副作用関数 */
 
     return () => {
       /* クリーンアップ関数 */
     };
+  }, []);
+
+  useEffect(() => {
+    void getAllTheme().then((res) => {
+      setTheme(res[themeName]);
+    });
   }, [themeName]);
 
   return (
