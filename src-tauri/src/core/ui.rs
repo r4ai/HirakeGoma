@@ -14,6 +14,14 @@ use tauri::Wry;
 use crate::plugins::application_search;
 
 use super::db::kv_store::SearchDatabaseItem;
+use super::setting::theme::ThemeState;
+use super::setting::theme::{
+    __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
+    __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
+    __cmd__setting_theme_remove, setting_theme_activate, setting_theme_change,
+    setting_theme_create, setting_theme_get, setting_theme_get_activated, setting_theme_get_all,
+    setting_theme_remove,
+};
 
 #[tauri::command]
 fn dbg_search_database_items(db: State<'_, SearchDatabase>) -> Result<(), String> {
@@ -62,10 +70,17 @@ fn search(
 
 fn init_states(app: &mut App) {
     let search_database_state = SearchDatabase::init(false);
+    let theme_state = ThemeState::init();
     app.manage(search_database_state);
+    app.manage(theme_state);
 }
 
-fn init_window(app: &mut App<Wry>) {}
+fn init_window(app: &mut App) {
+    let setting_window = app.get_window("setting_window").unwrap();
+    set_shadow(&setting_window, true).expect("Unsupported platform!");
+}
+
+fn init_events(app: &mut App) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -75,13 +90,18 @@ pub fn init_app() {
             add_app_to_search_database,
             get_all_search_database_items,
             clear_search_database,
-            search
+            search,
+            setting_theme_create,
+            setting_theme_remove,
+            setting_theme_get,
+            setting_theme_get_all,
+            setting_theme_change,
+            setting_theme_activate,
+            setting_theme_get_activated
         ])
         .setup(|app| {
             init_states(app);
-
-            let window = app.get_window("setting_window").unwrap();
-            set_shadow(&window, true).expect("Unsupported platform!");
+            init_window(app);
 
             #[cfg(debug_assertions)]
             app.get_window("setting_window").unwrap().open_devtools();

@@ -3,6 +3,7 @@ import "@emotion/react";
 declare module "@emotion/react" {
   interface Theme {
     mode: "dark" | "light";
+    activated: boolean;
     fonts: Fonts;
     colors: Colors;
   }
@@ -22,4 +23,8 @@ interface Fonts {
   titleFont: string;
   descriptionFont: string;
   codeFont: string;
+}
+
+interface Themes {
+  [index: string]: Theme;
 }

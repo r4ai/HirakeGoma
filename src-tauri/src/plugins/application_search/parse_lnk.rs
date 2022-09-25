@@ -1,5 +1,5 @@
 use crate::core::db::kv_store::SearchDatabaseItem;
-use crate::core::utils::get_error_icon_path;
+use crate::core::utils::path::get_error_icon_path;
 use configparser::ini::Ini;
 use lnk::ShellLink;
 use std::{any, fs};
@@ -64,7 +64,7 @@ mod tests {
 
     use super::{parse_lnk, parse_url};
     use crate::core::db::kv_store::SearchDatabaseItem;
-    use crate::core::utils::get_cargo_toml_dir;
+    use crate::core::utils::path::get_cargo_toml_dir;
 
     #[test]
     fn parse_lnk_test() {
