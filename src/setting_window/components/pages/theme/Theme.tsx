@@ -1,5 +1,6 @@
-import { FC, useState, createContext } from "react";
+import { FC, useState, createContext, useEffect } from "react";
 
+import { getActivatedTheme } from "../../../../commands/setting/theme";
 import { SettingHeading } from "../../parts/main";
 import { Create } from "./theme/Create";
 import { GetAll } from "./theme/GetAll";
@@ -17,7 +18,14 @@ export const ActivatedThemeContext = createContext<ActivatedThemeContextProps>({
 });
 
 export const Theme: FC = () => {
-  const [activatedTheme, setActivatedTheme] = useState("paper");
+  const [activatedTheme, setActivatedTheme] = useState("");
+
+  useEffect(() => {
+    void getActivatedTheme().then((name) => {
+      console.log(name);
+      setActivatedTheme(name);
+    });
+  }, []);
 
   return (
     <>

@@ -3,6 +3,7 @@ use crate::core::utils::path::get_project_dir;
 use crate::core::utils::result::{CommandError, CommandResult};
 use anyhow::Context;
 use kv::{Bucket, Config, Json, Store};
+use std::vec;
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{AppHandle, Manager, State};
 
@@ -52,6 +53,8 @@ impl Theme {
 
 impl ThemeState<'_> {
     fn init_default_theme(&self) -> CommandResult<()> {
+        let mut default_theme_list = HashMap::new();
+
         let carbon_theme = Theme::new(
             "dark".into(),
             ThemeColors {
@@ -69,6 +72,7 @@ impl ThemeState<'_> {
                 codeFont: "".into(),
             },
         );
+        default_theme_list.insert("carbon".to_string(), carbon_theme);
 
         let paper_theme = Theme::new(
             "light".into(),
@@ -87,9 +91,14 @@ impl ThemeState<'_> {
                 codeFont: "".into(),
             },
         );
+        default_theme_list.insert("paper".to_string(), paper_theme);
 
-        self.insert("carbon".into(), carbon_theme)?;
-        self.insert("paper".into(), paper_theme)?;
+        dbg!(self.get_all());
+        for theme_item in default_theme_list {
+            if !self.exists(&theme_item.0)? {
+                self.insert(theme_item.0, theme_item.1)?;
+            }
+        }
 
         Ok(())
     }
@@ -112,6 +121,13 @@ impl ThemeState<'_> {
         res.init_default_theme()
             .expect("Failed to load default themes.");
         res
+    }
+
+    pub fn exists(&self, key: &String) -> CommandResult<bool> {
+        match self.bucket.contains(key) {
+            Ok(res) => Ok(res),
+            Err(e) => Err(CommandError::KvError(e)),
+        }
     }
 
     pub fn insert(&self, key: String, value: Theme) -> CommandResult<()> {
@@ -258,14 +274,14 @@ pub fn setting_theme_activate(
 }
 
 #[tauri::command]
-pub fn setting_theme_get_activated(db: State<'_, ThemeState>) -> CommandResult<Option<Theme>> {
+pub fn setting_theme_get_activated(db: State<'_, ThemeState>) -> CommandResult<Option<String>> {
     for item_i in db.bucket.iter() {
         let item_i = item_i?;
         let key_i: String = item_i.key()?;
         let value_json_i: Json<Theme> = item_i.value()?;
         let value_i: Theme = value_json_i.0;
         if value_i.activated {
-            return db.get(&key_i);
+            return Ok(Some(key_i));
         }
     }
     Ok(None)
