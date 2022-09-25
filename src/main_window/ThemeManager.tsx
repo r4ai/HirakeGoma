@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@emotion/react";
+import { listen } from "@tauri-apps/api/event";
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
 
 import { getAllTheme } from "../commands/setting/theme";
@@ -7,6 +8,7 @@ import { carbon } from "./theme/carbon";
 interface Props {
   children: ReactNode;
 }
+type UnlistenFn = () => void;
 
 export const ThemeManager: FC<Props> = ({ children }) => {
   const [themeName, setThemeName] = useState("carbon");
@@ -14,14 +16,23 @@ export const ThemeManager: FC<Props> = ({ children }) => {
   const ThemeContext = createContext({ themeName, setThemeName });
 
   useEffect(() => {
-    /* 副作用関数 */
+    // * Consume theme_activated event.
+    interface Payload {
+      activatedTheme: string;
+    }
+    const unlistenPromise = listen<Payload>("theme_activated", ({ payload }) => {
+      setThemeName(payload.activatedTheme);
+    });
 
     return () => {
-      /* クリーンアップ関数 */
+      void unlistenPromise.then((unlisten: UnlistenFn) => {
+        unlisten();
+      });
     };
   }, []);
 
   useEffect(() => {
+    // * Get theme obj associated to the themeName.
     void getAllTheme().then((res) => {
       setTheme(res[themeName]);
     });
