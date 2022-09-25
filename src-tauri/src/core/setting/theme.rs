@@ -4,7 +4,7 @@ use crate::core::utils::result::{CommandError, CommandResult};
 use anyhow::Context;
 use kv::{Bucket, Config, Json, Store};
 use std::{collections::HashMap, path::PathBuf};
-use tauri::{Manager, State};
+use tauri::{AppHandle, Manager, State};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct Theme {
@@ -206,7 +206,11 @@ pub fn setting_theme_change(
 }
 
 #[tauri::command]
-pub fn setting_theme_activate(db: State<'_, ThemeState>, key: String) -> CommandResult<()> {
+pub fn setting_theme_activate(
+    db: State<'_, ThemeState>,
+    app: AppHandle,
+    key: String,
+) -> CommandResult<()> {
     // * DEACTIVATE CURRENT THEME
     for item_i in db.bucket.iter() {
         let item_i = item_i?;
@@ -234,7 +238,23 @@ pub fn setting_theme_activate(db: State<'_, ThemeState>, key: String) -> Command
             ..res
         },
     };
-    db.change(key, value)
+    db.change(key.clone(), value)?;
+
+    // * EMIT THEME_ACTIVATED EVENT
+    #[derive(Clone, serde::Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct Payload {
+        activated_theme: String,
+    }
+    app.emit_all(
+        "theme_activated",
+        Payload {
+            activated_theme: key,
+        },
+    )
+    .unwrap();
+
+    Ok(())
 }
 
 #[tauri::command]
