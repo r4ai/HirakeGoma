@@ -2,7 +2,7 @@ import { ThemeProvider } from "@emotion/react";
 import { listen } from "@tauri-apps/api/event";
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
 
-import { getAllTheme } from "../commands/setting/theme";
+import { getActivatedTheme, getAllTheme } from "../commands/setting/theme";
 import { carbon } from "./theme/carbon";
 
 interface Props {
@@ -29,6 +29,13 @@ export const ThemeManager: FC<Props> = ({ children }) => {
         unlisten();
       });
     };
+  }, []);
+
+  useEffect(() => {
+    // * Get activated theme.
+    void getActivatedTheme().then((activateTheme) => {
+      setThemeName(activateTheme);
+    });
   }, []);
 
   useEffect(() => {
