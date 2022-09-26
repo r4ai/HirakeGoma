@@ -14,7 +14,7 @@ export const Relaunch: FC = () => {
           void relaunchApp();
         }}
       >
-        Quit
+        Relaunch
       </SettingItemButton>
     </SettingItem>
   );
