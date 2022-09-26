@@ -80,7 +80,7 @@ fn init_window(app: &mut App) {
     set_shadow(&setting_window, true).expect("Unsupported platform!");
 }
 
-fn init_events(app: &mut App) {}
+fn init_events(app: &mut App, theme_state: State<'_, ThemeState>) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -108,6 +108,14 @@ pub fn init_app() {
             app.get_window("setting_window").unwrap().open_devtools();
 
             Ok(())
+        })
+        .on_window_event(|event| match event.event() {
+            tauri::WindowEvent::Destroyed => {
+                let theme_state = event.window().state::<ThemeState>();
+                let _ = theme_state.save();
+                println!("ThemeState has been saved.");
+            }
+            _ => (),
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
