@@ -5,6 +5,7 @@ import { SettingHeading } from "../../parts/main";
 import { Create } from "./theme/Create";
 import { GetAll } from "./theme/GetAll";
 import { Remove } from "./theme/Remove";
+import { Save } from "./theme/Save";
 import { SelectTheme } from "./theme/Select";
 
 interface ActivatedThemeContextProps {
@@ -35,6 +36,7 @@ export const Theme: FC = () => {
         <Create />
         <Remove />
         <GetAll />
+        <Save />
       </ActivatedThemeContext.Provider>
     </>
   );

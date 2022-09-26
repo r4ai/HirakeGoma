@@ -159,6 +159,11 @@ impl ThemeState<'_> {
         Ok(result)
     }
 
+    pub fn save(&self) -> CommandResult<()> {
+        self.bucket.flush()?;
+        Ok(())
+    }
+
     pub fn change(&self, key: String, value: Theme) -> CommandResult<()> {
         // TODO: 過去のvalueと新しく置き換えるvalueを比較し、差分のみをDBに反映させる
         let pre_value: Theme = match self.get(&key)? {
@@ -285,4 +290,10 @@ pub fn setting_theme_get_activated(db: State<'_, ThemeState>) -> CommandResult<O
         }
     }
     Ok(None)
+}
+
+#[tauri::command]
+pub fn setting_theme_save(db: State<'_, ThemeState>) -> CommandResult<()> {
+    db.save()?;
+    Ok(())
 }

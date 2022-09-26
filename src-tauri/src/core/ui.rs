@@ -18,9 +18,9 @@ use super::setting::theme::ThemeState;
 use super::setting::theme::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
     __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
-    __cmd__setting_theme_remove, setting_theme_activate, setting_theme_change,
-    setting_theme_create, setting_theme_get, setting_theme_get_activated, setting_theme_get_all,
-    setting_theme_remove,
+    __cmd__setting_theme_remove, __cmd__setting_theme_save, setting_theme_activate,
+    setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
+    setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
 
 #[tauri::command]
@@ -97,6 +97,7 @@ pub fn init_app() {
             setting_theme_get_all,
             setting_theme_change,
             setting_theme_activate,
+            setting_theme_save,
             setting_theme_get_activated
         ])
         .setup(|app| {
