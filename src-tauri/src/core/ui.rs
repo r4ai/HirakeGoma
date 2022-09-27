@@ -1,76 +1,30 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
-
-use window_shadows::set_shadow;
-
-use crate::core::db::kv_store::SearchDatabase;
-use kv::Json;
+use crate::plugins::application_search;
 use tauri;
 use tauri::App;
 use tauri::Manager;
 use tauri::State;
-use tauri::Wry;
+use window_shadows::set_shadow;
 
-use crate::plugins::application_search;
+use super::db::db_command::{
+    __cmd__add_app_to_search_database, __cmd__clear_search_database,
+    __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
+    add_app_to_search_database, clear_search_database, dbg_search_database_items,
+    get_all_search_database_items, search,
+};
+use crate::core::db::db_store::DbStore;
 
-use super::db::kv_store::SearchDatabaseItem;
-use super::setting::theme::ThemeState;
-use super::setting::theme::{
+use super::setting::theme_command::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
     __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
     __cmd__setting_theme_remove, __cmd__setting_theme_save, setting_theme_activate,
     setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
     setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
-
-#[tauri::command]
-fn dbg_search_database_items(db: State<'_, SearchDatabase>) -> Result<(), String> {
-    db.print_all_item();
-    Ok(())
-}
-
-#[tauri::command]
-fn get_all_search_database_items(
-    db: State<'_, SearchDatabase>,
-) -> HashMap<String, SearchDatabaseItem> {
-    db.get_all_items()
-}
-
-#[tauri::command]
-fn add_app_to_search_database(
-    db: State<'_, SearchDatabase>,
-    app_title: String,
-    app_icon_path: String,
-    app_path: String,
-) -> Result<(), String> {
-    let key = app_title.clone();
-    let value = SearchDatabaseItem::newApplication(app_title, app_icon_path, app_path);
-    let _ = db.insert(key, value);
-    Ok(())
-}
-
-#[tauri::command]
-fn clear_search_database(db: State<'_, SearchDatabase>) -> String {
-    let res = db.clear();
-    let result_msg: String = match res {
-        Ok(_) => String::from("SUCCESS"),
-        Err(_) => String::from("ERROR"),
-    };
-    result_msg
-}
-
-#[tauri::command]
-fn search(
-    db: State<'_, SearchDatabase>,
-    keyword: String,
-    min_score: i64,
-) -> Vec<SearchDatabaseItem> {
-    db.search(&keyword, min_score)
-}
+use super::setting::theme_store::ThemeStore;
 
 fn init_states(app: &mut App) {
-    let search_database_state = SearchDatabase::init(false);
-    let theme_state = ThemeState::init();
+    let search_database_state = DbStore::init(false);
+    let theme_state = ThemeStore::init();
     app.manage(search_database_state);
     app.manage(theme_state);
 }
@@ -80,7 +34,7 @@ fn init_window(app: &mut App) {
     set_shadow(&setting_window, true).expect("Unsupported platform!");
 }
 
-fn init_events(app: &mut App, theme_state: State<'_, ThemeState>) {}
+fn init_events(app: &mut App, theme_state: State<'_, ThemeStore>) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -111,7 +65,7 @@ pub fn init_app() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::Destroyed => {
-                let theme_state = event.window().state::<ThemeState>();
+                let theme_state = event.window().state::<ThemeStore>();
                 let _ = theme_state.save();
                 println!("ThemeState has been saved.");
             }

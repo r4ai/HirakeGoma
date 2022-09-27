@@ -1,3 +1,2 @@
-pub mod commands;
-pub mod kv_store;
-pub mod setting_store;
+pub mod db_command;
+pub mod db_store;

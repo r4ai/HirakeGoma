@@ -1,4 +1,4 @@
-use crate::core::db::kv_store::SearchDatabaseItem;
+use crate::core::db::db_store::DbItem;
 use crate::core::utils::path::get_error_icon_path;
 use configparser::ini::Ini;
 use lnk::ShellLink;
@@ -23,7 +23,7 @@ use std::{
 /// let result = parse_lnk(&lnk_file_path).unwrap();
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
-pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> {
+pub fn parse_lnk(file_path: &PathBuf) -> Result<DbItem, lnk::Error> {
     let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     let lnk_file_path = file_path.to_str().unwrap().to_string();
     let lnk_file = ShellLink::open(&file_path)?;
@@ -32,7 +32,7 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
         .icon_location()
         .clone()
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
-    Ok(SearchDatabaseItem::newApplication(
+    Ok(DbItem::newApplication(
         lnk_file_name,
         lnk_file_icon_path,
         lnk_file_path,
@@ -40,7 +40,7 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
 }
 
 /// .urlファイルの情報を読み取る。
-pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Error>> {
+pub fn parse_url(file_path: &PathBuf) -> Result<DbItem, Box<dyn Error>> {
     let mut config = Ini::new();
     let map = config.load(file_path)?;
     let file_icon_path = config
@@ -48,7 +48,7 @@ pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Erro
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
     let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     dbg!(&file_icon_path, &file_name, &file_path);
-    Ok(SearchDatabaseItem::newApplication(
+    Ok(DbItem::newApplication(
         file_name,
         file_icon_path,
         file_path.to_str().unwrap().to_string(),
@@ -63,7 +63,7 @@ mod tests {
     };
 
     use super::{parse_lnk, parse_url};
-    use crate::core::db::kv_store::SearchDatabaseItem;
+    use crate::core::db::db_store::DbItem;
     use crate::core::utils::path::get_cargo_toml_dir;
 
     #[test]

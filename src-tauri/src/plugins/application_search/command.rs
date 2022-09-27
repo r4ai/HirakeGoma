@@ -1,4 +1,4 @@
-use crate::core::db::kv_store::{SearchDatabase, SearchDatabaseItem};
+use crate::core::db::db_store::{DbItem, DbStore};
 use crate::plugins::application_search::parse_lnk::{parse_lnk, parse_url};
 use kv::Json;
 use std::error::Error;
@@ -12,7 +12,7 @@ pub fn greet(name: &str) -> String {
 
 #[tauri::command]
 pub fn generate_index(path: &PathBuf) -> Result<(), Box<dyn Error>> {
-    let db = SearchDatabase::init(false);
+    let db = DbStore::init(false);
     for entry in WalkDir::new(path) {
         let entry = entry?;
         let entry_path = entry.path();
@@ -39,11 +39,11 @@ pub fn generate_index(path: &PathBuf) -> Result<(), Box<dyn Error>> {
 
 #[tauri::command]
 pub fn dbg_read_db() -> Result<(), Box<dyn Error>> {
-    let db = SearchDatabase::init(false);
+    let db = DbStore::init(false);
     for item in db.bucket.iter() {
         let item_i = item.unwrap();
         let key_i: String = item_i.key().unwrap();
-        let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+        let value_i: Json<DbItem> = item_i.value().unwrap();
         let value = value_i.to_string();
         dbg!(key_i, value);
     }
@@ -69,11 +69,11 @@ mod tests {
             .join("resources")
             .join("fake_data");
         let _ = generate_index(&path);
-        let db = SearchDatabase::init(false);
+        let db = DbStore::init(false);
         for item in db.bucket.iter() {
             let item_i = item.unwrap();
             let key_i: String = item_i.key().unwrap();
-            let value_i: Result<Json<SearchDatabaseItem>, kv::Error> = item_i.value();
+            let value_i: Result<Json<DbItem>, kv::Error> = item_i.value();
             dbg!(key_i);
             dbg!(value_i.unwrap().0);
         }
