@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import { SettingHeading } from "../../parts/main";
+import { Quit, Relaunch } from "./app";
 import { Print, Insert, Reset, Search } from "./database";
 import { ColorMode, ToggleSideBar } from "./theme";
 
@@ -15,6 +16,9 @@ export const Debug: FC = () => {
       <SettingHeading title="Theme" />
       <ColorMode />
       <ToggleSideBar />
+      <SettingHeading title="App" />
+      <Quit />
+      <Relaunch />
     </>
   );
 };

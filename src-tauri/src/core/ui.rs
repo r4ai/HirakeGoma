@@ -18,9 +18,9 @@ use super::setting::theme::ThemeState;
 use super::setting::theme::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
     __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
-    __cmd__setting_theme_remove, setting_theme_activate, setting_theme_change,
-    setting_theme_create, setting_theme_get, setting_theme_get_activated, setting_theme_get_all,
-    setting_theme_remove,
+    __cmd__setting_theme_remove, __cmd__setting_theme_save, setting_theme_activate,
+    setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
+    setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
 
 #[tauri::command]
@@ -80,7 +80,7 @@ fn init_window(app: &mut App) {
     set_shadow(&setting_window, true).expect("Unsupported platform!");
 }
 
-fn init_events(app: &mut App) {}
+fn init_events(app: &mut App, theme_state: State<'_, ThemeState>) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -97,6 +97,7 @@ pub fn init_app() {
             setting_theme_get_all,
             setting_theme_change,
             setting_theme_activate,
+            setting_theme_save,
             setting_theme_get_activated
         ])
         .setup(|app| {
@@ -107,6 +108,14 @@ pub fn init_app() {
             app.get_window("setting_window").unwrap().open_devtools();
 
             Ok(())
+        })
+        .on_window_event(|event| match event.event() {
+            tauri::WindowEvent::Destroyed => {
+                let theme_state = event.window().state::<ThemeState>();
+                let _ = theme_state.save();
+                println!("ThemeState has been saved.");
+            }
+            _ => (),
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

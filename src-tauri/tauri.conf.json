@@ -49,7 +49,7 @@
     "windows": [
       {
         "title": "HirakeGoma",
-        "label": "search_window",
+        "label": "main_window",
         "url": "index.html",
         "fullscreen": false,
         "height": 600,
