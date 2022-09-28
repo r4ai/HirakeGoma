@@ -5,13 +5,15 @@ use tauri::Manager;
 use tauri::State;
 use window_shadows::set_shadow;
 
-use super::db::db_command::{
+use super::db::main_command::{
     __cmd__add_app_to_search_database, __cmd__clear_search_database,
     __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
     add_app_to_search_database, clear_search_database, dbg_search_database_items,
     get_all_search_database_items, search,
 };
-use crate::core::db::db_store::DbStore;
+use super::db::main_table::SearchDatabaseMainTable;
+use super::db::search_database_store::SearchDatabaseTable;
+use crate::core::db::search_database_store::SearchDatabaseStore;
 
 use super::setting::theme_command::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
@@ -22,11 +24,16 @@ use super::setting::theme_command::{
 };
 use super::setting::theme_store::ThemeStore;
 
-fn init_states(app: &mut App) {
-    let search_database_state = DbStore::init(false);
-    let theme_state = ThemeStore::init();
-    app.manage(search_database_state);
-    app.manage(theme_state);
+fn init_store(app: &mut App) {
+    let search_database_store = SearchDatabaseStore::init(false);
+    let theme_store = ThemeStore::init();
+    app.manage(search_database_store);
+    app.manage(theme_store);
+
+    let search_database_main_table =
+        SearchDatabaseMainTable::init(app.state::<SearchDatabaseStore>());
+
+    app.manage(search_database_main_table);
 }
 
 fn init_window(app: &mut App) {
@@ -55,7 +62,7 @@ pub fn init_app() {
             setting_theme_get_activated
         ])
         .setup(|app| {
-            init_states(app);
+            init_store(app);
             init_window(app);
 
             #[cfg(debug_assertions)]
