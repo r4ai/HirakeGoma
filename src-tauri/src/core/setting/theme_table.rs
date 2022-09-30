@@ -1,10 +1,15 @@
-use crate::core::utils::path::get_project_dir;
+use super::setting_store::SettingStore;
 use crate::core::utils::result::{CommandError, CommandResult};
-use kv::{Bucket, Config, Json, Store};
-use std::{collections::HashMap, path::PathBuf};
+use kv::{Bucket, Json};
+use std::collections::HashMap;
+use tauri::State;
+
+pub struct SettingThemeTable<'a> {
+    pub bucket: Bucket<'a, String, Json<ThemeItem>>,
+}
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
-pub struct Theme {
+pub struct ThemeItem {
     pub mode: String,
     pub activated: bool,
     pub colors: ThemeColors,
@@ -29,14 +34,7 @@ pub struct ThemeFonts {
     pub codeFont: String,
 }
 
-pub struct ThemeStore<'a> {
-    pub config: Config,
-    pub store: Store,
-    pub bucket: Bucket<'a, String, Json<Theme>>,
-    pub folder_path: PathBuf,
-}
-
-impl Theme {
+impl ThemeItem {
     pub fn new(mode: String, colors: ThemeColors, fonts: ThemeFonts) -> Self {
         Self {
             mode,
@@ -47,11 +45,11 @@ impl Theme {
     }
 }
 
-impl ThemeStore<'_> {
+impl SettingThemeTable<'_> {
     fn init_default_theme(&self) -> CommandResult<()> {
         let mut default_theme_list = HashMap::new();
 
-        let carbon_theme = Theme::new(
+        let carbon_theme = ThemeItem::new(
             "dark".into(),
             ThemeColors {
                 accentColor: "#e0e0e0".into(),
@@ -70,7 +68,7 @@ impl ThemeStore<'_> {
         );
         default_theme_list.insert("carbon".to_string(), carbon_theme);
 
-        let paper_theme = Theme::new(
+        let paper_theme = ThemeItem::new(
             "light".into(),
             ThemeColors {
                 accentColor: "#e0e0e0".into(),
@@ -99,23 +97,10 @@ impl ThemeStore<'_> {
         Ok(())
     }
 
-    pub fn init() -> Self {
-        let db_path = get_project_dir()
-            .unwrap()
-            .data_dir()
-            .join("setting")
-            .join("theme");
-        let db_cfg = Config::new(db_path.clone());
-        let db_store = Store::new(db_cfg.clone()).expect("Failed to create store");
-        let db_bucket: Bucket<String, Json<Theme>> = db_store.bucket(Some("theme")).unwrap();
-        let res = Self {
-            config: db_cfg,
-            store: db_store,
-            bucket: db_bucket,
-            folder_path: db_path,
-        };
-        res.init_default_theme()
-            .expect("Failed to load default themes.");
+    pub fn init(store: State<'_, SettingStore>) -> Self {
+        let bucket: Bucket<String, Json<ThemeItem>> = store.store.bucket(Some("theme")).unwrap();
+        let res = Self { bucket };
+        res.init_default_theme();
         res
     }
 
@@ -126,7 +111,7 @@ impl ThemeStore<'_> {
         }
     }
 
-    pub fn insert(&self, key: String, value: Theme) -> CommandResult<()> {
+    pub fn insert(&self, key: String, value: ThemeItem) -> CommandResult<()> {
         self.bucket.set(&key, &Json(value))?;
         Ok(())
     }
@@ -136,20 +121,20 @@ impl ThemeStore<'_> {
         Ok(())
     }
 
-    pub fn get(&self, key: &String) -> CommandResult<Option<Theme>> {
-        let result: Option<Theme> = match self.bucket.get(key)? {
+    pub fn get(&self, key: &String) -> CommandResult<Option<ThemeItem>> {
+        let result: Option<ThemeItem> = match self.bucket.get(key)? {
             None => None,
             Some(value) => Some(value.0),
         };
         Ok(result)
     }
 
-    pub fn get_all(&self) -> CommandResult<HashMap<String, Theme>> {
-        let mut result: HashMap<String, Theme> = HashMap::new();
+    pub fn get_all(&self) -> CommandResult<HashMap<String, ThemeItem>> {
+        let mut result: HashMap<String, ThemeItem> = HashMap::new();
         for item_i in self.bucket.iter() {
             let item_i = item_i?;
             let key_i: String = item_i.key()?;
-            let value_i: Json<Theme> = item_i.value()?;
+            let value_i: Json<ThemeItem> = item_i.value()?;
             result.insert(key_i, value_i.0);
         }
         Ok(result)
@@ -160,9 +145,9 @@ impl ThemeStore<'_> {
         Ok(())
     }
 
-    pub fn change(&self, key: String, value: Theme) -> CommandResult<()> {
+    pub fn change(&self, key: String, value: ThemeItem) -> CommandResult<()> {
         // TODO: 過去のvalueと新しく置き換えるvalueを比較し、差分のみをDBに反映させる
-        let pre_value: Theme = match self.get(&key)? {
+        let pre_value: ThemeItem = match self.get(&key)? {
             None => {
                 return Err(CommandError::KvError(kv::Error::Message(String::from(
                     "Failed to find the item associated to the key.",

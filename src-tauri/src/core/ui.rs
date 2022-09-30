@@ -13,6 +13,7 @@ use super::db::main_command::{
 };
 use super::db::main_table::SearchDatabaseMainTable;
 use super::db::search_database_store::SearchDatabaseTable;
+use super::setting::setting_store::SettingStore;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 
 use super::setting::theme_command::{
@@ -22,18 +23,21 @@ use super::setting::theme_command::{
     setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
     setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
-use super::setting::theme_store::ThemeStore;
+use super::setting::theme_table::SettingThemeTable;
 
 fn init_store(app: &mut App) {
+    // * Init stores
     let search_database_store = SearchDatabaseStore::init(false);
-    let theme_store = ThemeStore::init();
+    let setting_store = SettingStore::init(false);
     app.manage(search_database_store);
-    app.manage(theme_store);
+    app.manage(setting_store);
 
+    // * Init tables
     let search_database_main_table =
         SearchDatabaseMainTable::init(app.state::<SearchDatabaseStore>());
-
+    let setting_theme_table = SettingThemeTable::init(app.state::<SettingStore>());
     app.manage(search_database_main_table);
+    app.manage(setting_theme_table);
 }
 
 fn init_window(app: &mut App) {
@@ -41,7 +45,7 @@ fn init_window(app: &mut App) {
     set_shadow(&setting_window, true).expect("Unsupported platform!");
 }
 
-fn init_events(app: &mut App, theme_state: State<'_, ThemeStore>) {}
+fn init_events(app: &mut App, theme_state: State<'_, SettingThemeTable>) {}
 
 pub fn init_app() {
     tauri::Builder::default()
@@ -72,7 +76,7 @@ pub fn init_app() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::Destroyed => {
-                let theme_state = event.window().state::<ThemeStore>();
+                let theme_state = event.window().state::<SettingThemeTable>();
                 let _ = theme_state.save();
                 println!("ThemeState has been saved.");
             }
