@@ -1,4 +1,4 @@
-use crate::core::db::kv_store::SearchDatabaseItem;
+use crate::core::db::search_database_store::SearchDatabaseItem;
 use crate::core::utils::path::get_error_icon_path;
 use configparser::ini::Ini;
 use lnk::ShellLink;
@@ -63,7 +63,7 @@ mod tests {
     };
 
     use super::{parse_lnk, parse_url};
-    use crate::core::db::kv_store::SearchDatabaseItem;
+    use crate::core::db::search_database_store::SearchDatabaseItem;
     use crate::core::utils::path::get_cargo_toml_dir;
 
     #[test]
