@@ -1,9 +1,13 @@
 use serde::{Serialize, Serializer};
+use walkdir;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
     #[error(transparent)]
     KvError(#[from] kv::Error),
+
+    #[error(transparent)]
+    WalkdirError(#[from] walkdir::Error),
 }
 
 impl Serialize for CommandError {

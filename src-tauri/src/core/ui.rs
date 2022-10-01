@@ -14,8 +14,6 @@ use super::db::main_command::{
 use super::db::main_table::SearchDatabaseMainTable;
 use super::db::search_database_store::SearchDatabaseTable;
 use super::setting::setting_store::SettingStore;
-use crate::core::db::search_database_store::SearchDatabaseStore;
-
 use super::setting::theme_command::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
     __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
@@ -24,6 +22,10 @@ use super::setting::theme_command::{
     setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
 use super::setting::theme_table::SettingThemeTable;
+use crate::core::db::search_database_store::SearchDatabaseStore;
+use crate::plugins::application_search::command::{
+    __cmd__plugin_appsearch_generate_index, plugin_appsearch_generate_index,
+};
 
 fn init_store(app: &mut App) {
     // * Init stores
@@ -50,7 +52,6 @@ fn init_events(app: &mut App, theme_state: State<'_, SettingThemeTable>) {}
 pub fn init_app() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            application_search::command::greet,
             dbg_search_database_items,
             add_app_to_search_database,
             get_all_search_database_items,
@@ -63,7 +64,8 @@ pub fn init_app() {
             setting_theme_change,
             setting_theme_activate,
             setting_theme_save,
-            setting_theme_get_activated
+            setting_theme_get_activated,
+            plugin_appsearch_generate_index
         ])
         .setup(|app| {
             init_store(app);

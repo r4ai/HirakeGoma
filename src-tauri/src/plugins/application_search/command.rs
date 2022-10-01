@@ -2,24 +2,19 @@ use crate::core::db::main_table::SearchDatabaseMainTable;
 use crate::core::db::search_database_store::{
     SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable,
 };
+use crate::core::utils::result::CommandResult;
 use crate::plugins::application_search::parse_lnk::{parse_lnk, parse_url};
-use kv::Json;
 use std::error::Error;
 use std::path::PathBuf;
 use tauri::State;
 use walkdir::WalkDir;
 
 #[tauri::command]
-pub fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-#[tauri::command]
-pub fn generate_index(
+pub fn plugin_appsearch_generate_index(
     table: State<'_, SearchDatabaseMainTable>,
-    path: &PathBuf,
-) -> Result<(), Box<dyn Error>> {
-    for entry in WalkDir::new(path) {
+    path: String,
+) -> CommandResult<()> {
+    for entry in WalkDir::new(PathBuf::from(path)) {
         let entry = entry?;
         let entry_path = entry.path();
         dbg!(&entry_path);
@@ -40,19 +35,6 @@ pub fn generate_index(
         dbg!(&entry_item);
         let _ = table.insert(entry_item.name.clone(), entry_item);
     }
-    Ok(())
-}
-
-#[tauri::command]
-pub fn dbg_read_db(table: State<SearchDatabaseMainTable>) -> Result<(), Box<dyn Error>> {
-    for item in table.bucket.iter() {
-        let item_i = item.unwrap();
-        let key_i: String = item_i.key().unwrap();
-        let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
-        let value = value_i.to_string();
-        dbg!(key_i, value);
-    }
-
     Ok(())
 }
 
