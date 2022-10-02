@@ -7,7 +7,7 @@ use tauri::State;
 
 #[tauri::command]
 pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> Result<(), String> {
-    table.print_all_item();
+    table.print_all_items();
     Ok(())
 }
 

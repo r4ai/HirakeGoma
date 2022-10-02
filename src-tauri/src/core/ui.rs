@@ -1,10 +1,16 @@
+use crate::core::db::search_database_store;
 use crate::plugins::application_search;
+use crate::plugins::application_search::table::PluginAppsearchTable;
+use crate::plugins::plugin_store;
+use crate::plugins::plugin_store::PluginStore;
 use tauri;
 use tauri::App;
 use tauri::Manager;
 use tauri::State;
 use window_shadows::set_shadow;
 
+use super::db::applications_table::SearchDatabaseApplicationTable;
+use super::db::commands_table::SearchDatabaseCommandsTable;
 use super::db::main_command::{
     __cmd__add_app_to_search_database, __cmd__clear_search_database,
     __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
@@ -23,23 +29,33 @@ use super::setting::theme_command::{
 };
 use super::setting::theme_table::SettingThemeTable;
 use crate::core::db::search_database_store::SearchDatabaseStore;
-use crate::plugins::application_search::command::{
-    __cmd__plugin_appsearch_generate_index, plugin_appsearch_generate_index,
-};
+use crate::plugins::application_search::command::*;
 
 fn init_store(app: &mut App) {
     // * Init stores
     let search_database_store = SearchDatabaseStore::init(false);
     let setting_store = SettingStore::init(false);
+    let plugin_store = PluginStore::init(false);
     app.manage(search_database_store);
     app.manage(setting_store);
+    app.manage(plugin_store);
 
     // * Init tables
     let search_database_main_table =
         SearchDatabaseMainTable::init(app.state::<SearchDatabaseStore>());
-    let setting_theme_table = SettingThemeTable::init(app.state::<SettingStore>());
+    let search_database_application_table =
+        SearchDatabaseApplicationTable::init(app.state::<SearchDatabaseStore>());
+    let search_database_command_table =
+        SearchDatabaseCommandsTable::init(app.state::<SearchDatabaseStore>());
     app.manage(search_database_main_table);
+    app.manage(search_database_application_table);
+    app.manage(search_database_command_table);
+
+    let setting_theme_table = SettingThemeTable::init(app.state::<SettingStore>());
     app.manage(setting_theme_table);
+
+    let plugin_appsearch_table = PluginAppsearchTable::init(app.state::<PluginStore>());
+    app.manage(plugin_appsearch_table);
 }
 
 fn init_window(app: &mut App) {
@@ -65,7 +81,11 @@ pub fn init_app() {
             setting_theme_activate,
             setting_theme_save,
             setting_theme_get_activated,
-            plugin_appsearch_generate_index
+            plugin_appsearch_generate_index,
+            plugin_appsearch_update_folder_path,
+            plugin_appsearch_upload_to_main_table,
+            plugin_appsearch_get_all,
+            plugin_appsearch_get
         ])
         .setup(|app| {
             init_store(app);
@@ -78,9 +98,15 @@ pub fn init_app() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::Destroyed => {
-                let theme_state = event.window().state::<SettingThemeTable>();
-                let _ = theme_state.save();
-                println!("ThemeState has been saved.");
+                let _ = event.window().state::<SettingThemeTable>().save();
+                let _ = event.window().state::<SearchDatabaseMainTable>().save();
+                let _ = event
+                    .window()
+                    .state::<SearchDatabaseApplicationTable>()
+                    .save();
+                let _ = event.window().state::<SearchDatabaseCommandsTable>().save();
+                let _ = event.window().state::<PluginAppsearchTable>().save();
+                println!("Stores has been saved.");
             }
             _ => (),
         })

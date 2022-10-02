@@ -1,4 +1,4 @@
-use crate::core::utils::path::get_project_dir;
+use crate::core::utils::{path::get_project_dir, result::CommandResult};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
 use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf};
@@ -101,7 +101,8 @@ pub trait SearchDatabaseTable<'a> {
         self.access_to_bucket().clear()
     }
 
-    fn print_all_item(&self) {
+    fn print_all_items(&self) {
+        dbg!("START PRINTING ALL ITEMS");
         for item_i in self.access_to_bucket().iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
@@ -150,5 +151,10 @@ pub trait SearchDatabaseTable<'a> {
             }
         }
         result
+    }
+
+    fn save(&self) -> CommandResult<()> {
+        self.access_to_bucket().flush()?;
+        Ok(())
     }
 }
