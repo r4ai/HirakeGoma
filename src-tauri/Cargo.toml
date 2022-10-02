@@ -15,7 +15,7 @@ tauri-build = {version = "1.0.4", features = [] }
 
 [dependencies]
 anyhow = "1.0.65"
-configparser = "3.0.1"
+configparser = "3.0.2"
 directories = "4.0.1"
 fuzzy-matcher = "0.3.7"
 kv = {version = "0.24", features = ["json-value"] }
