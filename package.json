@@ -64,6 +64,6 @@
     "react-devtools": "^4.25.0",
     "storybook-dark-mode": "^1.1.0",
     "typescript": "*",
-    "vite": "^3.0.2"
+    "vite": "^3.1.4"
   }
 }
