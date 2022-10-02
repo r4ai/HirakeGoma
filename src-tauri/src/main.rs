@@ -3,14 +3,24 @@
     windows_subsystem = "windows"
 )]
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod core;
+mod plugins;
+
+use crate::core::ui;
 
 fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    #[tauri::command]
+    fn ping() -> String {
+        String::from("pong!")
+    }
+
+    ui::init_app();
+}
+
+#[cfg(test)] // cargo test時にtestsモジュールが実行されるように指定
+mod tests {
+    #[test] // 実際にテストする関数
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
 }

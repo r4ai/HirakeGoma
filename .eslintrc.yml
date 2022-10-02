@@ -1,0 +1,62 @@
+env:
+  browser: true
+  es2021: true
+extends:
+  - plugin:react/recommended
+  - plugin:react-hooks/recommended
+  - standard-with-typescript
+  - plugin:jsx-a11y/recommended
+  - plugin:prettier/recommended
+  - plugin:import/recommended
+  - plugin:import/typescript
+  - plugin:import/errors
+  - plugin:import/warnings
+overrides: []
+settings:
+  import/resolver:
+    typescript: true
+    node: true
+parserOptions:
+  project:
+    - "tsconfig.json"
+  ecmaVersion: latest
+  sourceType: module
+plugins:
+  - react
+  - react-hooks
+  - jsx-a11y
+  - prettier
+  - import
+  - unused-imports
+rules:
+  react-hooks/rules-of-hooks: "error"
+  react-hooks/exhaustive-deps: "warn"
+  prettier/prettier: "error"
+  react/jsx-uses-react: off
+  react/react-in-jsx-scope: off
+  import/no-unresolved: "error"
+  "@typescript-eslint/no-misused-promises":
+    - "error"
+    - checksVoidReturn: false
+  import/named: 2
+  import/namespace: 2
+  import/default: 2
+  import/export: 2
+  import/order:
+    - warn
+    - groups:
+        - builtin
+        - external
+        - internal
+      newlines-between: always
+      pathGroupsExcludedImportTypes:
+        - builtin
+      alphabetize:
+        order: asc
+        caseInsensitive: true
+  unused-imports/no-unused-imports: error
+ignorePatterns:
+  - ".eslintrc.yml"
+  - "dist/"
+  - "node_modules/"
+  - "src-tauri/target"
