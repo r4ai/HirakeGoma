@@ -14,7 +14,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.3.2",
+    "@chakra-ui/react": "^2.3.4",
     "@emotion/react": "11",
     "@emotion/styled": "11",
     "@monaco-editor/react": "^4.4.5",
