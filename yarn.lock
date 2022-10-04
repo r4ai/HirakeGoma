@@ -7199,10 +7199,10 @@ eslint-plugin-jsx-a11y@^6.6.1:
     minimatch "^3.1.2"
     semver "^6.3.0"
 
-eslint-plugin-n@^15.0.0:
-  version "15.2.5"
-  resolved "https://registry.npmjs.org/eslint-plugin-n/-/eslint-plugin-n-15.2.5.tgz"
-  integrity sha512-8+BYsqiyZfpu6NXmdLOXVUfk8IocpCjpd8nMRRH0A9ulrcemhb2VI9RSJMEy5udx++A/YcVPD11zT8hpFq368g==
+eslint-plugin-n@^15.3.0:
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-15.3.0.tgz#3e1ad236a17dce7ecc0760621c46cc251ef99560"
+  integrity sha512-IyzPnEWHypCWasDpxeJnim60jhlumbmq0pubL6IOcnk8u2y53s5QfT8JnXy7skjHJ44yWHRb11PLtDHuu1kg/Q==
   dependencies:
     builtins "^5.0.1"
     eslint-plugin-es "^4.1.0"
@@ -11679,24 +11679,24 @@ react-clientside-effect@^1.2.6:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-devtools-core@4.25.0:
-  version "4.25.0"
-  resolved "https://registry.npmjs.org/react-devtools-core/-/react-devtools-core-4.25.0.tgz"
-  integrity sha512-iewRrnu0ZnmfL+jJayKphXj04CFh6i3ezVnpCtcnZbTPSQgN09XqHAzXbKbqNDl7aTg9QLNkQRP6M3DvdrinWA==
+react-devtools-core@4.26.0:
+  version "4.26.0"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.26.0.tgz#d3d0f59d62ccf1ac03017a7e92f0fe71455019cc"
+  integrity sha512-OO0Q+vXtHYCXvRQ6elLiOUph3MjsCpuYktGTLnBpizYm46f8tAPuJKihGkwsceitHSJNpzNIjJaYHgX96CyTUQ==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-devtools@^4.25.0:
-  version "4.25.0"
-  resolved "https://registry.npmjs.org/react-devtools/-/react-devtools-4.25.0.tgz"
-  integrity sha512-b6BEjWP0BOF1umqKDAVeSi4sm+crIQJ9WlwPTAxT4T73mKYMqFOr4nf5JwnQK0Vt2U/+kKlLSQqrTKPa2feq+Q==
+react-devtools@^4.26.0:
+  version "4.26.0"
+  resolved "https://registry.yarnpkg.com/react-devtools/-/react-devtools-4.26.0.tgz#e8f325062f07123f0413421ec6dfdda1387372bc"
+  integrity sha512-4HH1175pV+F8oqVQHwu4lNlXYF23wTZk1jx8E6nYh2RlTehMUY7lLwyv7wgcSWhDjbmGKzVfJ2P/0qaHn+22/g==
   dependencies:
     cross-spawn "^5.0.1"
     electron "^11.1.0"
     ip "^1.1.4"
     minimist "^1.2.3"
-    react-devtools-core "4.25.0"
+    react-devtools-core "4.26.0"
     update-notifier "^2.1.0"
 
 react-docgen-typescript@^2.1.1:
