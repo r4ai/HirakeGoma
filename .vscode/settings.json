@@ -1,0 +1,21 @@
+{
+  "files.eol": "\n",
+  "[yaml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "cSpell.words": ["appsearch", "Goma", "Hirake", "tauri", "thiserror", "walkdir"],
+  "exportall.config.relExclusion": ["/src-tauri", "/test", "/src/stories"],
+  "exportall.config.folderListener": [
+    "/src/setting_window/components/pages/debug/database",
+    "/src/setting_window/components/pages/debug/theme",
+    "/src/setting_window/components/parts/main",
+    "/src/setting_window/components/parts/nav",
+    "/src/setting_window/components/parts/title",
+    "/src/main_window/theme",
+    "/src/commands/setting/theme",
+    "/src/setting_window/components/pages/theme/funcs",
+    "/src/setting_window/components/pages/debug/app",
+    "/src/setting_window/components/pages/plugin/application_search"
+  ]
+}
