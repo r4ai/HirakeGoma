@@ -20,7 +20,7 @@ export const Layout: FC = () => {
         templateAreas={`"nav title"
                         "nav main"`}
         gridTemplateRows={"40px 1fr"}
-        gridTemplateColumns={`${navSize === "large" ? "150px" : "30px"} 1fr`}
+        gridTemplateColumns={`${navSize === "large" ? "20vw" : "30px"} 1fr`}
         alignItems="start"
         bgColor="white"
       >
