@@ -29,7 +29,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.13",
+    "@babel/core": "^7.19.3",
     "@emotion/babel-plugin": "^11.10.2",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-essentials": "^6.5.12",
