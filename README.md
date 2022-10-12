@@ -5,6 +5,8 @@ Below is the roadmap to `0.1.0`.
 
 - [ ] Search feature
   - [x] Application search
+    - [x] windows support
+    - [ ] macos support
   - [ ] Commands
   - [ ] Calculator
 - [ ] Call up the search window by Alt+Space
