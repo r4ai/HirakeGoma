@@ -46,6 +46,7 @@
     "updater": {
       "active": false
     },
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "HirakeGoma",
@@ -58,7 +59,8 @@
         "resizable": false,
         "fileDropEnabled": false,
         "transparent": true,
-        "alwaysOnTop": false
+        "alwaysOnTop": true,
+        "decorations": false
       },
       {
         "title": "setting widow",

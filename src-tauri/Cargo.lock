@@ -22,6 +22,7 @@ dependencies = [
  "uuid 1.2.1",
  "walkdir",
  "window-shadows",
+ "window-vibrancy",
 ]
 
 [[package]]
@@ -3570,6 +3571,18 @@ dependencies = [
  "objc",
  "raw-window-handle",
  "windows-sys 0.36.1",
+]
+
+[[package]]
+name = "window-vibrancy"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7044a9e4ea5d5609983495fac0d8a4c7a43c75041cf4d8079b67af1c170a3c8e"
+dependencies = [
+ "cocoa",
+ "objc",
+ "raw-window-handle",
+ "windows-sys 0.42.0",
 ]
 
 [[package]]
