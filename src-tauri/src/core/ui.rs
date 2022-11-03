@@ -83,13 +83,24 @@ fn init_window(app: &mut App) {
 
 fn init_events(app: &mut App, theme_state: State<'_, SettingThemeTable>) {}
 
-fn toggle_visibility(win: Window) {
+#[tauri::command]
+fn core_window_hide(win: Window) {
+    win.hide().expect("Failed to hide window.");
+}
+
+#[tauri::command]
+fn core_window_show(win: Window) {
+    win.center().expect("Failed to center the window.");
+    win.show().expect("Failed to show window.");
+    win.set_focus().expect("Failed to set-focus to window.");
+}
+
+#[tauri::command]
+fn core_window_toggle_visibility(win: Window) {
     if win.is_visible().unwrap() {
-        win.hide().expect("failed to hide window");
+        core_window_hide(win);
     } else {
-        win.center().unwrap();
-        win.show().expect("failed to show window");
-        win.set_focus().expect("failed to set-focus to window");
+        core_window_show(win);
     }
 }
 
@@ -103,6 +114,9 @@ pub fn init_app() {
             get_all_search_database_items,
             clear_search_database,
             search,
+            core_window_hide,
+            core_window_show,
+            core_window_toggle_visibility,
             setting_theme_create,
             setting_theme_remove,
             setting_theme_get,
@@ -123,7 +137,7 @@ pub fn init_app() {
             init_window(app);
             app.global_shortcut_manager()
                 .register("CmdOrCtrl+Space", move || {
-                    toggle_visibility(main_window.clone());
+                    core_window_toggle_visibility(main_window.clone());
                 })
                 .expect("Failed to register global shortcuts.");
             Ok(())
@@ -136,7 +150,7 @@ pub fn init_app() {
                 ..
             } => {
                 let window = app.get_window("main_window").unwrap();
-                toggle_visibility(window);
+                core_window_toggle_visibility(window);
             }
             _ => {}
         })
