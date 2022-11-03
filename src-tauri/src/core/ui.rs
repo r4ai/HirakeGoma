@@ -73,6 +73,7 @@ fn init_window(app: &mut App) {
 
     set_shadow(&main_window, true).expect("Unsupported platform!");
     set_shadow(&setting_window, true).expect("Unsupported platform!");
+    main_window.set_skip_taskbar(true);
 
     main_window.hide().expect("failed to hide main_window");
     setting_window
@@ -117,12 +118,14 @@ pub fn init_app() {
             plugin_appsearch_get
         ])
         .setup(|app| {
+            let main_window = app.get_window("main_window").unwrap();
             init_store(app);
             init_window(app);
-
-            // #[cfg(debug_assertions)]
-            // app.get_window("setting_window").unwrap().open_devtools();
-
+            app.global_shortcut_manager()
+                .register("CmdOrCtrl+Space", move || {
+                    toggle_visibility(main_window.clone());
+                })
+                .expect("Failed to register global shortcuts.");
             Ok(())
         })
         .system_tray(tray)
