@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { core_window_toggle_visibility } from "../commands/core";
 import { core_window_hide } from "../commands/core/core_window_hide";
+import { rgba } from "emotion-rgba";
 
 import { search } from "../commands/main/search";
 import { InputBox } from "./components/InputBox";
@@ -26,7 +27,7 @@ const App: FC = () => {
   }, []);
 
   const globalCss = css`
-    background: "#0f0f0fff";
+    background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
     min-width: 100vw;
     max-width: 100vw;
     height: 100%;
