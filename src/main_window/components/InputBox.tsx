@@ -27,7 +27,7 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
 
   return (
     <div css={inputBoxCss.self}>
-      <input css={inputBoxCss.input} type="text" {...inputProps} />
+      <input css={inputBoxCss.input} type="text" {...inputProps} autoFocus={true} />
     </div>
   );
 };

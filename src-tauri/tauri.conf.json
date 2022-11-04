@@ -46,6 +46,7 @@
     "updater": {
       "active": false
     },
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "HirakeGoma",
@@ -53,12 +54,13 @@
         "url": "index.html",
         "fullscreen": false,
         "height": 600,
-        "width": 800,
+        "width": 700,
         "center": true,
         "resizable": false,
         "fileDropEnabled": false,
         "transparent": true,
-        "alwaysOnTop": false
+        "alwaysOnTop": true,
+        "decorations": false
       },
       {
         "title": "setting widow",
@@ -71,7 +73,8 @@
       }
     ],
     "systemTray": {
-      "iconPath": "icons/icon.png"
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
     }
   }
 }

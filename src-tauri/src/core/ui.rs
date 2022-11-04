@@ -3,11 +3,9 @@ use crate::plugins::application_search;
 use crate::plugins::application_search::table::PluginAppsearchTable;
 use crate::plugins::plugin_store;
 use crate::plugins::plugin_store::PluginStore;
-use tauri;
-use tauri::App;
-use tauri::Manager;
-use tauri::State;
+use tauri::{App, GlobalShortcutManager, Manager, State, SystemTray, SystemTrayEvent, Window};
 use window_shadows::set_shadow;
+use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
 use super::db::applications_table::SearchDatabaseApplicationTable;
 use super::db::commands_table::SearchDatabaseCommandsTable;
@@ -59,13 +57,56 @@ fn init_store(app: &mut App) {
 }
 
 fn init_window(app: &mut App) {
+    let main_window = app.get_window("main_window").unwrap();
     let setting_window = app.get_window("setting_window").unwrap();
+
+    #[cfg(target_os = "macos")]
+    {
+        app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+        apply_vibrancy(&main_window, NSVisualEffectMaterial::UltraDark)
+            .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+    }
+
+    #[cfg(target_os = "windows")]
+    apply_blur(&main_window, Some((18, 18, 18, 125)))
+        .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+
+    set_shadow(&main_window, true).expect("Unsupported platform!");
     set_shadow(&setting_window, true).expect("Unsupported platform!");
+    main_window.set_skip_taskbar(true);
+
+    main_window.hide().expect("failed to hide main_window");
+    setting_window
+        .hide()
+        .expect("failed to hide setting_window")
 }
 
 fn init_events(app: &mut App, theme_state: State<'_, SettingThemeTable>) {}
 
+#[tauri::command]
+fn core_window_hide(win: Window) {
+    win.hide().expect("Failed to hide window.");
+}
+
+#[tauri::command]
+fn core_window_show(win: Window) {
+    win.center().expect("Failed to center the window.");
+    win.show().expect("Failed to show window.");
+    win.set_focus().expect("Failed to set-focus to window.");
+}
+
+#[tauri::command]
+fn core_window_toggle_visibility(win: Window) {
+    if win.is_visible().unwrap() {
+        core_window_hide(win);
+    } else {
+        core_window_show(win);
+    }
+}
+
 pub fn init_app() {
+    let tray = SystemTray::new();
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             dbg_search_database_items,
@@ -73,6 +114,9 @@ pub fn init_app() {
             get_all_search_database_items,
             clear_search_database,
             search,
+            core_window_hide,
+            core_window_show,
+            core_window_toggle_visibility,
             setting_theme_create,
             setting_theme_remove,
             setting_theme_get,
@@ -88,13 +132,27 @@ pub fn init_app() {
             plugin_appsearch_get
         ])
         .setup(|app| {
+            let main_window = app.get_window("main_window").unwrap();
             init_store(app);
             init_window(app);
-
-            #[cfg(debug_assertions)]
-            app.get_window("setting_window").unwrap().open_devtools();
-
+            app.global_shortcut_manager()
+                .register("CmdOrCtrl+Space", move || {
+                    core_window_toggle_visibility(main_window.clone());
+                })
+                .expect("Failed to register global shortcuts.");
             Ok(())
+        })
+        .system_tray(tray)
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::LeftClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                let window = app.get_window("main_window").unwrap();
+                core_window_toggle_visibility(window);
+            }
+            _ => {}
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::Destroyed => {

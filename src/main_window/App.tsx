@@ -1,5 +1,7 @@
 import { css, useTheme } from "@emotion/react";
 import { FC, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { core_window_hide } from "../commands/core/core_window_hide";
 
 import { search } from "../commands/main/search";
 import { InputBox } from "./components/InputBox";
@@ -24,6 +26,8 @@ const App: FC = () => {
     height: 100%;
     min-height: 100vh;
   `;
+
+  useHotkeys("esc", core_window_hide);
 
   return (
     <div css={globalCss}>
