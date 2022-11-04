@@ -7,7 +7,7 @@ interface Props {
 
 export const SettingItemBase: FC<Props> = ({ children }) => {
   return (
-    <Box p={2} _hover={{ outline: "1px solid" }}>
+    <Box p={2} _hover={{ outline: `1px solid`, outlineColor: "whiteAlpha.300" }}>
       {children}
     </Box>
   );

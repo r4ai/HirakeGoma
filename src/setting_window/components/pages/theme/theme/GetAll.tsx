@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 
-import { getAllTheme } from "../../../../../commands/setting/theme/getAllTheme";
+import { setting_theme_get_all } from "../../../../../commands/setting/theme/setting_theme_get_all";
 import { Themes } from "../../../../../types/Theme";
 import { SettingItem, SettingItemButton } from "../../../parts/main";
 
@@ -8,7 +8,7 @@ export const GetAll: FC = () => {
   const [themeList, setThemeList] = useState<Themes>({});
 
   function handleClick(): void {
-    void getAllTheme().then((res) => {
+    void setting_theme_get_all().then((res) => {
       setThemeList(res);
       console.log(res);
     });
