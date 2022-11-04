@@ -13,7 +13,9 @@ pub fn setting_theme_create(db: State<'_, SettingThemeTable>, key: String) -> Co
         descriptionTextColor: "#c9c9c9".into(),
         lineColor: "#00000000".into(),
         backgroundColor: "#0f0f0f".into(),
+        backgroundTransparency: 0.7,
         inputBoxBackgroundColor: "#0d0d0d".into(),
+        inputBoxBackgroundTransparency: 0.7,
     };
     let fonts = ThemeFonts {
         inputBoxFont: "".into(),

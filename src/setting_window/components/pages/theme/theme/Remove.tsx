@@ -1,13 +1,13 @@
 import { Input } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
-import { removeTheme } from "../../../../../commands/setting/theme";
+import { setting_theme_remove } from "../../../../../commands/setting/theme";
 import { SettingItem } from "../../../parts/main";
 
 export const Remove: FC = () => {
   const [themeName, setThemeName] = useState("");
   async function handleSubmit(): Promise<void> {
-    await removeTheme(themeName);
+    await setting_theme_remove(themeName);
   }
 
   return (

@@ -21,7 +21,7 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
       border: 2px solid ${theme.colors.lineColor};
       box-sizing: border-box;
       outline: 0;
-      background: ${rgba(theme.colors.inputBoxBackgroundColor, 1)};
+      background: ${rgba(theme.colors.inputBoxBackgroundColor, theme.colors.inputBoxBackgroundTransparency)};
       color: ${theme.colors.textColor};
     `
   };

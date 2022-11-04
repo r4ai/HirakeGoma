@@ -23,7 +23,9 @@ pub struct ThemeColors {
     pub descriptionTextColor: String,
     pub lineColor: String,
     pub backgroundColor: String,
+    pub backgroundTransparency: f64,
     pub inputBoxBackgroundColor: String,
+    pub inputBoxBackgroundTransparency: f64,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -57,7 +59,9 @@ impl SettingThemeTable<'_> {
                 descriptionTextColor: "#c9c9c9".into(),
                 lineColor: "#00000000".into(),
                 backgroundColor: "#0f0f0f".into(),
+                backgroundTransparency: 0.7,
                 inputBoxBackgroundColor: "#0d0d0d".into(),
+                inputBoxBackgroundTransparency: 0.7,
             },
             ThemeFonts {
                 inputBoxFont: "".into(),
@@ -76,7 +80,9 @@ impl SettingThemeTable<'_> {
                 descriptionTextColor: "#1c1c1c".into(),
                 lineColor: "#00000000".into(),
                 backgroundColor: "#f2f2f2".into(),
+                backgroundTransparency: 0.7,
                 inputBoxBackgroundColor: "#e3e3e3".into(),
+                inputBoxBackgroundTransparency: 0.7,
             },
             ThemeFonts {
                 inputBoxFont: "".into(),

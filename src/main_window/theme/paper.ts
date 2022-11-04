@@ -7,7 +7,9 @@ export const paper: Theme = {
     descriptionTextColor: "#1c1c1c",
     lineColor: "#00000000",
     backgroundColor: "#f2f2f2",
-    inputBoxBackgroundColor: "#e3e3e3"
+    backgroundTransparency: 0.7,
+    inputBoxBackgroundColor: "#e3e3e3",
+    inputBoxBackgroundTransparency: 0.7
   },
   fonts: {
     inputBoxFont: "",

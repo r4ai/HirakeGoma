@@ -1,9 +1,10 @@
 // eslint-disable-next-line
+import { useToast } from "@chakra-ui/react";
 import { invoke } from "@tauri-apps/api";
 import { Select } from "chakra-react-select";
 import { FC, useContext, useEffect, useState } from "react";
 
-import { activateTheme, getAllTheme } from "../../../../../commands/setting/theme";
+import { setting_theme_activate, setting_theme_get_all } from "../../../../../commands/setting/theme";
 import { Themes } from "../../../../../types/Theme";
 import { SettingItem } from "../../../parts/main";
 import { ActivatedThemeContext } from "../Theme";
@@ -11,6 +12,7 @@ import { ActivatedThemeContext } from "../Theme";
 export const SelectTheme: FC = () => {
   const [themeList, setThemeList] = useState<Themes>({});
   const { activatedTheme, setActivatedTheme } = useContext(ActivatedThemeContext);
+  const toast = useToast();
 
   type Option = {
     label: string;
@@ -19,7 +21,7 @@ export const SelectTheme: FC = () => {
   type Options = Option[];
 
   useEffect(() => {
-    void getAllTheme().then((res) => {
+    void setting_theme_get_all().then((res) => {
       setThemeList(res);
     });
   }, []);
@@ -44,7 +46,7 @@ export const SelectTheme: FC = () => {
   }
 
   async function handleFocus(): Promise<void> {
-    const themes: Themes = await getAllTheme();
+    const themes: Themes = await setting_theme_get_all();
     setThemeList(themes);
   }
 
@@ -56,11 +58,33 @@ export const SelectTheme: FC = () => {
         onFocus={handleFocus}
         options={convert(themeList)}
         onChange={(e) => {
-          void activateTheme(e?.value);
+          void setting_theme_activate(e?.value).catch(() => {
+            toast({
+              title: `Failed to change theme.`,
+              description: `Failed to change the theme to ${e?.value}.`,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            });
+          });
           if (e?.value === undefined) {
             console.log("error");
+            toast({
+              title: `Failed to change theme.`,
+              description: `Failed to change the theme to ${e?.value}.`,
+              status: "error",
+              duration: 9000,
+              isClosable: true
+            });
           } else {
             setActivatedTheme(e?.value);
+            toast({
+              title: `Theme changed.`,
+              description: `Successfully change the theme to ${e?.value}.`,
+              status: "success",
+              duration: 4000,
+              isClosable: true
+            });
           }
         }}
       ></Select>
