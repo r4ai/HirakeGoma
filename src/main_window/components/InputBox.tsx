@@ -1,5 +1,6 @@
 import { css, useTheme } from "@emotion/react";
-import { FC } from "react";
+import { FC, useEffect } from "react";
+import { rgba } from "emotion-rgba";
 
 type Props = JSX.IntrinsicElements["input"] & {
   keyword: string;
@@ -20,10 +21,18 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
       border: 2px solid ${theme.colors.lineColor};
       box-sizing: border-box;
       outline: 0;
-      background-color: ${theme.colors.inputBoxBackgroundColor};
+      background: ${rgba(theme.colors.inputBoxBackgroundColor, 1)};
       color: ${theme.colors.textColor};
     `
   };
+
+  useEffect(() => {
+    console.log(theme.colors.inputBoxBackgroundColor);
+
+    return () => {
+      /* クリーンアップ関数 */
+    };
+  }, []);
 
   return (
     <div css={inputBoxCss.self}>

@@ -1,6 +1,8 @@
 import { css, useTheme } from "@emotion/react";
-import { FC, useState } from "react";
+import { register } from "@tauri-apps/api/globalShortcut";
+import { FC, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { core_window_toggle_visibility } from "../commands/core";
 import { core_window_hide } from "../commands/core/core_window_hide";
 
 import { search } from "../commands/main/search";
@@ -19,8 +21,12 @@ const App: FC = () => {
     }
   }
 
+  useEffect(() => {
+    void register("CommandOrControl+Space", core_window_toggle_visibility);
+  }, []);
+
   const globalCss = css`
-    background-color: ${theme.colors.backgroundColor};
+    background: "#0f0f0fff";
     min-width: 100vw;
     max-width: 100vw;
     height: 100%;

@@ -3,7 +3,10 @@ use crate::plugins::application_search;
 use crate::plugins::application_search::table::PluginAppsearchTable;
 use crate::plugins::plugin_store;
 use crate::plugins::plugin_store::PluginStore;
-use tauri::{App, GlobalShortcutManager, Manager, State, SystemTray, SystemTrayEvent, Window};
+use tauri::{
+    App, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, Window,
+};
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
@@ -105,7 +108,13 @@ fn core_window_toggle_visibility(win: Window) {
 }
 
 pub fn init_app() {
-    let tray = SystemTray::new();
+    let settings = CustomMenuItem::new("settings".to_string(), "Settings");
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let tray_menu = SystemTrayMenu::new()
+        .add_item(settings)
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(quit);
+    let tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -135,11 +144,6 @@ pub fn init_app() {
             let main_window = app.get_window("main_window").unwrap();
             init_store(app);
             init_window(app);
-            app.global_shortcut_manager()
-                .register("CmdOrCtrl+Space", move || {
-                    core_window_toggle_visibility(main_window.clone());
-                })
-                .expect("Failed to register global shortcuts.");
             Ok(())
         })
         .system_tray(tray)
@@ -152,6 +156,23 @@ pub fn init_app() {
                 let window = app.get_window("main_window").unwrap();
                 core_window_toggle_visibility(window);
             }
+            SystemTrayEvent::RightClick {
+                position: _,
+                size: _,
+                ..
+            } => {}
+            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "quit" => {
+                    std::process::exit(0);
+                }
+                "settings" => {
+                    let setting_win = app
+                        .get_window("setting_window")
+                        .expect("Failed to get setting_window.");
+                    setting_win.show().expect("Failed to show setting_window.");
+                }
+                _ => {}
+            },
             _ => {}
         })
         .on_window_event(|event| match event.event() {

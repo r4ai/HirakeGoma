@@ -3,6 +3,7 @@ import { FC, useState, createContext, useEffect } from "react";
 import { getActivatedTheme } from "../../../../commands/setting/theme";
 import { SettingHeading } from "../../parts/main";
 import { Create } from "./theme/Create";
+import { Edit } from "./theme/Edit";
 import { GetAll } from "./theme/GetAll";
 import { Remove } from "./theme/Remove";
 import { Save } from "./theme/Save";
@@ -34,6 +35,7 @@ export const Theme: FC = () => {
         <SettingHeading title="Theme" />
         <SelectTheme />
         <Create />
+        <Edit />
         <Remove />
         <GetAll />
         <Save />
