@@ -40,7 +40,7 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
         {searchResults.map((item) => (
           <div key={item.name} css={resultListCss.item} onClick={() => {}}>
             <div css={resultListCss.itemTitle}>{item.name}</div>
-            <div css={resultListCss.itemDescription}>{item.file_path}</div>
+            <div css={resultListCss.itemDescription}>{item.description}</div>
           </div>
         ))}
       </div>
