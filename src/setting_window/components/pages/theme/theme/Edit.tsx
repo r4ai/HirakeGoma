@@ -16,12 +16,12 @@ import {
 import { Select } from "chakra-react-select";
 import { FC, useEffect, useState, useContext } from "react";
 import {
-  setting_theme_activate,
-  setting_theme_create,
-  setting_theme_get_all,
-  setting_theme_change,
-  setting_theme_save
-} from "../../../../../commands/setting/theme";
+  settingThemeActivate,
+  settingThemeCreate,
+  settingThemeGetAll,
+  settingThemeChange,
+  settingThemeSave
+} from "../../../../../commands/setting";
 import { Colors, Fonts, Themes } from "../../../../../types/Theme";
 import { AlphaPicker, SettingHeading, SettingItem, SettingItemColorPicker } from "../../../parts/main";
 import { FiRotateCcw } from "react-icons/fi";
@@ -122,14 +122,14 @@ export const Edit: FC = () => {
   useEffect(() => {
     // * SAVE THEME CHANGES IN BACKEND
     if (selectedThemeName !== "fake") {
-      void setting_theme_change(selectedThemeName, selectedTheme);
-      void setting_theme_save();
+      void settingThemeChange(selectedThemeName, selectedTheme);
+      void settingThemeSave();
     }
   }, [selectedTheme]);
 
   useEffect(() => {
     // * GET THEME LIST FROM BACKEND
-    void setting_theme_get_all().then(setThemeList);
+    void settingThemeGetAll().then(setThemeList);
   }, []);
 
   function convert(themes: Themes): Options {
@@ -141,7 +141,7 @@ export const Edit: FC = () => {
   }
 
   async function handleSubmit(): Promise<void> {
-    await setting_theme_create(selectedThemeName);
+    await settingThemeCreate(selectedThemeName);
   }
 
   return (
@@ -157,7 +157,7 @@ export const Edit: FC = () => {
           options={convert(themeList)}
           onChange={(e) => {
             if (e?.value === undefined) {
-              void setting_theme_activate(e?.value).catch(() => {
+              void settingThemeActivate(e?.value).catch(() => {
                 toast({
                   title: `Failed to change theme.`,
                   description: `Failed to select the theme ${e?.value}.`,

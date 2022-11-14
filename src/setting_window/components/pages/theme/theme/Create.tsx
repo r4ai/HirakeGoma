@@ -1,13 +1,13 @@
 import { Input } from "@chakra-ui/react";
 import { FC, useState } from "react";
 
-import { setting_theme_create } from "../../../../../commands/setting/theme";
+import { settingThemeCreate } from "../../../../../commands/setting";
 import { SettingItem } from "../../../parts/main";
 
 export const Create: FC = () => {
   const [themeName, setThemeName] = useState("");
   async function handleSubmit(): Promise<void> {
-    await setting_theme_create(themeName);
+    await settingThemeCreate(themeName);
   }
 
   return (

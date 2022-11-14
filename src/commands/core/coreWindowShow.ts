@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
 
-export function core_window_show(): void {
+export function coreWindowShow(): void {
   invoke("core_window_show");
 }

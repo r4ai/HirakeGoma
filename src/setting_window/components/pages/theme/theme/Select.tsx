@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api";
 import { Select } from "chakra-react-select";
 import { FC, useContext, useEffect, useState } from "react";
 
-import { setting_theme_activate, setting_theme_get_all } from "../../../../../commands/setting/theme";
+import { settingThemeActivate, settingThemeGetAll } from "../../../../../commands/setting";
 import { Themes } from "../../../../../types/Theme";
 import { SettingItem } from "../../../parts/main";
 import { ActivatedThemeContext } from "../Theme";
@@ -21,7 +21,7 @@ export const SelectTheme: FC = () => {
   type Options = Option[];
 
   useEffect(() => {
-    void setting_theme_get_all().then((res) => {
+    void settingThemeGetAll().then((res) => {
       setThemeList(res);
     });
   }, []);
@@ -46,7 +46,7 @@ export const SelectTheme: FC = () => {
   }
 
   async function handleFocus(): Promise<void> {
-    const themes: Themes = await setting_theme_get_all();
+    const themes: Themes = await settingThemeGetAll();
     setThemeList(themes);
   }
 
@@ -58,7 +58,7 @@ export const SelectTheme: FC = () => {
         onFocus={handleFocus}
         options={convert(themeList)}
         onChange={(e) => {
-          void setting_theme_activate(e?.value).catch(() => {
+          void settingThemeActivate(e?.value).catch(() => {
             toast({
               title: `Failed to change theme.`,
               description: `Failed to change the theme to ${e?.value}.`,

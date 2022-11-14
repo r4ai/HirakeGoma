@@ -1,6 +1,6 @@
 import { FC, useState, createContext, useEffect } from "react";
 
-import { setting_theme_get_activated } from "../../../../commands/setting/theme";
+import { settingThemeGetActivated } from "../../../../commands/setting";
 import { SettingHeading } from "../../parts/main";
 import { Create } from "./theme/Create";
 import { Edit } from "./theme/Edit";
@@ -23,7 +23,7 @@ export const Theme: FC = () => {
   const [activatedTheme, setActivatedTheme] = useState("");
 
   useEffect(() => {
-    void setting_theme_get_activated().then((name) => {
+    void settingThemeGetActivated().then((name) => {
       console.log(name);
       setActivatedTheme(name);
     });
