@@ -10,25 +10,25 @@ use tauri::{
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
-use super::db::applications_table::SearchDatabaseApplicationTable;
-use super::db::commands_table::SearchDatabaseCommandsTable;
-use super::db::main_command::{
+use super::commands::main_command::{
     __cmd__add_app_to_search_database, __cmd__clear_search_database,
     __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
     add_app_to_search_database, clear_search_database, dbg_search_database_items,
     get_all_search_database_items, search,
 };
-use super::db::main_table::SearchDatabaseMainTable;
-use super::db::search_database_store::SearchDatabaseTable;
-use super::setting::setting_store::SettingStore;
-use super::setting::theme_command::{
+use super::commands::theme_command::{
     __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
     __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
     __cmd__setting_theme_remove, __cmd__setting_theme_save, setting_theme_activate,
     setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
     setting_theme_get_all, setting_theme_remove, setting_theme_save,
 };
-use super::setting::theme_table::SettingThemeTable;
+use super::db::applications_table::SearchDatabaseApplicationTable;
+use super::db::commands_table::SearchDatabaseCommandsTable;
+use super::db::main_table::SearchDatabaseMainTable;
+use super::db::search_database_store::SearchDatabaseTable;
+use super::db::setting_store::SettingStore;
+use super::db::theme_table::SettingThemeTable;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 use crate::plugins::application_search::command::*;
 

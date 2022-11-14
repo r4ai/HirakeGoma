@@ -14,38 +14,42 @@ pub struct SearchDatabaseStore {
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct SearchDatabaseItem {
     pub name: String,
+    pub description: String,
     pub score: i64,
     pub item_type: String,
     pub icon_path: String,
-    pub file_path: String,
+    pub path: String,
     pub command: String,
 }
 
 impl SearchDatabaseItem {
     fn new(
         name: String,
+        description: String,
         score: i64,
         item_type: String,
         icon_path: String,
-        file_path: String,
+        path: String,
         command: String,
     ) -> Self {
         Self {
             name,
+            description,
             score,
             item_type,
             icon_path,
-            file_path,
+            path,
             command,
         }
     }
 
-    pub fn newApplication(name: String, icon_path: String, file_path: String) -> Self {
+    pub fn new_app(name: String, icon_path: String, file_path: String) -> Self {
         Self {
             name,
+            description: file_path.clone(),
             score: 0,
             icon_path,
-            file_path,
+            path: file_path,
             item_type: String::from("Application"),
             command: String::from(""),
         }

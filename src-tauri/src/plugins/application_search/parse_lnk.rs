@@ -32,7 +32,7 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
         .icon_location()
         .clone()
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
-    Ok(SearchDatabaseItem::newApplication(
+    Ok(SearchDatabaseItem::new_app(
         lnk_file_name,
         lnk_file_icon_path,
         lnk_file_path,
@@ -48,7 +48,7 @@ pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Erro
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
     let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     dbg!(&file_icon_path, &file_name, &file_path);
-    Ok(SearchDatabaseItem::newApplication(
+    Ok(SearchDatabaseItem::new_app(
         file_name,
         file_icon_path,
         file_path.to_str().unwrap().to_string(),
@@ -86,8 +86,8 @@ mod tests {
             .join("Arma 3.url");
         let res = parse_url(&path).unwrap();
         dbg!(&res);
-        assert_eq!(path.to_str().unwrap().to_string(), res.file_path); // file path check
-                                                                       // TODO: file_name check
-                                                                       // TODO: file_icon_path check
+        assert_eq!(path.to_str().unwrap().to_string(), res.path); // file path check
+                                                                  // TODO: file_name check
+                                                                  // TODO: file_icon_path check
     }
 }

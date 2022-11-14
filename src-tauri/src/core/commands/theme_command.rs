@@ -1,4 +1,4 @@
-use super::theme_table::{SettingThemeTable, ThemeColors, ThemeFonts, ThemeItem};
+use crate::core::db::theme_table::{SettingThemeTable, ThemeColors, ThemeFonts, ThemeItem};
 use crate::core::utils::result::{CommandError, CommandResult};
 use kv::Json;
 use std::collections::HashMap;
