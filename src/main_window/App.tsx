@@ -32,6 +32,9 @@ const App: FC = () => {
     max-width: 100vw;
     height: 100%;
     min-height: 100vh;
+    display: grid;
+    grid-template-rows: 200px 1fr;
+    grid-template-columns: 1fr;
   `;
 
   useHotkeys("esc", coreWindowHide);
@@ -39,12 +42,20 @@ const App: FC = () => {
   return (
     <div css={globalCss}>
       <InputBox
+        css={css`
+          grid-row: 1 / 2;
+        `}
         keyword=""
         onChange={(e) => {
           void handleInputBoxChange(e.target.value);
         }}
       />
-      <ResultList searchResults={searchResults} />
+      <ResultList
+        css={css`
+          grid-row: 2/3;
+        `}
+        searchResults={searchResults}
+      />
     </div>
   );
 };

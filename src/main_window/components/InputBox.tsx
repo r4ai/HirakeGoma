@@ -11,6 +11,8 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
 
   const inputBoxCss = {
     self: css`
+      position: sticky;
+      top: 0;
       padding: 5px 7px;
     `,
     input: css`
@@ -25,14 +27,6 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
       color: ${theme.colors.textColor};
     `
   };
-
-  useEffect(() => {
-    console.log(theme.colors.inputBoxBackgroundColor);
-
-    return () => {
-      /* クリーンアップ関数 */
-    };
-  }, []);
 
   return (
     <div css={inputBoxCss.self}>
