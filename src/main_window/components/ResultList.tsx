@@ -11,15 +11,10 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
   const resultListCss = {
     self: css`
       padding: 0px 7px;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      row-gap: 5px;
     `,
     item: css`
       padding: 0px 10px;
-      overflow: hidden;
+      margin-bottom: 5px;
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;

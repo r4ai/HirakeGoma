@@ -11,8 +11,6 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
 
   const inputBoxCss = {
     self: css`
-      position: sticky;
-      top: 0;
       padding: 5px 7px;
     `,
     input: css`

@@ -30,10 +30,9 @@ const App: FC = () => {
     background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
     min-width: 100vw;
     max-width: 100vw;
-    height: 100%;
-    min-height: 100vh;
+    height: 100vh;
     display: grid;
-    grid-template-rows: 200px 1fr;
+    grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
   `;
 
@@ -43,7 +42,7 @@ const App: FC = () => {
     <div css={globalCss}>
       <InputBox
         css={css`
-          grid-row: 1 / 2;
+          grid-row: 1;
         `}
         keyword=""
         onChange={(e) => {
@@ -52,7 +51,8 @@ const App: FC = () => {
       />
       <ResultList
         css={css`
-          grid-row: 2/3;
+          grid-row: 2;
+          overflow-y: scroll;
         `}
         searchResults={searchResults}
       />
