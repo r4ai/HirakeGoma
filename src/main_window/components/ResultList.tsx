@@ -10,11 +10,18 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
 
   const resultListCss = {
     self: css`
+      grid-row: 2 / 3;
+      grid-column: 1;
+      grid-auto-flow: row;
+      grid-auto-rows: 50%;
+      grid-template-columns: unset;
+      grid-template-rows: unset;
+      overflow-y: scroll;
       padding: 0px 7px;
     `,
     item: css`
       padding: 0px 10px;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;

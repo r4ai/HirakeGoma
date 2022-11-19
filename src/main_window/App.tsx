@@ -28,12 +28,13 @@ const App: FC = () => {
 
   const globalCss = css`
     background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
-    min-width: 100vw;
-    max-width: 100vw;
+    width: 100vw;
+    min-width: 0;
     height: 100vh;
+    min-height: 0;
     display: grid;
-    grid-template-rows: auto 1fr;
-    grid-template-columns: 1fr;
+    grid-template-rows: 10% 90%;
+    grid-template-columns: auto;
   `;
 
   useHotkeys("esc", coreWindowHide);
@@ -41,21 +42,12 @@ const App: FC = () => {
   return (
     <div css={globalCss}>
       <InputBox
-        css={css`
-          grid-row: 1;
-        `}
         keyword=""
         onChange={(e) => {
           void handleInputBoxChange(e.target.value);
         }}
       />
-      <ResultList
-        css={css`
-          grid-row: 2;
-          overflow-y: scroll;
-        `}
-        searchResults={searchResults}
-      />
+      <ResultList searchResults={searchResults} />
     </div>
   );
 };

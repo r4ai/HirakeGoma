@@ -11,6 +11,9 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
 
   const inputBoxCss = {
     self: css`
+      grid-row: 1 / 2;
+      grid-column: 1;
+      height: 100%;
       padding: 5px 7px;
     `,
     input: css`
