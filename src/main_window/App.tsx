@@ -14,6 +14,17 @@ const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
 
+  const globalCss = css`
+    background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
+    width: 100vw;
+    min-width: 0;
+    height: 100vh;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 10% 90%;
+    grid-template-columns: auto;
+  `;
+
   async function handleInputBoxChange(keyword: string): Promise<void> {
     if (keyword === "") {
       setSearchResults([]);
@@ -26,18 +37,7 @@ const App: FC = () => {
     void register("CommandOrControl+Space", coreWindowToggleVisibility);
   }, []);
 
-  const globalCss = css`
-    background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
-    width: 100vw;
-    min-width: 0;
-    height: 100vh;
-    min-height: 0;
-    display: grid;
-    grid-template-rows: 10% 90%;
-    grid-template-columns: auto;
-  `;
-
-  useHotkeys("esc", coreWindowHide);
+  useHotkeys("escape", coreWindowHide, { enableOnFormTags: true, keyup: true });
 
   return (
     <div css={globalCss}>
