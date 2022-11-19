@@ -1,7 +1,7 @@
 use crate::core::utils::{path::get_project_dir, result::CommandResult};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
-use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf};
+use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf, vec};
 use tauri::State;
 
 pub struct SearchDatabaseStore {
@@ -20,6 +20,7 @@ pub struct SearchDatabaseItem {
     pub icon_path: String,
     pub path: String,
     pub command: String,
+    pub alias: Vec<String>,
 }
 
 impl SearchDatabaseItem {
@@ -31,6 +32,7 @@ impl SearchDatabaseItem {
         icon_path: String,
         path: String,
         command: String,
+        alias: Vec<String>,
     ) -> Self {
         Self {
             name,
@@ -40,6 +42,7 @@ impl SearchDatabaseItem {
             icon_path,
             path,
             command,
+            alias,
         }
     }
 
@@ -52,6 +55,7 @@ impl SearchDatabaseItem {
             path: file_path,
             item_type: String::from("Application"),
             command: String::from(""),
+            alias: vec![],
         }
     }
 }
