@@ -1,4 +1,4 @@
-use super::{
+use crate::core::db::{
     main_table::SearchDatabaseMainTable,
     search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
 };
@@ -26,7 +26,7 @@ pub fn add_app_to_search_database(
     app_path: String,
 ) -> Result<(), String> {
     let key = app_title.clone();
-    let value = SearchDatabaseItem::newApplication(app_title, app_icon_path, app_path);
+    let value = SearchDatabaseItem::new_app(app_title, app_icon_path, app_path);
     let _ = table.insert(key, value);
     Ok(())
 }

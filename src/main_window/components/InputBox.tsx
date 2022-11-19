@@ -26,14 +26,6 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
     `
   };
 
-  useEffect(() => {
-    console.log(theme.colors.inputBoxBackgroundColor);
-
-    return () => {
-      /* クリーンアップ関数 */
-    };
-  }, []);
-
   return (
     <div css={inputBoxCss.self}>
       <input css={inputBoxCss.input} type="text" {...inputProps} autoFocus={true} />
