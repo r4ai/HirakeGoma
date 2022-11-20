@@ -1,16 +1,18 @@
-import { forwardRef } from "@chakra-ui/react";
+import { forwardRef, useStatStyles } from "@chakra-ui/react";
 import { useTheme, css } from "@emotion/react";
-import { FC, useEffect, ComponentPropsWithoutRef } from "react";
+import { FC, useEffect, ComponentPropsWithoutRef, Ref, RefObject, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 interface Props {
   searchResults: SearchResults;
   selectedItemIndex: number;
   setHideEnabled: Function;
+  resultListRefs: Ref<RefObject<HTMLDivElement>[]>;
 }
 
-export const ResultList = forwardRef(({ searchResults, selectedItemIndex, setHideEnabled }: Props, ref) => {
+export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHideEnabled, resultListRefs }) => {
   const theme = useTheme();
+  const [selectedIndex, setSelectedIndex] = useState(selectedItemIndex);
 
   const resultListCss = {
     self: css`
@@ -28,7 +30,7 @@ export const ResultList = forwardRef(({ searchResults, selectedItemIndex, setHid
       margin-bottom: 10px;
       text-overflow: ellipsis;
       white-space: nowrap;
-      background-color: ${i === selectedItemIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
+      background-color: ${i === selectedIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
       cursor: pointer;
     `,
     itemTitle: css`
@@ -50,7 +52,13 @@ export const ResultList = forwardRef(({ searchResults, selectedItemIndex, setHid
         }}
       >
         {searchResults.map((item, i) => (
-          <div key={item.name} css={resultListCss.item(i)} onClick={() => {}} tabIndex={i}>
+          <div
+            key={item.name}
+            css={resultListCss.item(i)}
+            onClick={() => {}}
+            ref={resultListRefs.current[i]}
+            tabIndex={i}
+          >
             <div css={resultListCss.itemTitle}>{item.name}</div>
             <div css={resultListCss.itemDescription}>{item.description}</div>
           </div>
@@ -58,4 +66,4 @@ export const ResultList = forwardRef(({ searchResults, selectedItemIndex, setHid
       </div>
     </>
   );
-});
+};

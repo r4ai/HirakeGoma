@@ -1,6 +1,6 @@
 import { css, useTheme } from "@emotion/react";
 import { register } from "@tauri-apps/api/globalShortcut";
-import { FC, useEffect, useRef, useState } from "react";
+import { createRef, FC, Ref, RefObject, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { coreWindowToggleVisibility } from "../commands/core";
 import { coreWindowHide } from "../commands/core/coreWindowHide";
@@ -15,7 +15,7 @@ import { Button } from "@chakra-ui/react";
 const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
-  const selectedItem = useIterator(searchResults.length - 1);
+  // const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const globalCss = css`
     background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
@@ -41,12 +41,11 @@ const App: FC = () => {
     void register("CommandOrControl+Space", coreWindowToggleVisibility);
   }, []);
 
-  useEffect(() => {
-    // ! DEBUG
-    console.log(selectedItem);
-  }, [selectedItem]);
-
   const inputBoxRef = useRef<HTMLInputElement>(null);
+  const resultListRefs = useRef<RefObject<HTMLDivElement>[]>([]);
+  for (let i = 0; i < searchResults.length; i++) {
+    resultListRefs.current[i] = createRef<HTMLDivElement>();
+  }
 
   const [hideEnabled, setHideEnabled] = useState(true);
   const hideRef = useHotkeys("escape", coreWindowHide, { enabled: hideEnabled, enableOnFormTags: true, keyup: true });
@@ -61,15 +60,53 @@ const App: FC = () => {
     { enableOnFormTags: true, keyup: true }
   );
 
-  useHotkeys("up", selectedItem.prev, { enableOnFormTags: true, keyup: true });
-  useHotkeys("down", selectedItem.next, { enableOnFormTags: true, keyup: true });
-  useHotkeys("left", selectedItem.first, { enableOnFormTags: true, keyup: true });
-  useHotkeys("right", selectedItem.last, { enableOnFormTags: true, keyup: true });
+  const focusLast = () => {
+    // ! DEBUG FUNCTION
+    resultListRefs.current[searchResults.length - 1].current?.scrollIntoView();
+    console.log("FOCUS TO LAST");
+  };
+
+  function focus(i: number) {
+    if (i < 0 || searchResults.length <= i) {
+      console.error("given index is in `i < 0 || searchResults.length <= 1`");
+      return;
+    }
+    // setSelectedItemIndex(i);
+    console.log("focus to " + i);
+    resultListRefs.current[i].current?.scrollIntoView();
+  }
+
+  let selectedIndex = 0;
+  useHotkeys(
+    "k",
+    () => {
+      if (selectedIndex === 0) {
+        selectedIndex = searchResults.length - 1;
+      } else {
+        selectedIndex -= 1;
+      }
+      focus(selectedIndex);
+    },
+    { enableOnFormTags: true, keyup: true, preventDefault: true }
+  );
+  useHotkeys(
+    "down",
+    () => {
+      if (selectedIndex === searchResults.length - 1) {
+        selectedIndex = 0;
+      } else {
+        selectedIndex += 1;
+      }
+      focus(selectedIndex);
+    },
+    { enableOnFormTags: true, keyup: true, preventDefault: true }
+  );
   // TODO: pageDown hotkey using `selectedItem.nextByX`
   // TODO: pageUp hotkey using `selectedItem.prevByX`
 
   return (
     <div css={globalCss} ref={hideRef} tabIndex={-1}>
+      {/* <Button onClick={focusLast}>FOCUS LAST</Button> */}
       <InputBox
         keyword=""
         onChange={(e) => {
@@ -80,9 +117,9 @@ const App: FC = () => {
       />
       <ResultList
         searchResults={searchResults}
-        selectedItemIndex={selectedItem.i}
-        ref={focusInputBoxRef}
+        selectedItemIndex={selectedIndex}
         setHideEnabled={setHideEnabled}
+        resultListRefs={resultListRefs}
       />
     </div>
   );
