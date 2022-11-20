@@ -11,12 +11,15 @@ import { InputBox } from "./components/InputBox";
 import { ResultList } from "./components/ResultList";
 import { useIterator } from "./hooks/useIterator";
 import { Button } from "@chakra-ui/react";
+import { usePrevious } from "./hooks/usePrevious";
 
 const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
   let selectedIndex = 0;
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [prevSelectedItemIndex, setPrevSelectedItemIndex] = useState(0);
+  const [upCount, setUpCount] = useState(0);
 
   const globalCss = css`
     background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
@@ -48,7 +51,11 @@ const App: FC = () => {
   }, [searchResults]);
 
   useEffect(() => {
-    focus(selectedItemIndex);
+    if (selectedItemIndex - prevSelectedItemIndex > 0) {
+      focus(selectedItemIndex, "down");
+    } else {
+      focus(selectedItemIndex, "up");
+    }
   }, [selectedItemIndex]);
 
   const inputBoxRef = useRef<HTMLInputElement>(null);
@@ -63,25 +70,47 @@ const App: FC = () => {
     "escape",
     () => {
       setHideEnabled(true);
-      // TODO: FOCUS INPUT BOX
       inputBoxRef.current?.focus();
-      console.log("FOCUS INPUTBOX !!!");
     },
     { enableOnFormTags: true, keyup: true }
   );
 
-  function focus(i: number) {
+  function focus(i: number, direction: "up" | "down") {
     if (i < 0 || searchResults.length <= i) {
       console.error("given index is in `i < 0 || searchResults.length <= 1`");
       return;
     }
-    console.log("focus to " + i);
-    resultListRefs.current[i].current?.scrollIntoView();
+    const element = resultListRefs.current[i].current;
+    if (!element) {
+      return;
+    }
+    const maxElementNum = Math.floor((document.body.clientHeight * 0.9) / (element?.scrollHeight + 10)) - 1;
+    console.log(`focus to ${i} / ${searchResults.length - 1}`);
+    if (i === 0) {
+      setUpCount(maxElementNum);
+      element?.scrollIntoView();
+    } else if (i === searchResults.length - 1) {
+      setUpCount(0);
+      element?.scrollIntoView();
+    } else {
+      if (direction === "down") {
+        setUpCount((prev) => Math.max(prev - 1, 0));
+        if (upCount === 0) {
+          resultListRefs.current[i - maxElementNum].current?.scrollIntoView();
+        }
+      } else {
+        setUpCount((prev) => Math.min(prev + 1, maxElementNum));
+        if (upCount === maxElementNum) {
+          element?.scrollIntoView();
+        }
+      }
+    }
   }
 
   useHotkeys(
     "up",
     () => {
+      setPrevSelectedItemIndex(selectedItemIndex);
       if (selectedItemIndex === 0) {
         setSelectedItemIndex(searchResults.length - 1);
       } else {
@@ -95,6 +124,7 @@ const App: FC = () => {
   useHotkeys(
     "down",
     () => {
+      setPrevSelectedItemIndex(selectedItemIndex);
       if (selectedItemIndex === searchResults.length - 1) {
         setSelectedItemIndex(0);
       } else {
