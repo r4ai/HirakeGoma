@@ -36,8 +36,6 @@ const App: FC = () => {
     }
   }
 
-  function focus(): void {}
-
   useEffect(() => {
     // * SET GLOBAL SHORTCUT
     void register("CommandOrControl+Space", coreWindowToggleVisibility);
