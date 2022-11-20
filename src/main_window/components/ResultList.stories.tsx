@@ -2,7 +2,7 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import React from "react";
 
 import { SearchResults } from "../../@types/SearchResult";
-import { ResultList } from "./ResultList";
+import ResultList from "./ResultList";
 
 const meta: ComponentMeta<typeof ResultList> = {
   title: "main_window/ResultList",

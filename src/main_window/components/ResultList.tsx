@@ -1,11 +1,15 @@
+import { forwardRef } from "@chakra-ui/react";
 import { useTheme, css } from "@emotion/react";
-import { FC } from "react";
+import { FC, useEffect, ComponentPropsWithoutRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
-interface ResultListProps {
+interface Props {
   searchResults: SearchResults;
+  selectedItemIndex: number;
+  setHideEnabled: Function;
 }
 
-export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
+export const ResultList = forwardRef(({ searchResults, selectedItemIndex, setHideEnabled }: Props, ref) => {
   const theme = useTheme();
 
   const resultListCss = {
@@ -19,11 +23,12 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
       overflow-y: scroll;
       padding: 0px 7px;
     `,
-    item: css`
+    item: (i: number) => css`
       padding: 0px 10px;
       margin-bottom: 10px;
       text-overflow: ellipsis;
       white-space: nowrap;
+      background-color: ${i === selectedItemIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
       cursor: pointer;
     `,
     itemTitle: css`
@@ -38,9 +43,14 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
 
   return (
     <>
-      <div css={resultListCss.self}>
-        {searchResults.map((item) => (
-          <div key={item.name} css={resultListCss.item} onClick={() => {}}>
+      <div
+        css={resultListCss.self}
+        onFocus={() => {
+          setHideEnabled(false);
+        }}
+      >
+        {searchResults.map((item, i) => (
+          <div key={item.name} css={resultListCss.item(i)} onClick={() => {}} tabIndex={i}>
             <div css={resultListCss.itemTitle}>{item.name}</div>
             <div css={resultListCss.itemDescription}>{item.description}</div>
           </div>
@@ -48,4 +58,4 @@ export const ResultList: FC<ResultListProps> = ({ searchResults }) => {
       </div>
     </>
   );
-};
+});
