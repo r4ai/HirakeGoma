@@ -15,7 +15,8 @@ import { Button } from "@chakra-ui/react";
 const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
-  // const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  let selectedIndex = 0;
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const globalCss = css`
     background: ${rgba(theme.colors.backgroundColor, theme.colors.backgroundTransparency)};
@@ -40,6 +41,15 @@ const App: FC = () => {
     // * SET GLOBAL SHORTCUT
     void register("CommandOrControl+Space", coreWindowToggleVisibility);
   }, []);
+
+  useEffect(() => {
+    setSelectedItemIndex(0);
+    console.log(selectedItemIndex);
+  }, [searchResults]);
+
+  useEffect(() => {
+    focus(selectedItemIndex);
+  }, [selectedItemIndex]);
 
   const inputBoxRef = useRef<HTMLInputElement>(null);
   const resultListRefs = useRef<RefObject<HTMLDivElement>[]>([]);
@@ -71,35 +81,34 @@ const App: FC = () => {
       console.error("given index is in `i < 0 || searchResults.length <= 1`");
       return;
     }
-    // setSelectedItemIndex(i);
     console.log("focus to " + i);
     resultListRefs.current[i].current?.scrollIntoView();
   }
 
-  let selectedIndex = 0;
   useHotkeys(
-    "k",
+    "up",
     () => {
-      if (selectedIndex === 0) {
-        selectedIndex = searchResults.length - 1;
+      if (selectedItemIndex === 0) {
+        setSelectedItemIndex(searchResults.length - 1);
       } else {
-        selectedIndex -= 1;
+        setSelectedItemIndex((prev) => prev - 1);
       }
-      focus(selectedIndex);
     },
-    { enableOnFormTags: true, keyup: true, preventDefault: true }
+    { enableOnFormTags: true, preventDefault: true },
+    [selectedItemIndex]
   );
+
   useHotkeys(
     "down",
     () => {
-      if (selectedIndex === searchResults.length - 1) {
-        selectedIndex = 0;
+      if (selectedItemIndex === searchResults.length - 1) {
+        setSelectedItemIndex(0);
       } else {
-        selectedIndex += 1;
+        setSelectedItemIndex((prev) => prev + 1);
       }
-      focus(selectedIndex);
     },
-    { enableOnFormTags: true, keyup: true, preventDefault: true }
+    { enableOnFormTags: true, preventDefault: true },
+    [selectedItemIndex]
   );
   // TODO: pageDown hotkey using `selectedItem.nextByX`
   // TODO: pageUp hotkey using `selectedItem.prevByX`
