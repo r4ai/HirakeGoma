@@ -1,6 +1,6 @@
 import { css, useTheme } from "@emotion/react";
 import { register } from "@tauri-apps/api/globalShortcut";
-import { createRef, FC, Ref, RefObject, useEffect, useRef, useState } from "react";
+import { createRef, FC, MutableRefObject, Ref, RefObject, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { coreWindowToggleVisibility } from "../commands/core";
 import { coreWindowHide } from "../commands/core/coreWindowHide";
@@ -46,11 +46,13 @@ const App: FC = () => {
   }, []);
 
   useEffect(() => {
+    // * INITIALIZE SELECTED_ITEM_INDEX
     setSelectedItemIndex(0);
     console.log(selectedItemIndex);
   }, [searchResults]);
 
   useEffect(() => {
+    // * SCROLL TO SELECTED ITEM ELEMENT
     if (selectedItemIndex - prevSelectedItemIndex > 0) {
       focus(selectedItemIndex, "down");
     } else {
@@ -62,6 +64,7 @@ const App: FC = () => {
   const resultListRefs = useRef<RefObject<HTMLDivElement>[]>([]);
   for (let i = 0; i < searchResults.length; i++) {
     resultListRefs.current[i] = createRef<HTMLDivElement>();
+    // console.log(`created ref ${i}`);
   }
 
   const [hideEnabled, setHideEnabled] = useState(true);
@@ -75,12 +78,13 @@ const App: FC = () => {
     { enableOnFormTags: true, keyup: true }
   );
 
+  // TODO: custom hooks へ矢印キーの処理を分離する。
   function focus(i: number, direction: "up" | "down") {
     if (i < 0 || searchResults.length <= i) {
       console.error("given index is in `i < 0 || searchResults.length <= 1`");
       return;
     }
-    const element = resultListRefs.current[i].current;
+    const element = resultListRefs.current[i]?.current;
     if (!element) {
       return;
     }
@@ -96,7 +100,7 @@ const App: FC = () => {
       if (direction === "down") {
         setUpCount((prev) => Math.max(prev - 1, 0));
         if (upCount === 0) {
-          resultListRefs.current[i - maxElementNum].current?.scrollIntoView();
+          resultListRefs.current[i - maxElementNum]?.current?.scrollIntoView();
         }
       } else {
         setUpCount((prev) => Math.min(prev + 1, maxElementNum));
@@ -134,11 +138,11 @@ const App: FC = () => {
     { enableOnFormTags: true, preventDefault: true },
     [selectedItemIndex]
   );
-  // TODO: pageDown hotkey using `selectedItem.nextByX`
-  // TODO: pageUp hotkey using `selectedItem.prevByX`
+  // TODO: pageDown hotkey
+  // TODO: pageUp hotkey
 
   return (
-    <div css={globalCss} ref={hideRef} tabIndex={-1}>
+    <div css={globalCss} ref={hideRef as MutableRefObject<HTMLDivElement>} tabIndex={-1}>
       <InputBox
         keyword=""
         onChange={(e) => {

@@ -1,13 +1,13 @@
-import { forwardRef, useStatStyles } from "@chakra-ui/react";
+import { forwardRef, propNames, useStatStyles } from "@chakra-ui/react";
 import { useTheme, css } from "@emotion/react";
-import { FC, useEffect, ComponentPropsWithoutRef, Ref, RefObject, useState } from "react";
+import { FC, useEffect, ComponentPropsWithoutRef, Ref, RefObject, useState, MutableRefObject } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 interface Props {
   searchResults: SearchResults;
   selectedItemIndex: number;
   setHideEnabled: Function;
-  resultListRefs: Ref<RefObject<HTMLDivElement>[]>;
+  resultListRefs: MutableRefObject<RefObject<HTMLDivElement>[]>;
 }
 
 export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHideEnabled, resultListRefs }) => {
