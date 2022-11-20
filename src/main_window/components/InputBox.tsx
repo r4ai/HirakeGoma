@@ -1,16 +1,22 @@
 import { css, useTheme } from "@emotion/react";
-import { FC, useEffect } from "react";
+import { FC, Ref, useEffect } from "react";
 import { rgba } from "emotion-rgba";
+import { forwardRef } from "@chakra-ui/react";
 
 type Props = JSX.IntrinsicElements["input"] & {
   keyword: string;
+  setHideEnabled: Function;
+  inputBoxRef: Ref<HTMLInputElement>;
 };
 
-export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
+export const InputBox: FC<Props> = ({ keyword, setHideEnabled, inputBoxRef, ...inputProps }) => {
   const theme = useTheme();
 
   const inputBoxCss = {
     self: css`
+      grid-row: 1 / 2;
+      grid-column: 1;
+      height: 100%;
       padding: 5px 7px;
     `,
     input: css`
@@ -27,8 +33,13 @@ export const InputBox: FC<Props> = ({ keyword, ...inputProps }) => {
   };
 
   return (
-    <div css={inputBoxCss.self}>
-      <input css={inputBoxCss.input} type="text" {...inputProps} autoFocus={true} />
+    <div
+      css={inputBoxCss.self}
+      onFocus={() => {
+        setHideEnabled(true);
+      }}
+    >
+      <input css={inputBoxCss.input} type="text" {...inputProps} autoFocus={true} ref={inputBoxRef} />
     </div>
   );
 };
