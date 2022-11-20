@@ -70,12 +70,6 @@ const App: FC = () => {
     { enableOnFormTags: true, keyup: true }
   );
 
-  const focusLast = () => {
-    // ! DEBUG FUNCTION
-    resultListRefs.current[searchResults.length - 1].current?.scrollIntoView();
-    console.log("FOCUS TO LAST");
-  };
-
   function focus(i: number) {
     if (i < 0 || searchResults.length <= i) {
       console.error("given index is in `i < 0 || searchResults.length <= 1`");
@@ -115,7 +109,6 @@ const App: FC = () => {
 
   return (
     <div css={globalCss} ref={hideRef} tabIndex={-1}>
-      {/* <Button onClick={focusLast}>FOCUS LAST</Button> */}
       <InputBox
         keyword=""
         onChange={(e) => {
@@ -126,7 +119,7 @@ const App: FC = () => {
       />
       <ResultList
         searchResults={searchResults}
-        selectedItemIndex={selectedIndex}
+        selectedItemIndex={selectedItemIndex}
         setHideEnabled={setHideEnabled}
         resultListRefs={resultListRefs}
       />

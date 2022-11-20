@@ -12,7 +12,6 @@ interface Props {
 
 export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHideEnabled, resultListRefs }) => {
   const theme = useTheme();
-  const [selectedIndex, setSelectedIndex] = useState(selectedItemIndex);
 
   const resultListCss = {
     self: css`
@@ -30,7 +29,7 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
       margin-bottom: 10px;
       text-overflow: ellipsis;
       white-space: nowrap;
-      background-color: ${i === selectedIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
+      background-color: ${i === selectedItemIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
       cursor: pointer;
     `,
     itemTitle: css`
