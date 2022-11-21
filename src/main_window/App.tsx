@@ -42,7 +42,7 @@ const App: FC = () => {
 
   useEffect(() => {
     // * SET GLOBAL SHORTCUT
-    void register("CommandOrControl+Space", coreWindowToggleVisibility);
+    // void register("CommandOrControl+Space", coreWindowToggleVisibility);
   }, []);
 
   useEffect(() => {

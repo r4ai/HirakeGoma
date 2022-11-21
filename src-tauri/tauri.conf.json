@@ -68,8 +68,7 @@
         "url": "src/setting_window/setting.html",
         "height": 600,
         "width": 800,
-        "resizable": true,
-        "decorations": false
+        "resizable": true
       }
     ],
     "systemTray": {

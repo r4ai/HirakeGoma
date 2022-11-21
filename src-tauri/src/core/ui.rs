@@ -66,17 +66,27 @@ fn init_window(app: &mut App) {
     #[cfg(target_os = "macos")]
     {
         app.set_activation_policy(tauri::ActivationPolicy::Accessory);
-        apply_vibrancy(&main_window, NSVisualEffectMaterial::UltraDark)
+        setting_window
+            .set_decorations(true)
+            .expect("Failed to set decoration true");
+        apply_vibrancy(&main_window, NSVisualEffectMaterial::HudWindow, None, None)
             .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
     }
 
     #[cfg(target_os = "windows")]
-    apply_blur(&main_window, Some((18, 18, 18, 125)))
-        .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+    {
+        setting_window
+            .set_decorations(false)
+            .expect("Failed to set decoration false");
+        apply_blur(&main_window, Some((18, 18, 18, 125)))
+            .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+    }
 
     set_shadow(&main_window, true).expect("Unsupported platform!");
     set_shadow(&setting_window, true).expect("Unsupported platform!");
-    main_window.set_skip_taskbar(true);
+    main_window
+        .set_skip_taskbar(true)
+        .expect("Failed to set to skip taskbar");
 
     main_window.hide().expect("failed to hide main_window");
     setting_window
@@ -107,6 +117,18 @@ fn core_window_toggle_visibility(win: Window) {
     }
 }
 
+#[tauri::command]
+fn core_os_get_name() -> String {
+    #[cfg(target_os = "windows")]
+    return "windows".to_string();
+
+    #[cfg(target_os = "macos")]
+    return "macos".to_string();
+
+    #[cfg(target_os = "linux")]
+    return "linux".to_string();
+}
+
 pub fn init_app() {
     let settings = CustomMenuItem::new("settings".to_string(), "Settings");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -126,6 +148,7 @@ pub fn init_app() {
             core_window_hide,
             core_window_show,
             core_window_toggle_visibility,
+            core_os_get_name,
             setting_theme_create,
             setting_theme_remove,
             setting_theme_get,
@@ -141,7 +164,6 @@ pub fn init_app() {
             plugin_appsearch_get
         ])
         .setup(|app| {
-            let main_window = app.get_window("main_window").unwrap();
             init_store(app);
             init_window(app);
             Ok(())
