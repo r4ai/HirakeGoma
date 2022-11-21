@@ -2,38 +2,18 @@ import { HStack, Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakr
 import { appWindow } from "@tauri-apps/api/window";
 import { FC, useEffect, useState } from "react";
 import { FiX, FiMaximize, FiMinimize, FiMinus } from "react-icons/fi";
+import { coreOsGetName } from "../../../commands/core";
+import { SystemIconButtons } from "../parts/title";
 
 import { SystemIconButton } from "../parts/title/SystemIconButton";
 
 export const TitleBar: FC = () => {
-  const [maximizeIcon, setMaximizeIcon] = useState(<FiMaximize />);
-  async function toggleMaximizeIcon(): Promise<void> {
-    await appWindow.isMaximized().then((isMaximized) => {
-      if (isMaximized) {
-        setMaximizeIcon(<FiMinimize />);
-      } else {
-        setMaximizeIcon(<FiMaximize />);
-      }
-    });
-  }
-  async function handleToggleMaximize(): Promise<void> {
-    await appWindow.toggleMaximize();
-    await toggleMaximizeIcon();
-  }
+  const [isWindows, setIsWindows] = useState(false);
 
   useEffect(() => {
-    const unlistenPromise = appWindow.onResized(async ({ payload: size }) => {
-      await toggleMaximizeIcon();
-      // console.log(size);
+    coreOsGetName().then((res) => {
+      setIsWindows(res.toLowerCase() === "windows");
     });
-    return () => {
-      async function unlisten(): Promise<void> {
-        await unlistenPromise.then((fn) => {
-          fn();
-        });
-      }
-      void unlisten();
-    };
   }, []);
 
   return (
@@ -47,23 +27,7 @@ export const TitleBar: FC = () => {
             <BreadcrumbLink href="#">Database</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
-        <HStack alignSelf="start" spacing={0}>
-          <SystemIconButton
-            aria-label="minimize"
-            icon={<FiMinus />}
-            onClick={async () => {
-              await appWindow.minimize();
-            }}
-          />
-          <SystemIconButton aria-label="maximize" icon={maximizeIcon} onClick={handleToggleMaximize} />
-          <SystemIconButton
-            aria-label="close"
-            icon={<FiX />}
-            onClick={async () => {
-              await appWindow.close();
-            }}
-          />
-        </HStack>
+        {isWindows ? <SystemIconButtons /> : <></>}
       </Flex>
     </>
   );

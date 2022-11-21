@@ -1,5 +1,5 @@
 import { VStack, Flex, Box, Image, Text, Center } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { FaRegKeyboard } from "react-icons/fa";
 import { FiHome, FiTool, FiDatabase } from "react-icons/fi";
 import { HiOutlinePuzzle } from "react-icons/hi";
@@ -7,8 +7,10 @@ import { MdOutlineColorLens } from "react-icons/md";
 
 // eslint-disable-next-line
 import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
+import { createContext } from "vm";
 
 import { navSize } from "../Layout";
+import { SideBarProvider } from "../parts/nav";
 import { SideBarItem } from "../parts/nav/SideBarItem";
 
 interface Props {
@@ -28,12 +30,14 @@ export const SideBar: FC<Props> = ({ navSize }) => {
               HirakeGoma
             </Text>
           </Box>
-          <SideBarItem icon={<FiHome />} title="General" link="/general" />
-          <SideBarItem icon={<MdOutlineColorLens />} title="Theme" link="/theme" />
-          <SideBarItem icon={<HiOutlinePuzzle />} title="Plugin" link="/plugin" />
-          <SideBarItem icon={<FiDatabase />} title="Database" link="/database" />
-          <SideBarItem icon={<FaRegKeyboard />} title="Hotkey" link="/hotkey" />
-          <SideBarItem icon={<FiTool />} title="Debug" link="/debug" />
+          <SideBarProvider>
+            <SideBarItem icon={<FiHome />} title="General" link="/general" index={0} />
+            <SideBarItem icon={<MdOutlineColorLens />} title="Theme" link="/theme" index={1} />
+            <SideBarItem icon={<HiOutlinePuzzle />} title="Plugin" link="/plugin" index={2} />
+            <SideBarItem icon={<FiDatabase />} title="Database" link="/database" index={3} />
+            <SideBarItem icon={<FaRegKeyboard />} title="Hotkey" link="/hotkey" index={4} />
+            <SideBarItem icon={<FiTool />} title="Debug" link="/debug" index={5} />
+          </SideBarProvider>
         </VStack>
       </Flex>
     </>
