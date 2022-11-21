@@ -2,11 +2,20 @@ import { HStack, Flex, Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakr
 import { appWindow } from "@tauri-apps/api/window";
 import { FC, useEffect, useState } from "react";
 import { FiX, FiMaximize, FiMinimize, FiMinus } from "react-icons/fi";
+import { coreOsGetName } from "../../../commands/core";
 import { SystemIconButtons } from "../parts/title";
 
 import { SystemIconButton } from "../parts/title/SystemIconButton";
 
 export const TitleBar: FC = () => {
+  const [isWindows, setIsWindows] = useState(false);
+
+  useEffect(() => {
+    coreOsGetName().then((res) => {
+      setIsWindows(res.toLowerCase() === "windows");
+    });
+  }, []);
+
   return (
     <>
       <Flex data-tauri-drag-region justifyContent="space-between" h="100%" userSelect="none">
@@ -18,7 +27,7 @@ export const TitleBar: FC = () => {
             <BreadcrumbLink href="#">Database</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
-        <SystemIconButtons />
+        {isWindows ? <SystemIconButtons /> : <></>}
       </Flex>
     </>
   );
