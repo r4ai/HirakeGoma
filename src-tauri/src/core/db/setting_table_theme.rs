@@ -4,7 +4,7 @@ use kv::{Bucket, Json};
 use std::collections::HashMap;
 use tauri::State;
 
-pub struct SettingThemeTable<'a> {
+pub struct SettingTableTheme<'a> {
     pub bucket: Bucket<'a, String, Json<ThemeItem>>,
 }
 
@@ -47,7 +47,7 @@ impl ThemeItem {
     }
 }
 
-impl SettingThemeTable<'_> {
+impl SettingTableTheme<'_> {
     fn init_default_theme(&self) -> CommandResult<()> {
         let mut default_theme_list = HashMap::new();
 

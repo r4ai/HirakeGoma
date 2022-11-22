@@ -4,8 +4,8 @@ use crate::plugins::application_search::table::PluginAppsearchTable;
 use crate::plugins::plugin_store;
 use crate::plugins::plugin_store::PluginStore;
 use tauri::{
-    App, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray, SystemTrayEvent,
-    SystemTrayMenu, SystemTrayMenuItem, Window,
+    App, AppHandle, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray,
+    SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, Window,
 };
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
@@ -16,19 +16,14 @@ use super::commands::main_command::{
     add_app_to_search_database, clear_search_database, dbg_search_database_items,
     get_all_search_database_items, search,
 };
-use super::commands::theme_command::{
-    __cmd__setting_theme_activate, __cmd__setting_theme_change, __cmd__setting_theme_create,
-    __cmd__setting_theme_get, __cmd__setting_theme_get_activated, __cmd__setting_theme_get_all,
-    __cmd__setting_theme_remove, __cmd__setting_theme_save, setting_theme_activate,
-    setting_theme_change, setting_theme_create, setting_theme_get, setting_theme_get_activated,
-    setting_theme_get_all, setting_theme_remove, setting_theme_save,
-};
+use super::commands::setting_command::*;
 use super::db::applications_table::SearchDatabaseApplicationTable;
 use super::db::commands_table::SearchDatabaseCommandsTable;
 use super::db::main_table::SearchDatabaseMainTable;
 use super::db::search_database_store::SearchDatabaseTable;
 use super::db::setting_store::SettingStore;
-use super::db::theme_table::SettingThemeTable;
+use super::db::setting_table_hotkey::{self, SettingTableHotkey};
+use super::db::setting_table_theme::SettingTableTheme;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 use crate::plugins::application_search::command::*;
 
@@ -52,8 +47,10 @@ fn init_store(app: &mut App) {
     app.manage(search_database_application_table);
     app.manage(search_database_command_table);
 
-    let setting_theme_table = SettingThemeTable::init(app.state::<SettingStore>());
-    app.manage(setting_theme_table);
+    let setting_table_theme = SettingTableTheme::init(app.state::<SettingStore>());
+    let setting_table_hotkey = SettingTableHotkey::init(app.state::<SettingStore>());
+    app.manage(setting_table_theme);
+    app.manage(setting_table_hotkey);
 
     let plugin_appsearch_table = PluginAppsearchTable::init(app.state::<PluginStore>());
     app.manage(plugin_appsearch_table);
@@ -94,7 +91,25 @@ fn init_window(app: &mut App) {
         .expect("failed to hide setting_window")
 }
 
-fn init_events(app: &mut App, theme_state: State<'_, SettingThemeTable>) {}
+fn init_events(app: &mut App, theme_table: State<'_, SettingTableTheme>) {}
+
+fn init_hotkey(app: &mut App) {
+    let app_handle = app.app_handle();
+    let hotkey_table = app_handle.state::<SettingTableHotkey>();
+    let mut gsm = app_handle.global_shortcut_manager();
+    let hotkeys = hotkey_table
+        .get_all()
+        .expect("Failed to load hotkeys setting");
+    for hotkey_item in hotkeys {
+        let app_handle_clone = app_handle.clone();
+        let _ = match hotkey_item.0.as_str() {
+            "open_main_window" => gsm.register(hotkey_item.1.as_str(), move || {
+                core_window_toggle_visibility(app_handle_clone.get_window("main_window").unwrap());
+            }),
+            _ => Ok(()),
+        };
+    }
+}
 
 #[tauri::command]
 fn core_window_hide(win: Window) {
@@ -109,7 +124,7 @@ fn core_window_show(win: Window) {
 }
 
 #[tauri::command]
-fn core_window_toggle_visibility(win: Window) {
+pub fn core_window_toggle_visibility(win: Window) {
     if win.is_visible().unwrap() {
         core_window_hide(win);
     } else {
@@ -157,16 +172,24 @@ pub fn init_app() {
             setting_theme_activate,
             setting_theme_save,
             setting_theme_get_activated,
+            setting_hotkey_change,
+            setting_hotkey_get,
+            setting_hotkey_get_all,
+            setting_hotkey_remove,
+            setting_hotkey_save,
+            setting_hotkey_update,
             plugin_appsearch_generate_index,
             plugin_appsearch_update_folder_path,
             plugin_appsearch_upload_to_main_table,
             plugin_appsearch_get_all,
             plugin_appsearch_get,
-            plugin_appsearch_open
+            plugin_appsearch_open,
+            setting_hotkey_update
         ])
         .setup(|app| {
             init_store(app);
             init_window(app);
+            init_hotkey(app);
             Ok(())
         })
         .system_tray(tray)
@@ -200,7 +223,8 @@ pub fn init_app() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::Destroyed => {
-                let _ = event.window().state::<SettingThemeTable>().save();
+                let _ = event.window().state::<SettingTableTheme>().save();
+                let _ = event.window().state::<SettingTableHotkey>().save();
                 let _ = event.window().state::<SearchDatabaseMainTable>().save();
                 let _ = event
                     .window()

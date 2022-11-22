@@ -4,6 +4,6 @@ export * from "./SettingItemAlphaPicker";
 export * from "./SettingItemBase";
 export * from "./SettingItemButton";
 export * from "./SettingItemColorPicker";
+export * from "./SettingItemH";
 export * from "./SettingItemIconButton";
 export * from "./SettingListItem";
-export * from "./ThemeSideBarItem";
