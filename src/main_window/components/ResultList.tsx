@@ -1,5 +1,6 @@
 import { forwardRef, propNames, useStatStyles } from "@chakra-ui/react";
 import { useTheme, css } from "@emotion/react";
+import { invoke } from "@tauri-apps/api";
 import { FC, useEffect, ComponentPropsWithoutRef, Ref, RefObject, useState, MutableRefObject } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -42,6 +43,12 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
     `
   };
 
+  function handleClick(command: string, args: CommandArgs): void {
+    // TODO: HANDLE ERROR
+    invoke(command, args);
+    console.log(`CLICKED: ${command}`);
+  }
+
   return (
     <>
       <div
@@ -54,7 +61,9 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
           <div
             key={item.name}
             css={resultListCss.item(i)}
-            onClick={() => {}}
+            onClick={() => {
+              handleClick(item.command, item.command_args);
+            }}
             ref={resultListRefs.current[i]}
             tabIndex={i}
           >

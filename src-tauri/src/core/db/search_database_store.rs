@@ -20,6 +20,7 @@ pub struct SearchDatabaseItem {
     pub icon_path: String,
     pub path: String,
     pub command: String,
+    pub command_args: HashMap<String, String>,
     pub alias: Vec<String>,
 }
 
@@ -32,6 +33,7 @@ impl SearchDatabaseItem {
         icon_path: String,
         path: String,
         command: String,
+        command_args: HashMap<String, String>,
         alias: Vec<String>,
     ) -> Self {
         Self {
@@ -42,6 +44,7 @@ impl SearchDatabaseItem {
             icon_path,
             path,
             command,
+            command_args,
             alias,
         }
     }
@@ -52,9 +55,12 @@ impl SearchDatabaseItem {
             description: file_path.clone(),
             score: 0,
             icon_path,
-            path: file_path,
+            path: file_path.clone(),
             item_type: String::from("Application"),
             command: String::from("plugin_appsearch_open"),
+            command_args: vec![(String::from("path"), file_path)]
+                .into_iter()
+                .collect::<HashMap<String, String>>(),
             alias: vec![],
         }
     }
