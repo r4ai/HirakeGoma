@@ -112,38 +112,3 @@ pub fn plugin_appsearch_open(path: String, app: AppHandle) -> CommandResult<()> 
         Err(e) => Err(CommandError::TauriError(e)),
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use kv::Json;
-//     use serde::de::value;
-
-//     #[test]
-//     fn greet_test() {
-//         assert_eq!(greet("綾波"), "Hello, 綾波! You've been greeted from Rust!");
-//     }
-
-//     #[test]
-//     fn generate_index_dbg() {
-//         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-//             .join("tests")
-//             .join("resources")
-//             .join("fake_data");
-//         let _ = generate_index(&path);
-//         let db = SearchDatabaseStore::init(false);
-//         for item in db.bucket.iter() {
-//             let item_i = item.unwrap();
-//             let key_i: String = item_i.key().unwrap();
-//             let value_i: Result<Json<SearchDatabaseItem>, kv::Error> = item_i.value();
-//             dbg!(key_i);
-//             dbg!(value_i.unwrap().0);
-//         }
-//         assert_eq!(0, 0);
-//     }
-
-//     #[test]
-//     fn dbg_read_db_dbg() {
-//         let _ = dbg_read_db();
-//     }
-// }

@@ -17,6 +17,7 @@ import { invoke } from "@tauri-apps/api";
 const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
+  const [inputValue, setInputValue] = useState("");
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [prevSelectedItemIndex, setPrevSelectedItemIndex] = useState(0);
   const [upCount, setUpCount] = useState(0);
@@ -141,26 +142,29 @@ const App: FC = () => {
   // TODO: pageDown hotkey
   // TODO: pageUp hotkey
 
-  useHotkeys(
-    "Enter",
-    () => {
-      coreWindowHide();
-      console.log(searchResults);
-      console.log("index: " + selectedItemIndex);
-      const command = searchResults[selectedItemIndex].command;
-      const args = searchResults[selectedItemIndex].command_args;
-      console.log(args);
-      invoke(command, args);
-    },
-    { enableOnFormTags: true, preventDefault: true },
-    [selectedItemIndex, searchResults]
-  );
+  function onEnter() {
+    coreWindowHide();
+    console.log(searchResults);
+    console.log("index: " + selectedItemIndex);
+    const command = searchResults[selectedItemIndex].command;
+    const args = searchResults[selectedItemIndex].command_args;
+    console.log(args);
+    invoke(command, args);
+  }
+
+  useHotkeys("Enter", onEnter, { enableOnFormTags: true, preventDefault: true, keyup: true }, [
+    selectedItemIndex,
+    searchResults,
+    inputValue
+  ]);
 
   return (
     <div css={globalCss} ref={hideRef as MutableRefObject<HTMLDivElement>} tabIndex={-1}>
       <InputBox
         keyword=""
+        value={inputValue}
         onChange={(e) => {
+          setInputValue(e.target.value);
           void handleInputBoxChange(e.target.value);
         }}
         setHideEnabled={setHideEnabled}
