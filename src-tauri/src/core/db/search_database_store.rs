@@ -54,7 +54,7 @@ impl SearchDatabaseItem {
             icon_path,
             path: file_path,
             item_type: String::from("Application"),
-            command: String::from(""),
+            command: String::from("plugin_appsearch_open"),
             alias: vec![],
         }
     }

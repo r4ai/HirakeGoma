@@ -3,11 +3,12 @@ use crate::core::db::applications_table::SearchDatabaseApplicationTable;
 use crate::core::db::main_table::SearchDatabaseMainTable;
 use crate::core::db::search_database_store::{SearchDatabaseItem, SearchDatabaseTable};
 use crate::core::utils::result::{CommandError, CommandResult};
-use crate::plugins::application_search::parse_lnk::{parse_lnk, parse_url};
+use crate::plugins::application_search::parser::{parse_lnk, parse_url};
 use kv::Json;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use tauri::State;
+use tauri::api::shell::open;
+use tauri::{App, AppHandle, Manager, State};
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -29,16 +30,15 @@ pub fn plugin_appsearch_generate_index(
             let entry = entry?;
             let entry_path = entry.path();
             dbg!(&entry_path);
-            dbg!(&entry_path.extension());
             let entry_extension = match entry_path.extension() {
                 Some(ext) => ext.to_str().unwrap().to_string(),
                 None => continue,
             };
             let entry_item = if &entry_extension == "lnk" {
-                dbg!("1");
+                println!("--- PARSE .LNK FILE ---");
                 parse_lnk(&entry_path.to_path_buf()).unwrap()
             } else if &entry_extension == "url" {
-                dbg!("2");
+                println!("--- PARSE .URL FILE ---");
                 parse_url(&entry_path.to_path_buf()).unwrap()
             } else {
                 continue;
@@ -102,6 +102,15 @@ pub fn plugin_appsearch_upload_to_main_table(
     }
     dbg!("Successfully Uploaded to main table");
     Ok(())
+}
+
+#[tauri::command]
+pub fn plugin_appsearch_open(path: String, app: AppHandle) -> CommandResult<()> {
+    let res = open(&app.shell_scope(), path.as_str(), None);
+    match res {
+        Ok(_) => Ok(()),
+        Err(e) => Err(CommandError::TauriError(e)),
+    }
 }
 
 // #[cfg(test)]
