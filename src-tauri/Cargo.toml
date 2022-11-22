@@ -31,6 +31,12 @@ walkdir = "2.3.2"
 window-shadows = "0.2.0"
 window-vibrancy = {version = "0.3.2"}
 
+[dependencies.windows]
+version = "0.43.0"
+features = [
+    "Foundation",
+]
+
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL

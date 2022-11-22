@@ -3,11 +3,12 @@ use crate::core::db::applications_table::SearchDatabaseApplicationTable;
 use crate::core::db::main_table::SearchDatabaseMainTable;
 use crate::core::db::search_database_store::{SearchDatabaseItem, SearchDatabaseTable};
 use crate::core::utils::result::{CommandError, CommandResult};
-use crate::plugins::application_search::parse_lnk::{parse_lnk, parse_url};
+use crate::plugins::application_search::parser::{parse_lnk, parse_url};
 use kv::Json;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use tauri::State;
+use tauri::api::shell::open;
+use tauri::{App, AppHandle, Manager, State};
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -29,16 +30,15 @@ pub fn plugin_appsearch_generate_index(
             let entry = entry?;
             let entry_path = entry.path();
             dbg!(&entry_path);
-            dbg!(&entry_path.extension());
             let entry_extension = match entry_path.extension() {
                 Some(ext) => ext.to_str().unwrap().to_string(),
                 None => continue,
             };
             let entry_item = if &entry_extension == "lnk" {
-                dbg!("1");
+                println!("--- PARSE .LNK FILE ---");
                 parse_lnk(&entry_path.to_path_buf()).unwrap()
             } else if &entry_extension == "url" {
-                dbg!("2");
+                println!("--- PARSE .URL FILE ---");
                 parse_url(&entry_path.to_path_buf()).unwrap()
             } else {
                 continue;
@@ -104,37 +104,11 @@ pub fn plugin_appsearch_upload_to_main_table(
     Ok(())
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use kv::Json;
-//     use serde::de::value;
-
-//     #[test]
-//     fn greet_test() {
-//         assert_eq!(greet("綾波"), "Hello, 綾波! You've been greeted from Rust!");
-//     }
-
-//     #[test]
-//     fn generate_index_dbg() {
-//         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-//             .join("tests")
-//             .join("resources")
-//             .join("fake_data");
-//         let _ = generate_index(&path);
-//         let db = SearchDatabaseStore::init(false);
-//         for item in db.bucket.iter() {
-//             let item_i = item.unwrap();
-//             let key_i: String = item_i.key().unwrap();
-//             let value_i: Result<Json<SearchDatabaseItem>, kv::Error> = item_i.value();
-//             dbg!(key_i);
-//             dbg!(value_i.unwrap().0);
-//         }
-//         assert_eq!(0, 0);
-//     }
-
-//     #[test]
-//     fn dbg_read_db_dbg() {
-//         let _ = dbg_read_db();
-//     }
-// }
+#[tauri::command]
+pub fn plugin_appsearch_open(path: String, app: AppHandle) -> CommandResult<()> {
+    let res = open(&app.shell_scope(), path.as_str(), None);
+    match res {
+        Ok(_) => Ok(()),
+        Err(e) => Err(CommandError::TauriError(e)),
+    }
+}

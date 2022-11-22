@@ -1,3 +1,3 @@
 pub mod command;
-pub mod parse_lnk;
+pub mod parser;
 pub mod table;

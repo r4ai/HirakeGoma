@@ -1,3 +1,5 @@
+use std::error;
+
 use serde::{Serialize, Serializer};
 use walkdir;
 
@@ -8,6 +10,15 @@ pub enum CommandError {
 
     #[error(transparent)]
     WalkdirError(#[from] walkdir::Error),
+
+    #[error(transparent)]
+    TauriError(#[from] tauri::api::Error),
+
+    #[error(transparent)]
+    WindowsError(#[from] windows::core::Error),
+
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
 }
 
 impl Serialize for CommandError {

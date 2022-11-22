@@ -161,7 +161,8 @@ pub fn init_app() {
             plugin_appsearch_update_folder_path,
             plugin_appsearch_upload_to_main_table,
             plugin_appsearch_get_all,
-            plugin_appsearch_get
+            plugin_appsearch_get,
+            plugin_appsearch_open
         ])
         .setup(|app| {
             init_store(app);
