@@ -12,11 +12,11 @@ import { ResultList } from "./components/ResultList";
 import { useIterator } from "./hooks/useIterator";
 import { Button } from "@chakra-ui/react";
 import { usePrevious } from "./hooks/usePrevious";
+import { invoke } from "@tauri-apps/api";
 
 const App: FC = () => {
   const theme = useTheme();
   const [searchResults, setSearchResults] = useState<SearchResults>([]);
-  let selectedIndex = 0;
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
   const [prevSelectedItemIndex, setPrevSelectedItemIndex] = useState(0);
   const [upCount, setUpCount] = useState(0);
@@ -140,6 +140,21 @@ const App: FC = () => {
   );
   // TODO: pageDown hotkey
   // TODO: pageUp hotkey
+
+  useHotkeys(
+    "Enter",
+    () => {
+      coreWindowHide();
+      console.log(searchResults);
+      console.log("index: " + selectedItemIndex);
+      const command = searchResults[selectedItemIndex].command;
+      const args = searchResults[selectedItemIndex].command_args;
+      console.log(args);
+      invoke(command, args);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [selectedItemIndex, searchResults]
+  );
 
   return (
     <div css={globalCss} ref={hideRef as MutableRefObject<HTMLDivElement>} tabIndex={-1}>
