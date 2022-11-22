@@ -7,8 +7,8 @@ export const Plugin: FC = () => {
   return (
     <>
       <SettingHeading title="Application Search" />
-      <Generate />
       <FolderPaths />
+      <Generate />
       <UploadToMainTable />
       <Debug />
     </>
