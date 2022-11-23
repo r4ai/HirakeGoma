@@ -31,7 +31,8 @@ impl SettingTableHotkey<'_> {
     pub fn init(store: State<'_, SettingStore>) -> Self {
         let bucket: Bucket<String, String> = store.store.bucket(Some("hotkey")).unwrap();
         let res = Self { bucket };
-        res.init_default_hotkey();
+        res.init_default_hotkey()
+            .expect("Failed to init default hotkey values.");
         res
     }
 
@@ -53,10 +54,7 @@ impl SettingTableHotkey<'_> {
     }
 
     pub fn get(&self, key: &String) -> CommandResult<Option<String>> {
-        let result: Option<String> = match self.bucket.get(key)? {
-            None => None,
-            Some(value) => Some(value),
-        };
+        let result = self.bucket.get(key)?;
         Ok(result)
     }
 
@@ -77,15 +75,13 @@ impl SettingTableHotkey<'_> {
     }
 
     pub fn change(&self, key: String, value: String) -> CommandResult<()> {
-        let pre_value: String = match self.get(&key)? {
-            None => {
-                return Err(CommandError::KvError(kv::Error::Message(String::from(
-                    "Failed to find the item associated to the key.",
-                ))))
-            }
-            Some(res) => res,
+        let is_exist = self.bucket.contains(&key)?;
+        if is_exist {
+            self.bucket.remove(&key)?;
+            self.bucket.set(&key, &value)?;
+        } else {
+            self.bucket.set(&key, &value)?;
         };
-        self.bucket.set(&key, &value);
         Ok(())
     }
 }

@@ -6,4 +6,5 @@ export * from "./SettingItemButton";
 export * from "./SettingItemColorPicker";
 export * from "./SettingItemH";
 export * from "./SettingItemIconButton";
+export * from "./SettingItemShortcut";
 export * from "./SettingListItem";

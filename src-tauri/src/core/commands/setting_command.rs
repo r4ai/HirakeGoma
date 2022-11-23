@@ -138,6 +138,7 @@ pub fn setting_theme_save(db: State<'_, SettingTableTheme>) -> CommandResult<()>
 
 // * HOTKEY COMMANDS
 
+/// Register all shortcuts in SettingTableHotkey.
 #[tauri::command]
 pub fn setting_hotkey_update(
     app_handle: AppHandle,
