@@ -17,7 +17,11 @@ export const Generate: FC = () => {
       .catch((e) => {
         errorToast({
           title: "ERROR",
-          description: "Failed to generate indexes in application table."
+          description: "Failed to generate indexes in application table.",
+          position: "top",
+          status: "error",
+          isClosable: true,
+          duration: 5000
         });
       });
   }
