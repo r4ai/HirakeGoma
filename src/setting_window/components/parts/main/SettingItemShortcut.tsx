@@ -8,7 +8,8 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  useDisclosure
+  useDisclosure,
+  ModalFooter
 } from "@chakra-ui/react";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { FC, useRef, useState, KeyboardEvent, useEffect } from "react";
@@ -36,7 +37,13 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
 
   function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
     console.log(e.key);
-    setKeyCodes((prev) => [...prev, e.key]);
+    switch (e.key) {
+      case "Escape":
+        return;
+      default:
+        setKeyCodes((prev) => [...prev, e.key]);
+        return;
+    }
   }
 
   function generateKeyCode(): string {
@@ -59,6 +66,7 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
   async function applyHotkey(shortcut: string, keyCode: string) {
     await settingHotkeyChange(shortcut, keyCode);
     await settingHotkeyUpdate(); // register all shortcuts in setting_db
+    await setCurrentKeyCode(keyCode);
   }
 
   useEffect(() => {
@@ -112,21 +120,28 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
         </Button>
       </SettingCardItem>
 
-      <Modal
-        finalFocusRef={finalRef}
-        isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          applyHotkey(shortcut, generateKeyCode());
-        }}
-        isCentered
-      >
+      <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign="center">Please press keys...</ModalHeader>
           <ModalBody>
             <Input variant="unstyled" onKeyDown={(e) => handleKeyPress(e)} />
           </ModalBody>
+          <ModalFooter>
+            <Button mr={3} onClick={onClose}>
+              CANCEL
+            </Button>
+            <Button
+              colorScheme="red"
+              variant="solid"
+              onClick={() => {
+                applyHotkey(shortcut, generateKeyCode());
+                onClose();
+              }}
+            >
+              APPLY
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
