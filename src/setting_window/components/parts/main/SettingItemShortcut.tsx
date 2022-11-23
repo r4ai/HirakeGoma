@@ -11,6 +11,7 @@ import {
   useDisclosure,
   ModalFooter
 } from "@chakra-ui/react";
+import { css } from "@emotion/react";
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { FC, useRef, useState, KeyboardEvent, useEffect } from "react";
 import { coreOsGetName } from "../../../../commands/core";
@@ -125,7 +126,15 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
         <ModalContent>
           <ModalHeader textAlign="center">Please press keys...</ModalHeader>
           <ModalBody>
-            <Input variant="unstyled" onKeyDown={(e) => handleKeyPress(e)} />
+            <Input
+              variant="unstyled"
+              onKeyDown={(e) => handleKeyPress(e)}
+              w={0}
+              bgColor="red"
+              css={css`
+                caret-color: rgba(0, 0, 0, 0);
+              `}
+            />
           </ModalBody>
           <ModalFooter>
             <Button mr={3} onClick={onClose}>
