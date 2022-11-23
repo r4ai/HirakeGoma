@@ -26,6 +26,7 @@ export const SystemIconButtons: FC = () => {
     // * HANDLE APP_WINDOW SIZE CHANGE EVENT
     const unlistenPromise = appWindow.onResized(async ({ payload: size }) => {
       await toggleMaximizeIcon();
+      console.log("CHANGED!!");
     });
     return () => {
       async function unlisten(): Promise<void> {

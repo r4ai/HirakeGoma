@@ -1,6 +1,6 @@
+use crate::core::commands::core_command::core_window_toggle_visibility;
 use crate::core::db::setting_table_hotkey::SettingTableHotkey;
 use crate::core::db::setting_table_theme::{SettingTableTheme, ThemeColors, ThemeFonts, ThemeItem};
-use crate::core::ui::core_window_toggle_visibility;
 use crate::core::utils::result::{CommandError, CommandResult};
 use kv::Json;
 use std::collections::HashMap;

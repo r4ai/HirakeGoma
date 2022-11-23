@@ -1,9 +1,18 @@
-use crate::core::db::{
-    main_table::SearchDatabaseMainTable,
-    search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
+use crate::{
+    core::{
+        db::{
+            applications_table::SearchDatabaseApplicationTable,
+            main_table::SearchDatabaseMainTable,
+            search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
+            setting_table_hotkey::SettingTableHotkey,
+            setting_table_theme::SettingTableTheme,
+        },
+        utils::result::CommandResult,
+    },
+    plugins::application_search::table::PluginAppsearchTable,
 };
 use std::collections::HashMap;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 #[tauri::command]
 pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> Result<(), String> {

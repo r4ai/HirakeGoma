@@ -10,6 +10,7 @@ use tauri::{
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
+use super::commands::core_command::*;
 use super::commands::main_command::{
     __cmd__add_app_to_search_database, __cmd__clear_search_database,
     __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
@@ -111,39 +112,6 @@ fn init_hotkey(app: &mut App) {
     }
 }
 
-#[tauri::command]
-fn core_window_hide(win: Window) {
-    win.hide().expect("Failed to hide window.");
-}
-
-#[tauri::command]
-fn core_window_show(win: Window) {
-    win.center().expect("Failed to center the window.");
-    win.show().expect("Failed to show window.");
-    win.set_focus().expect("Failed to set-focus to window.");
-}
-
-#[tauri::command]
-pub fn core_window_toggle_visibility(win: Window) {
-    if win.is_visible().unwrap() {
-        core_window_hide(win);
-    } else {
-        core_window_show(win);
-    }
-}
-
-#[tauri::command]
-fn core_os_get_name() -> String {
-    #[cfg(target_os = "windows")]
-    return "windows".to_string();
-
-    #[cfg(target_os = "macos")]
-    return "macos".to_string();
-
-    #[cfg(target_os = "linux")]
-    return "linux".to_string();
-}
-
 pub fn init_app() {
     let settings = CustomMenuItem::new("settings".to_string(), "Settings");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -163,6 +131,7 @@ pub fn init_app() {
             core_window_hide,
             core_window_show,
             core_window_toggle_visibility,
+            core_window_create,
             core_os_get_name,
             setting_theme_create,
             setting_theme_remove,
@@ -212,10 +181,14 @@ pub fn init_app() {
                     std::process::exit(0);
                 }
                 "settings" => {
-                    let setting_win = app
-                        .get_window("setting_window")
-                        .expect("Failed to get setting_window.");
-                    setting_win.show().expect("Failed to show setting_window.");
+                    let app_handle = app.app_handle();
+                    let setting_win = WindowList::Setting;
+                    let got_window = app_handle.get_window(&setting_win.label());
+                    println!("{:?}", &setting_win.label());
+                    let _ = match got_window {
+                        Some(_) => Ok(core_window_show_that(&app_handle, setting_win)),
+                        None => core_window_create_that(app_handle, setting_win),
+                    };
                 }
                 _ => {}
             },
