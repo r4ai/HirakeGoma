@@ -12,10 +12,10 @@ pub enum CommandError {
     WalkdirError(#[from] walkdir::Error),
 
     #[error(transparent)]
-    TauriError(#[from] tauri::api::Error),
+    TauriApiError(#[from] tauri::api::Error),
 
     #[error(transparent)]
-    WindowsError(#[from] windows::core::Error),
+    TauriRuntimeApiError(#[from] tauri_runtime::Error),
 
     #[error(transparent)]
     IoError(#[from] std::io::Error),

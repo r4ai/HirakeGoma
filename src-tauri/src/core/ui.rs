@@ -186,7 +186,10 @@ pub fn init_app() {
                     let got_window = app_handle.get_window(&setting_win.label());
                     println!("{:?}", &setting_win.label());
                     let _ = match got_window {
-                        Some(_) => Ok(core_window_show_that(&app_handle, setting_win)),
+                        Some(_) => {
+                            core_window_show_that(&app_handle, setting_win);
+                            Ok(())
+                        }
                         None => core_window_create_that(app_handle, setting_win),
                     };
                 }

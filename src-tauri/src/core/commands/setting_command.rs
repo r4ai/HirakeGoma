@@ -149,11 +149,15 @@ pub fn setting_hotkey_update(
     gsm.unregister_all().expect("Failed to unregister all.");
     for hotkey_item in hotkeys {
         let app_handle_clone = app_handle.clone();
-        let _ = match hotkey_item.0.as_str() {
+        let res = match hotkey_item.0.as_str() {
             "open_main_window" => gsm.register(hotkey_item.1.as_str(), move || {
                 core_window_toggle_visibility(app_handle_clone.get_window("main_window").unwrap());
             }),
             _ => Ok(()),
+        };
+        let _ = match res {
+            Ok(_) => Ok(()),
+            Err(e) => return Err(CommandError::TauriApiError(e)),
         };
     }
     Ok(())

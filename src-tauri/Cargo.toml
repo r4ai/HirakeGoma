@@ -5,8 +5,8 @@ edition = "2021"
 license = ""
 name = "HirakeGoma"
 repository = ""
-rust-version = "1.57"
-version = "0.0.0"
+rust-version = "1.65"
+version = "0.0.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -30,12 +30,6 @@ uuid = {version = "1.2.2", features = ["v4", "fast-rng", "macro-diagnostics"] }#
 walkdir = "2.3.2"
 window-shadows = "0.2.0"
 window-vibrancy = {version = "0.3.2"}
-
-[dependencies.windows]
-version = "0.43.0"
-features = [
-    "Foundation",
-]
 
 [features]
 # by default Tauri runs in production mode

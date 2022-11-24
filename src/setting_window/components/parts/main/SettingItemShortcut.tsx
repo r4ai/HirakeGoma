@@ -53,7 +53,9 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
         case "Control":
           current = "CommandOrControl";
           break;
-
+        case "Meta":
+          current = "CommandOrControl";
+          break;
         default:
           break;
       }
