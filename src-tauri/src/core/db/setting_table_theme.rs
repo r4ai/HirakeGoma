@@ -113,7 +113,7 @@ impl SettingTableTheme<'_> {
     pub fn exists(&self, key: &String) -> CommandResult<bool> {
         match self.bucket.contains(key) {
             Ok(res) => Ok(res),
-            Err(e) => Err(CommandError::KvError(e)),
+            Err(e) => Err(CommandError::Kv(e)),
         }
     }
 
@@ -155,7 +155,7 @@ impl SettingTableTheme<'_> {
         // TODO: 過去のvalueと新しく置き換えるvalueを比較し、差分のみをDBに反映させる
         let pre_value: ThemeItem = match self.get(&key)? {
             None => {
-                return Err(CommandError::KvError(kv::Error::Message(String::from(
+                return Err(CommandError::Kv(kv::Error::Message(String::from(
                     "Failed to find the item associated to the key.",
                 ))))
             }

@@ -18,6 +18,7 @@ dependencies = [
  "sled",
  "tauri",
  "tauri-build",
+ "tauri-runtime",
  "thiserror",
  "uuid 1.2.2",
  "walkdir",

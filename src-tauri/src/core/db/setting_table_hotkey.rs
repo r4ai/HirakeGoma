@@ -39,7 +39,7 @@ impl SettingTableHotkey<'_> {
     pub fn exists(&self, key: &String) -> CommandResult<bool> {
         match self.bucket.contains(key) {
             Ok(res) => Ok(res),
-            Err(e) => Err(CommandError::KvError(e)),
+            Err(e) => Err(CommandError::Kv(e)),
         }
     }
 

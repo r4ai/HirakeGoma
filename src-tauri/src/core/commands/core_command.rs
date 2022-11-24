@@ -80,7 +80,7 @@ pub async fn core_window_create(app_handle: AppHandle, win_label: String) -> Com
         "main_window" => WindowList::Main,
         "setting_window" => WindowList::Setting,
         _ => {
-            return Err(crate::core::utils::result::CommandError::TauriApiError(
+            return Err(crate::core::utils::result::CommandError::TauriApi(
                 tauri::api::Error::Command("unknown window label".to_string()),
             ))
         }

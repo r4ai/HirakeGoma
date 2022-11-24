@@ -18,7 +18,7 @@ pub fn plugin_appsearch_generate_index(
 ) -> CommandResult<()> {
     let paths = match plugin_table.bucket.get(&String::from("folder_paths"))? {
         None => {
-            return Err(CommandError::KvError(kv::Error::Message(String::from(
+            return Err(CommandError::Kv(kv::Error::Message(String::from(
                 "Failed to find the item associated to the key.",
             ))))
         }
@@ -109,6 +109,6 @@ pub fn plugin_appsearch_open(path: String, app: AppHandle) -> CommandResult<()> 
     let res = open(&app.shell_scope(), path.as_str(), None);
     match res {
         Ok(_) => Ok(()),
-        Err(e) => Err(CommandError::TauriApiError(e)),
+        Err(e) => Err(CommandError::TauriApi(e)),
     }
 }

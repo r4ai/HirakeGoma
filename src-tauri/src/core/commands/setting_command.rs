@@ -86,7 +86,7 @@ pub fn setting_theme_activate(
     // * ACTIVATE NEW THEME
     let value: ThemeItem = match db.get(&key)? {
         None => {
-            return Err(CommandError::KvError(kv::Error::Message(String::from(
+            return Err(CommandError::Kv(kv::Error::Message(String::from(
                 "Failed to find the item associated to the key.",
             ))))
         }
@@ -155,9 +155,8 @@ pub fn setting_hotkey_update(
             }),
             _ => Ok(()),
         };
-        let _ = match res {
-            Ok(_) => Ok(()),
-            Err(e) => return Err(CommandError::TauriApiError(e)),
+        if let Err(e) = res {
+            return Err(CommandError::TauriRuntime(e));
         };
     }
     Ok(())

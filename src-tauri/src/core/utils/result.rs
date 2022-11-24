@@ -1,24 +1,22 @@
-use std::error;
-
 use serde::{Serialize, Serializer};
 use walkdir;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
     #[error(transparent)]
-    KvError(#[from] kv::Error),
+    Kv(#[from] kv::Error),
 
     #[error(transparent)]
-    WalkdirError(#[from] walkdir::Error),
+    Walkdir(#[from] walkdir::Error),
 
     #[error(transparent)]
-    TauriApiError(#[from] tauri::api::Error),
+    TauriApi(#[from] tauri::api::Error),
 
     #[error(transparent)]
-    TauriRuntimeApiError(#[from] tauri_runtime::Error),
+    TauriRuntime(#[from] tauri_runtime::Error),
 
     #[error(transparent)]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
 }
 
 impl Serialize for CommandError {
