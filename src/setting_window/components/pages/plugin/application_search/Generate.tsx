@@ -10,7 +10,7 @@ export const Generate: FC = () => {
 
   async function handleClick(): Promise<void> {
     setIsLoading(true);
-    generateIndex()
+    generateIndex(false)
       .then((s) => {
         setIsLoading(false);
       })
@@ -23,6 +23,7 @@ export const Generate: FC = () => {
           isClosable: true,
           duration: 5000
         });
+        setIsLoading(false);
       });
   }
 

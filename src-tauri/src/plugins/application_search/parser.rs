@@ -23,11 +23,13 @@ use std::{
 /// let result = parse_lnk(&lnk_file_path).unwrap();
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
-pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> {
+pub fn parse_lnk(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem, lnk::Error> {
     let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     let lnk_file_path = file_path.to_str().unwrap().to_string();
     let lnk_file = ShellLink::open(&file_path)?;
-    dbg!(lnk_file.icon_location());
+    if debug {
+        dbg!(lnk_file.icon_location());
+    }
     let lnk_file_icon_path = lnk_file
         .icon_location()
         .clone()
@@ -40,14 +42,16 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
 }
 
 /// .urlファイルの情報を読み取る。
-pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Error>> {
+pub fn parse_url(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem, Box<dyn Error>> {
     let mut config = Ini::new();
     let map = config.load(file_path)?;
     let file_icon_path = config
         .get("InternetShortcut", "IconFile")
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
     let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
-    dbg!(&file_icon_path, &file_name, &file_path);
+    if debug {
+        dbg!(&file_icon_path, &file_name, &file_path);
+    }
     Ok(SearchDatabaseItem::new_app(
         file_name,
         file_icon_path,
@@ -72,7 +76,7 @@ mod tests {
         let root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let data_path = root_path.join("tests/resources/fake_data");
         let zoom_data_path = data_path.join(lnk_file_name);
-        let parse_res = parse_lnk(&zoom_data_path).expect("Failed to parse .lnk file.");
+        let parse_res = parse_lnk(&zoom_data_path, true).expect("Failed to parse .lnk file.");
         dbg!(&parse_res);
         assert_eq!(parse_res.name, lnk_file_name);
     }
@@ -84,7 +88,7 @@ mod tests {
             .join("resources")
             .join("fake_data")
             .join("Arma 3.url");
-        let res = parse_url(&path).unwrap();
+        let res = parse_url(&path, true).unwrap();
         dbg!(&res);
         assert_eq!(path.to_str().unwrap().to_string(), res.path); // file path check
                                                                   // TODO: file_name check

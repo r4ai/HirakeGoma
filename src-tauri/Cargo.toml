@@ -11,7 +11,7 @@ version = "0.0.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.2.0", features = [] }
+tauri-build = {version = "1.2.1", features = [] }
 
 [dependencies]
 anyhow = "1.0.66"
@@ -24,7 +24,7 @@ serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_urlencoded = "0.7.1"
 sled = "0.34.7"
-tauri = {version = "1.2.0", features = ["api-all", "macos-private-api", "system-tray", "wry"] }
+tauri = {version = "1.2.1", features = ["api-all", "macos-private-api", "system-tray", "wry"] }
 thiserror = "1.0.37"
 uuid = {version = "1.2.2", features = ["v4", "fast-rng", "macro-diagnostics"] }# not using
 walkdir = "2.3.2"

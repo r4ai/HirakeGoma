@@ -125,7 +125,7 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
   }, []);
 
   useEffect(() => {
-    // * FORMAT KEYCODE LIST INTO STRING & KBD COMPONENTS
+    // * FORMAT KEYCODE LIST INTO STRING
     if (keyCodes.length === 0) {
       setStringKeyCodes("");
     } else {
@@ -134,6 +134,7 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
   }, [keyCodes]);
 
   useEffect(() => {
+    // * FORMAT KEYCODE STRING INTO KBD COMPONENTS
     if (stringKeyCodes === "") {
       setComponentKeyCodes([]);
     } else {
@@ -203,7 +204,7 @@ export const SettingItemShortcut: FC<Props> = ({ title, shortcut }) => {
                   colorScheme="red"
                   variant="solid"
                   onClick={() => {
-                    // applyHotkey(shortcut, formatKeyCode());
+                    applyHotkey(shortcut, stringKeyCodes);
                     handleClose();
                   }}
                 >

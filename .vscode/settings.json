@@ -18,6 +18,7 @@
     "/src/setting_window/components/pages/debug/app",
     "/src/setting_window/components/pages/plugin/application_search",
     "/src/commands/core",
-    "/src/setting_window/components/pages/theme/theme"
+    "/src/setting_window/components/pages/theme/theme",
+    "/src/setting_window/components/pages/debug/plugin"
   ]
 }
