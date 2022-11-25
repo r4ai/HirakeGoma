@@ -13,10 +13,16 @@ pub struct SettingTableHotkey<'a> {
 
 impl SettingTableHotkey<'_> {
     fn init_default_hotkey(&self) -> CommandResult<()> {
-        let default_hotkeys = vec![(
-            "open_main_window".to_string(),
-            "CommandOrControl+Space".to_string(),
-        )]
+        let default_hotkeys = vec![
+            (
+                String::from("open_main_window"),
+                String::from("CommandOrControl+Space"),
+            ),
+            (
+                String::from("open_setting_window"),
+                String::from("undefined"),
+            ),
+        ]
         .into_iter()
         .collect::<HashMap<String, String>>();
 

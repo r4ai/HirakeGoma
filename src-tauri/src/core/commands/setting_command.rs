@@ -1,10 +1,11 @@
-use crate::core::commands::core_command::core_window_toggle_visibility;
 use crate::core::db::setting_table_hotkey::SettingTableHotkey;
 use crate::core::db::setting_table_theme::{SettingTableTheme, ThemeColors, ThemeFonts, ThemeItem};
 use crate::core::utils::result::{CommandError, CommandResult};
 use kv::Json;
 use std::collections::HashMap;
 use tauri::{AppHandle, GlobalShortcutManager, Manager, State};
+
+use super::core_command::{core_window_toggle_visibility_that, WindowList};
 
 // * THEME COMMANDS
 
@@ -149,9 +150,12 @@ pub fn setting_hotkey_update(
     gsm.unregister_all().expect("Failed to unregister all.");
     for hotkey_item in hotkeys {
         let app_handle_clone = app_handle.clone();
+        if hotkey_item.1.as_str() == "undefined" {
+            continue;
+        }
         let res = match hotkey_item.0.as_str() {
             "open_main_window" => gsm.register(hotkey_item.1.as_str(), move || {
-                core_window_toggle_visibility(app_handle_clone.get_window("main_window").unwrap());
+                core_window_toggle_visibility_that(&app_handle_clone, WindowList::Main);
             }),
             _ => Ok(()),
         };
