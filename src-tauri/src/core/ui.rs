@@ -128,7 +128,9 @@ pub fn init_app() {
             LoggerBuilder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .filter(|meta| {
-                    if meta.target() == "tauri_plugin_log" {
+                    if meta.target().contains("HirakeGoma")
+                        || meta.target().to_lowercase().contains("tauri")
+                    {
                         return true;
                     } else {
                         return (meta.level() == log::Level::Error)
