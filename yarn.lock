@@ -3626,7 +3626,7 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tauri-apps/api@^1.1.0":
+"@tauri-apps/api@^1.0.0", "@tauri-apps/api@^1.1.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.2.0.tgz#1f196b3e012971227f41b98214c846430a4eb477"
   integrity sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==
@@ -12965,6 +12965,13 @@ tar@^6.0.2:
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"
+
+"tauri-plugin-log-api@github:tauri-apps/tauri-plugin-log#dev":
+  version "0.1.0"
+  resolved "https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/b58475bbc410fa78eb69276c62d0b64c91c07914"
+  dependencies:
+    "@tauri-apps/api" "^1.0.0"
+    tslib "^2.3.1"
 
 telejson@^6.0.8:
   version "6.0.8"

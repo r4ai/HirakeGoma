@@ -27,6 +27,7 @@ use super::db::setting_table_hotkey::{self, SettingTableHotkey};
 use super::db::setting_table_theme::SettingTableTheme;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 use crate::plugins::application_search::command::*;
+use tauri_plugin_log::{LogTarget, LoggerBuilder};
 
 fn init_store(app: &mut App) {
     // * Init stores
@@ -122,6 +123,19 @@ pub fn init_app() {
     let tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
+        .plugin(
+            LoggerBuilder::default()
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .filter(|meta| {
+                    if meta.target() == "tauri_plugin_log" {
+                        return true;
+                    } else {
+                        return (meta.level() == log::Level::Error)
+                            || (meta.level() == log::Level::Warn);
+                    }
+                })
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             dbg_search_database_items,
             add_app_to_search_database,
