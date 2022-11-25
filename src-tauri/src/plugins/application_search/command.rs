@@ -7,6 +7,7 @@ use crate::core::db::search_database_store::{
 use crate::core::utils::result::{CommandError, CommandResult};
 use crate::plugins::application_search::parser::{parse_lnk, parse_url};
 use kv::Json;
+use log::{debug, info, trace, warn};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
@@ -17,7 +18,8 @@ use walkdir::WalkDir;
 
 #[tauri::command]
 pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandResult<()> {
-    thread::spawn(move || -> CommandResult<()> {
+    debug!("Start generating application indexes.");
+    let res = thread::spawn(move || -> CommandResult<()> {
         let app_handle = app;
         let db_table = app_handle.state::<SearchDatabaseApplicationTable>();
         let plugin_table = app_handle.state::<PluginAppsearchTable>();
@@ -31,32 +33,23 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
         };
         let PluginAppsearchItem::FolderPaths(paths_vec) = paths;
         for path in paths_vec.iter() {
+            trace!("Start parsing items in {}", path);
             for entry in WalkDir::new(PathBuf::from(path)) {
                 let entry = entry?;
                 let entry_path = entry.path();
-                if debug {
-                    dbg!(&entry_path);
-                }
                 let entry_extension = match entry_path.extension() {
                     Some(ext) => ext.to_str().unwrap().to_string(),
                     None => continue,
                 };
                 let entry_item = if &entry_extension == "lnk" {
-                    if debug {
-                        println!("--- PARSE .LNK FILE ---")
-                    };
+                    trace!("Start .lnk parsing of {}", &entry_path.display());
                     parse_lnk(&entry_path.to_path_buf(), debug).unwrap()
                 } else if &entry_extension == "url" {
-                    if debug {
-                        println!("--- PARSE .URL FILE ---");
-                    }
+                    trace!("Start .url parsing of {}", &entry_path.display());
                     parse_url(&entry_path.to_path_buf(), debug).unwrap()
                 } else {
                     continue;
                 };
-                if debug {
-                    dbg!(&entry_item);
-                }
                 let _ = db_table.insert(entry_item.name.clone(), entry_item);
             }
         }
@@ -66,7 +59,9 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
         Ok(())
     })
     .join()
-    .unwrap()
+    .unwrap();
+    debug!("Finish generating application indexes.");
+    return res;
 }
 
 #[tauri::command]

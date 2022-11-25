@@ -1,8 +1,11 @@
+use std::time;
+
 use crate::core::db::search_database_store;
 use crate::plugins::application_search;
 use crate::plugins::application_search::table::PluginAppsearchTable;
 use crate::plugins::plugin_store;
 use crate::plugins::plugin_store::PluginStore;
+use chrono::Utc;
 use tauri::{
     App, AppHandle, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray,
     SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, Window,
@@ -125,7 +128,16 @@ pub fn init_app() {
 
     tauri::Builder::default()
         .plugin(
-            LoggerBuilder::default()
+            LoggerBuilder::new()
+                .format(move |out, message, record| {
+                    out.finish(format_args!(
+                        "[{}][{}][{}] {}",
+                        record.level(),
+                        Utc::now().format("%Y-%m-%d %H:%M:%S"),
+                        record.target(),
+                        message
+                    ))
+                })
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .filter(|meta| {
                     if meta.target().contains("HirakeGoma")
