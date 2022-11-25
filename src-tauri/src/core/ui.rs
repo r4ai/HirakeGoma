@@ -7,6 +7,7 @@ use tauri::{
     App, AppHandle, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray,
     SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, Window,
 };
+use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
@@ -134,6 +135,7 @@ pub fn init_app() {
                             || (meta.level() == log::Level::Warn);
                     }
                 })
+                .with_colors(ColoredLevelConfig::default())
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
