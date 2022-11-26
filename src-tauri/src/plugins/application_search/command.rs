@@ -18,7 +18,7 @@ use walkdir::WalkDir;
 
 #[tauri::command]
 pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandResult<()> {
-    debug!("Start generating application indexes.");
+    info!("Start generating application indexes.");
     let res = thread::spawn(move || -> CommandResult<()> {
         let app_handle = app;
         let db_table = app_handle.state::<SearchDatabaseApplicationTable>();
@@ -33,7 +33,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
         };
         let PluginAppsearchItem::FolderPaths(paths_vec) = paths;
         for path in paths_vec.iter() {
-            trace!("Start parsing items in {}", path);
+            debug!("Start parsing items in {}", path);
             for entry in WalkDir::new(PathBuf::from(path)) {
                 let entry = entry?;
                 let entry_path = entry.path();
@@ -42,10 +42,10 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                     None => continue,
                 };
                 let entry_item = if &entry_extension == "lnk" {
-                    trace!("Start .lnk parsing of {}", &entry_path.display());
+                    debug!("Parse .lnk of {}", &entry_path.display());
                     parse_lnk(&entry_path.to_path_buf(), debug).unwrap()
                 } else if &entry_extension == "url" {
-                    trace!("Start .url parsing of {}", &entry_path.display());
+                    debug!("Parse .url of {}", &entry_path.display());
                     parse_url(&entry_path.to_path_buf(), debug).unwrap()
                 } else {
                     continue;
@@ -60,7 +60,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
     })
     .join()
     .unwrap();
-    debug!("Finish generating application indexes.");
+    info!("Finish generating application indexes.");
     return res;
 }
 
@@ -106,15 +106,15 @@ pub fn plugin_appsearch_upload_to_main_table(
     app_table: State<'_, SearchDatabaseApplicationTable>,
     main_table: State<'_, SearchDatabaseMainTable>,
 ) -> CommandResult<()> {
-    dbg!("Upload to main table");
+    info!("START: plugin_appsearch_upload_to_main_table command");
     for item_i in app_table.bucket.iter() {
         let item_i = item_i?;
         let key_i: String = item_i.key()?;
         let value_json_i: Json<SearchDatabaseItem> = item_i.value()?;
         let value_i = value_json_i.0;
-        main_table.insert(key_i, value_i)?;
+        main_table.change(key_i, value_i)?;
     }
-    dbg!("Successfully Uploaded to main table");
+    info!("END: plugin_appsearch_upload_to_main_table command");
     Ok(())
 }
 

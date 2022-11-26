@@ -23,7 +23,7 @@ pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> R
 #[tauri::command]
 pub fn get_all_search_database_items(
     table: State<'_, SearchDatabaseMainTable>,
-) -> HashMap<String, SearchDatabaseItem> {
+) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
     table.get_all_items()
 }
 

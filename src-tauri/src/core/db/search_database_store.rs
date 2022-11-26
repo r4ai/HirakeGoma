@@ -1,7 +1,8 @@
 use crate::core::utils::{path::get_project_dir, result::CommandResult};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
-use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf, vec};
+use log::{debug, trace};
+use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf, process::Command, vec};
 use tauri::State;
 
 pub struct SearchDatabaseStore {
@@ -98,25 +99,51 @@ impl SearchDatabaseStore {
 pub trait SearchDatabaseTable<'a> {
     fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>>;
 
+    fn access_to_name(&self) -> &String;
+
     fn init(store: State<'_, SearchDatabaseStore>) -> Self;
 
-    fn insert(&self, key: String, value: SearchDatabaseItem) -> Result<(), kv::Error> {
+    fn insert(&self, key: String, value: SearchDatabaseItem) -> CommandResult<()> {
         let json_value = Json(value);
+        debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
         self.access_to_bucket().set(&key, &json_value)?;
         Ok(())
     }
 
-    fn get(&self, key: &String) -> Result<SearchDatabaseItem, kv::Error> {
+    /// If given key has already exist, change the value. If not, insert new item.
+    fn change(&self, key: String, value: SearchDatabaseItem) -> CommandResult<()> {
+        let is_exist = self.access_to_bucket().contains(&key)?;
+        let json_value = Json(value);
+        if is_exist {
+            debug!("Remove `{}` key from the {}.", &key, &self.access_to_name());
+            self.access_to_bucket().remove(&key)?;
+            debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
+            self.access_to_bucket().set(&key, &json_value)?;
+        } else {
+            debug!("Set `{}` key to the table.", &key);
+            self.access_to_bucket().set(&key, &json_value)?;
+        };
+        Ok(())
+    }
+
+    fn get(&self, key: &String) -> CommandResult<SearchDatabaseItem> {
+        debug!(
+            "Get value corresponding to `{}` key in the {}.",
+            &key,
+            &self.access_to_name()
+        );
         let res = self.access_to_bucket().get(key)?.unwrap().0;
         Ok(res)
     }
 
-    fn clear(&self) -> Result<(), kv::Error> {
-        self.access_to_bucket().clear()
+    fn clear(&self) -> CommandResult<()> {
+        debug!("Remove all items in the {}.", self.access_to_name());
+        self.access_to_bucket().clear()?;
+        Ok(())
     }
 
     fn print_all_items(&self) {
-        dbg!("START PRINTING ALL ITEMS");
+        debug!("Print all items in the {}.", self.access_to_name());
         for item_i in self.access_to_bucket().iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
@@ -125,18 +152,20 @@ pub trait SearchDatabaseTable<'a> {
         }
     }
 
-    fn get_all_items(&self) -> HashMap<String, SearchDatabaseItem> {
+    fn get_all_items(&self) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
+        debug!("Get all items in the {}.", self.access_to_name());
         let mut result: HashMap<String, SearchDatabaseItem> = HashMap::new();
         for item_i in self.access_to_bucket().iter() {
-            let item_i = item_i.unwrap();
-            let key_i: String = item_i.key().unwrap();
-            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            let item_i = item_i?;
+            let key_i: String = item_i.key()?;
+            let value_i: Json<SearchDatabaseItem> = item_i.value()?;
             result.insert(key_i, value_i.0);
         }
-        result
+        Ok(result)
     }
 
-    fn search(&self, keyword: &String, min_score: i64) -> Vec<SearchDatabaseItem> {
+    fn search(&self, keyword: &str, min_score: i64) -> Vec<SearchDatabaseItem> {
+        debug!("Search {} in {}", keyword, self.access_to_name());
         let mut result: Vec<SearchDatabaseItem> = vec![];
         let matcher = SkimMatcherV2::default();
         for item_i in self.access_to_bucket().iter() {
@@ -168,6 +197,7 @@ pub trait SearchDatabaseTable<'a> {
     }
 
     fn save(&self) -> CommandResult<()> {
+        debug!("Save {}.", self.access_to_name());
         self.access_to_bucket().flush()?;
         Ok(())
     }
