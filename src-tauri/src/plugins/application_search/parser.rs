@@ -1,12 +1,14 @@
 use crate::core::db::search_database_store::SearchDatabaseItem;
 use crate::core::utils::path::get_error_icon_path;
+use crate::core::utils::result::CommandResult;
 use configparser::ini::Ini;
+use exe::{VecPE, PE};
 use lnk::ShellLink;
+use log::trace;
 use std::{any, fs};
 use std::{
     error::Error,
     path::{Path, PathBuf},
-    str::FromStr,
 };
 
 /// .lnkファイルの情報を読み取る。
@@ -34,6 +36,8 @@ pub fn parse_lnk(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem,
         .icon_location()
         .clone()
         .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
+    trace!("lnk_file_path: {}", &lnk_file_path);
+    trace!("lnk_file_icon_path: {}", &lnk_file_icon_path);
     Ok(SearchDatabaseItem::new_app(
         lnk_file_name,
         lnk_file_icon_path,
@@ -52,9 +56,22 @@ pub fn parse_url(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem,
     if debug {
         dbg!(&file_icon_path, &file_name, &file_path);
     }
+    trace!("url_file_path: {}", &file_path.to_str().unwrap());
+    trace!("url_file_icon_path: {}", &file_icon_path);
     Ok(SearchDatabaseItem::new_app(
         file_name,
         file_icon_path,
+        file_path.to_str().unwrap().to_string(),
+    ))
+}
+
+pub fn parse_exe(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Error>> {
+    let pe = VecPE::from_disk_file(file_path)?;
+    let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
+    trace!("{:?}", pe);
+    Ok(SearchDatabaseItem::new_app(
+        file_name,
+        file_path.to_str().unwrap().to_string(),
         file_path.to_str().unwrap().to_string(),
     ))
 }

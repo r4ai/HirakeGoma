@@ -5,7 +5,7 @@ use crate::core::db::search_database_store::{
     SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable,
 };
 use crate::core::utils::result::{CommandError, CommandResult};
-use crate::plugins::application_search::parser::{parse_lnk, parse_url};
+use crate::plugins::application_search::parser::{parse_exe, parse_lnk, parse_url};
 use kv::Json;
 use log::{debug, info, trace, warn};
 use std::collections::HashMap;
@@ -33,7 +33,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
         };
         let PluginAppsearchItem::FolderPaths(paths_vec) = paths;
         for path in paths_vec.iter() {
-            debug!("Start parsing items in {}", path);
+            debug!("START: parsing items in {}", path);
             for entry in WalkDir::new(PathBuf::from(path)) {
                 let entry = entry?;
                 let entry_path = entry.path();
@@ -47,11 +47,15 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                 } else if &entry_extension == "url" {
                     debug!("Parse .url of {}", &entry_path.display());
                     parse_url(&entry_path.to_path_buf(), debug).unwrap()
+                } else if &entry_extension == "exe" {
+                    debug!("Parse .exe of {}", &entry_path.display());
+                    parse_exe(&entry_path.to_path_buf()).unwrap()
                 } else {
                     continue;
                 };
                 let _ = db_table.insert(entry_item.name.clone(), entry_item);
             }
+            debug!("END: parsing items in {}", path);
         }
         if debug {
             dbg!(debug);
