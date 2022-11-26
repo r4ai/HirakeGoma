@@ -1,15 +1,9 @@
-use crate::{
-    core::{
-        db::{
-            applications_table::SearchDatabaseApplicationTable,
-            main_table::SearchDatabaseMainTable,
-            search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
-            setting_table_hotkey::SettingTableHotkey,
-            setting_table_theme::SettingTableTheme,
-        },
-        utils::result::CommandResult,
+use crate::core::{
+    db::{
+        main_table::SearchDatabaseMainTable,
+        search_database_store::{DbSearchTrait, SearchDatabaseItem, SearchDatabaseTable},
     },
-    plugins::application_search::table::PluginAppsearchTable,
+    utils::result::CommandResult,
 };
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager, State};
