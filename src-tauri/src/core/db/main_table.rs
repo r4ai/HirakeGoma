@@ -32,4 +32,8 @@ impl DbSearchTrait for SearchDatabaseMainTable<'_> {
     fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>> {
         &self.bucket
     }
+
+    fn access_to_name(&self) -> &String {
+        &self.name
+    }
 }

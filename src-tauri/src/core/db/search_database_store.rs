@@ -181,8 +181,10 @@ pub trait SearchDatabaseTable<
 pub trait DbSearchTrait {
     fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>>;
 
+    fn access_to_name(&self) -> &String;
+
     fn search(&self, keyword: &str, min_score: i64) -> Vec<SearchDatabaseItem> {
-        debug!("Search {} in", keyword);
+        debug!("Search {} in {}", keyword, self.access_to_name());
         let mut result: Vec<SearchDatabaseItem> = vec![];
         let matcher = SkimMatcherV2::default();
         for item_i in self.access_to_bucket().iter() {
