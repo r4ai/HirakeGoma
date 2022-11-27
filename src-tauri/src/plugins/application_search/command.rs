@@ -43,10 +43,10 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                 };
                 let entry_item = if &entry_extension == "lnk" {
                     debug!("Parse .lnk of {}", &entry_path.display());
-                    parse_lnk(&entry_path.to_path_buf(), debug).unwrap()
+                    parse_lnk(app.clone(), &entry_path.to_path_buf()).unwrap()
                 } else if &entry_extension == "url" {
                     debug!("Parse .url of {}", &entry_path.display());
-                    parse_url(&entry_path.to_path_buf(), debug).unwrap()
+                    parse_url(app.clone(), &entry_path.to_path_buf()).unwrap()
                 } else if &entry_extension == "exe" {
                     #[cfg(target_os = "windows")]
                     {

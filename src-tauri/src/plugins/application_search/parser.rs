@@ -1,13 +1,16 @@
 use crate::core::db::search_database_store::SearchDatabaseItem;
 use crate::core::utils::path::{
-    get_error_icon_path, get_project_data_dir, get_project_data_icons_dir,
+    get_default_file_icon_path, get_error_icon_path, get_project_data_dir,
+    get_project_data_icons_dir,
 };
 use crate::core::utils::result::{CommandError, CommandResult};
 use configparser::ini::Ini;
 use lnk::ShellLink;
-use log::{debug, error, trace};
+use log::{debug, error, trace, warn};
 use powershell_script::PsScriptBuilder;
+use std::ffi::OsStr;
 use std::path::PathBuf;
+use tauri::AppHandle;
 
 /// .lnkファイルの情報を読み取る。
 ///
@@ -23,19 +26,16 @@ use std::path::PathBuf;
 /// let result = parse_lnk(&lnk_file_path).unwrap();
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
-pub fn parse_lnk(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem, lnk::Error> {
+pub fn parse_lnk(app: AppHandle, file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
     let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
     let lnk_file_path = file_path.to_str().unwrap().to_string();
-    let lnk_file = ShellLink::open(&file_path)?;
-    if debug {
-        dbg!(lnk_file.icon_location());
-    }
-    let lnk_file_icon_path = lnk_file
-        .icon_location()
-        .clone()
-        .unwrap_or(get_error_icon_path().to_str().unwrap().to_string());
-    trace!("lnk_file_path: {}", &lnk_file_path);
-    trace!("lnk_file_icon_path: {}", &lnk_file_icon_path);
+    let lnk_file = match ShellLink::open(file_path) {
+        Ok(s) => s,
+        Err(e) => return Err(CommandError::Lnk(file_path.to_str().unwrap().to_string())),
+    };
+
+    let lnk_file_icon_path = get_icon_file_path(app.clone(), lnk_file.icon_location())?;
+
     Ok(SearchDatabaseItem::new_app(
         lnk_file_name,
         lnk_file_icon_path,
@@ -45,22 +45,20 @@ pub fn parse_lnk(file_path: &PathBuf, debug: bool) -> Result<SearchDatabaseItem,
 
 /// .urlファイルの情報を読み取る。
 pub fn parse_url(
+    app: AppHandle,
     file_path: &PathBuf,
-    debug: bool,
 ) -> Result<SearchDatabaseItem, Box<dyn std::error::Error>> {
     let mut config = Ini::new();
     let map = config.load(file_path)?;
-    let file_icon_path = config
-        .get("InternetShortcut", "IconFile")
-        .unwrap_or(get_error_icon_path().to_str().unwrap().to_string());
-    let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
-    if debug {
-        dbg!(&file_icon_path, &file_name, &file_path);
-    }
+
+    let file_icon_path =
+        get_icon_file_path(app.clone(), &config.get("InternetShortcut", "IconFile"))?;
+
+    let file_stem = file_path.file_stem().unwrap().to_str().unwrap().to_string();
     trace!("url_file_path: {}", &file_path.to_str().unwrap());
     trace!("url_file_icon_path: {}", &file_icon_path);
     Ok(SearchDatabaseItem::new_app(
-        file_name,
+        file_stem,
         file_icon_path,
         file_path.to_str().unwrap().to_string(),
     ))
@@ -77,6 +75,37 @@ pub fn parse_exe(file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
         target_file_path.to_str().unwrap().to_string(),
         file_path.to_str().unwrap().to_string(),
     ))
+}
+
+fn get_icon_file_path(
+    app: AppHandle,
+    raw_icon_file_path: &Option<String>,
+) -> CommandResult<String> {
+    let default_file_icon_path = get_default_file_icon_path(app.clone())
+        .to_str()
+        .unwrap()
+        .to_string();
+    let raw_icon_file_path = match raw_icon_file_path {
+        Some(p) => p,
+        None => &default_file_icon_path,
+    };
+    // TODO: IMPORTANT! DELETE BELOW warn!
+    warn!("raw_icon_file_path: {}", &raw_icon_file_path);
+
+    let icon_extension = match PathBuf::from(&raw_icon_file_path).extension() {
+        Some(ext) => ext.to_str().unwrap().to_string(),
+        None => String::from(""),
+    };
+
+    let file_icon_path = match icon_extension.as_str() {
+        "exe" => export_icon_from_exe(&PathBuf::from(&raw_icon_file_path), "png")?
+            .to_str()
+            .unwrap()
+            .to_string(),
+        "" => raw_icon_file_path.to_owned(),
+        _ => raw_icon_file_path.to_owned(),
+    };
+    Ok(file_icon_path)
 }
 
 /// Export icon file from .exe file.
@@ -120,7 +149,7 @@ fn export_icon_from_exe(exe_file_path: &PathBuf, icon_extension: &str) -> Comman
     match ps.run(powershell_script.as_str()) {
         Ok(o) => {
             debug!(
-                "SUCCESS: extract icon to {} from {}",
+                "Extracted icon to {} from {}",
                 exe_file_path.to_str().unwrap(),
                 target_file_path.to_str().unwrap()
             );
@@ -133,38 +162,5 @@ fn export_icon_from_exe(exe_file_path: &PathBuf, icon_extension: &str) -> Comman
             );
             return Err(CommandError::PowerShell(e));
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::{env, path::PathBuf};
-
-    use super::{parse_lnk, parse_url};
-    use crate::core::utils::path::get_cargo_toml_dir;
-
-    #[test]
-    fn parse_lnk_test() {
-        let lnk_file_name = "Zoom.lnk";
-        let root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let data_path = root_path.join("tests/resources/fake_data");
-        let zoom_data_path = data_path.join(lnk_file_name);
-        let parse_res = parse_lnk(&zoom_data_path, true).expect("Failed to parse .lnk file.");
-        dbg!(&parse_res);
-        assert_eq!(parse_res.name, lnk_file_name);
-    }
-
-    #[test]
-    fn parse_url_test() {
-        let path = get_cargo_toml_dir()
-            .join("tests")
-            .join("resources")
-            .join("fake_data")
-            .join("Arma 3.url");
-        let res = parse_url(&path, true).unwrap();
-        dbg!(&res);
-        assert_eq!(path.to_str().unwrap().to_string(), res.path); // file path check
-                                                                  // TODO: file_name check
-                                                                  // TODO: file_icon_path check
     }
 }

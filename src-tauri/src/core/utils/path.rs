@@ -1,6 +1,7 @@
 use directories::ProjectDirs;
 use std::path::{Path, PathBuf};
 use std::{env, fs};
+use tauri::AppHandle;
 
 use super::result::{CommandError, CommandResult};
 
@@ -40,10 +41,16 @@ pub fn get_cargo_toml_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
 }
 
-pub fn get_error_icon_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("resources")
-        .join("icon.ico")
+pub fn get_error_icon_path(app: AppHandle) -> PathBuf {
+    app.path_resolver()
+        .resolve_resource("resources/error_file.svg")
+        .expect("Failed to resolve `resources/error_file.svg`.")
+}
+
+pub fn get_default_file_icon_path(app: AppHandle) -> PathBuf {
+    app.path_resolver()
+        .resolve_resource("resources/default_file.svg")
+        .expect("Failed to resolve `resources/default_file.svg`.")
 }
 
 #[derive(Debug, thiserror::Error)]

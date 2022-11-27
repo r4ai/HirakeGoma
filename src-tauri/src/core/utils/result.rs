@@ -21,6 +21,9 @@ pub enum CommandError {
     #[error(transparent)]
     PowerShell(#[from] powershell_script::PsError),
 
+    #[error("Failed to parse `{0}`.")]
+    Lnk(String),
+
     #[error(transparent)]
     ProjectDir(#[from] super::path::ProjectDirError),
 
