@@ -17,6 +17,15 @@ pub enum CommandError {
 
     #[error(transparent)]
     Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    PowerShell(#[from] powershell_script::PsError),
+
+    #[error(transparent)]
+    ProjectDir(#[from] super::path::ProjectDirError),
+
+    #[error(transparent)]
+    Db(#[from] crate::core::commands::db_command::DbError),
 }
 
 impl Serialize for CommandError {

@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { SettingHeading } from "../../parts/main";
-import { UploadToMainTable, Debug, FolderPaths, Generate } from "./application_search";
+import { UploadToMainTable, Debug, FolderPaths, Generate, GetAll } from "./application_search";
 
 export const Plugin: FC = () => {
   return (
@@ -10,6 +10,7 @@ export const Plugin: FC = () => {
       <FolderPaths />
       <Generate />
       <UploadToMainTable />
+      <GetAll />
       <Debug />
     </>
   );

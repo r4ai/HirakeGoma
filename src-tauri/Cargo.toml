@@ -34,6 +34,7 @@ tauri-runtime = "0.12.0"
 window-vibrancy = {version = "0.3.2"}
 log = "0.4.17"
 chrono = "0.4.23"
+powershell_script = "1.0.4"
 
 [dependencies.tauri-plugin-log]
 git = "https://github.com/tauri-apps/tauri-plugin-log"

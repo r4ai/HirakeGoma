@@ -1,5 +1,6 @@
 use crate::core::{
     db::{
+        applications_table::SearchDatabaseApplicationTable,
         main_table::SearchDatabaseMainTable,
         search_database_store::{DbSearchTrait, SearchDatabaseItem, SearchDatabaseTable},
     },
@@ -51,4 +52,19 @@ pub fn search(
     min_score: i64,
 ) -> Vec<SearchDatabaseItem> {
     table.search(&keyword, min_score)
+}
+
+#[tauri::command]
+pub fn get_all_search_database_application_items(
+    table: State<'_, SearchDatabaseApplicationTable>,
+) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
+    table.get_all_items()
+}
+
+#[tauri::command]
+pub fn dbg_search_database_application_items(
+    table: State<'_, SearchDatabaseApplicationTable>,
+) -> Result<(), String> {
+    table.print_all_items();
+    Ok(())
 }

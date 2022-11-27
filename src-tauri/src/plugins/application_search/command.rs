@@ -7,7 +7,7 @@ use crate::core::db::search_database_store::{
 use crate::core::utils::result::{CommandError, CommandResult};
 use crate::plugins::application_search::parser::{parse_exe, parse_lnk, parse_url};
 use kv::Json;
-use log::{debug, info, trace, warn};
+use log::{debug, error, info, trace};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
@@ -20,7 +20,7 @@ use walkdir::WalkDir;
 pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandResult<()> {
     info!("Start generating application indexes.");
     let res = thread::spawn(move || -> CommandResult<()> {
-        let app_handle = app;
+        let app_handle = app.clone();
         let db_table = app_handle.state::<SearchDatabaseApplicationTable>();
         let plugin_table = app_handle.state::<PluginAppsearchTable>();
         let paths = match plugin_table.bucket.get(&String::from("folder_paths"))? {
@@ -48,15 +48,30 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                     debug!("Parse .url of {}", &entry_path.display());
                     parse_url(&entry_path.to_path_buf(), debug).unwrap()
                 } else if &entry_extension == "exe" {
-                    debug!("Parse .exe of {}", &entry_path.display());
-                    parse_exe(&entry_path.to_path_buf()).unwrap()
+                    #[cfg(target_os = "windows")]
+                    {
+                        debug!("Parse .exe of {}", &entry_path.display());
+                        match parse_exe(&entry_path.to_path_buf()) {
+                            Ok(o) => o,
+                            Err(e) => {
+                                error!("{}", e);
+                                continue;
+                            }
+                        }
+                    }
                 } else {
                     continue;
                 };
-                let _ = db_table.insert(entry_item.name.clone(), entry_item);
+                db_table
+                    .change(entry_item.name.clone(), entry_item)
+                    .unwrap();
             }
+            let _ = db_table.save();
             debug!("END: parsing items in {}", path);
         }
+        // let apptable = app_handle
+        //     .state::<SearchDatabaseApplicationTable>()
+        //     .print_all_items();
         if debug {
             dbg!(debug);
         }
@@ -114,6 +129,7 @@ pub fn plugin_appsearch_upload_to_main_table(
     for item_i in app_table.bucket.iter() {
         let item_i = item_i?;
         let key_i: String = item_i.key()?;
+        trace!("CHANGE: {}", &key_i);
         let value_json_i: Json<SearchDatabaseItem> = item_i.value()?;
         let value_i = value_json_i.0;
         main_table.change(key_i, value_i)?;

@@ -84,7 +84,7 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
             ref={resultListRefs.current[i]}
             tabIndex={i}
           >
-            // TODO: convertFileSrcの処理をindex生成時に行うようにする（これめちゃ重いから）。
+            {/* TODO: convertFileSrcの処理をindex生成時に行うようにする（これめちゃ重いから）。 */}
             <img css={resultListCss.itemIcon} src={convertFileSrc(item.icon_path)} alt="" />
             <div css={resultListCss.itemTitle}>{item.name}</div>
             <div css={resultListCss.itemDescription}>{item.description}</div>

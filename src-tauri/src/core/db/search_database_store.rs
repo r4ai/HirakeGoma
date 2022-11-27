@@ -1,4 +1,4 @@
-use crate::core::utils::{path::get_project_dir, result::CommandResult};
+use crate::core::utils::{path::_get_project_dir, result::CommandResult};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
 use log::{debug, info};
@@ -78,7 +78,7 @@ impl SearchDatabaseStore {
             let _ = fs::remove_dir_all(&path);
             path
         } else {
-            get_project_dir()
+            _get_project_dir()
                 .unwrap()
                 .data_dir()
                 .join("search_database")
@@ -126,7 +126,7 @@ pub trait SearchDatabaseTable<
             debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
             self.access_to_bucket().set(&key, &json_value)?;
         } else {
-            debug!("Set `{}` key to the table.", &key);
+            debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
             self.access_to_bucket().set(&key, &json_value)?;
         };
         Ok(())
@@ -153,8 +153,9 @@ pub trait SearchDatabaseTable<
         for item_i in self.access_to_bucket().iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
+            dbg!(&key_i);
             let value_i: Json<I> = item_i.value().unwrap();
-            dbg!(&key_i, &value_i.0);
+            dbg!(&value_i.0);
         }
     }
 

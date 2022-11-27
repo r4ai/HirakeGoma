@@ -15,12 +15,8 @@ use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
 use super::commands::core_command::*;
-use super::commands::main_command::{
-    __cmd__add_app_to_search_database, __cmd__clear_search_database,
-    __cmd__dbg_search_database_items, __cmd__get_all_search_database_items, __cmd__search,
-    add_app_to_search_database, clear_search_database, dbg_search_database_items,
-    get_all_search_database_items, search,
-};
+use super::commands::db_command::*;
+use super::commands::main_command::*;
 use super::commands::setting_command::*;
 use super::db::applications_table::SearchDatabaseApplicationTable;
 use super::db::commands_table::SearchDatabaseCommandsTable;
@@ -154,10 +150,15 @@ pub fn init_app() {
         )
         .invoke_handler(tauri::generate_handler![
             dbg_search_database_items,
+            dbg_search_database_application_items,
             add_app_to_search_database,
             get_all_search_database_items,
+            get_all_search_database_application_items,
             clear_search_database,
             search,
+            db_get_all,
+            db_print_all,
+            db_clear,
             core_window_hide,
             core_window_show,
             core_window_toggle_visibility,
