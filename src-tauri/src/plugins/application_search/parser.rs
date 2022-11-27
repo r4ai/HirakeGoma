@@ -1,13 +1,12 @@
 use crate::core::db::search_database_store::SearchDatabaseItem;
-use crate::core::utils::path::get_error_icon_path;
+use crate::core::utils::path::{get_default_file_icon_path, get_project_data_icons_dir};
+use crate::core::utils::result::{CommandError, CommandResult};
 use configparser::ini::Ini;
 use lnk::ShellLink;
-use std::{any, fs};
-use std::{
-    error::Error,
-    path::{Path, PathBuf},
-    str::FromStr,
-};
+use log::{debug, error, trace};
+use powershell_script::PsScriptBuilder;
+use std::path::PathBuf;
+use tauri::AppHandle;
 
 /// .lnkファイルの情報を読み取る。
 ///
@@ -23,15 +22,16 @@ use std::{
 /// let result = parse_lnk(&lnk_file_path).unwrap();
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
-pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> {
-    let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
+pub fn parse_lnk(app: AppHandle, file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
+    let lnk_file_name = file_path.file_stem().unwrap().to_str().unwrap().to_string();
     let lnk_file_path = file_path.to_str().unwrap().to_string();
-    let lnk_file = ShellLink::open(&file_path)?;
-    dbg!(lnk_file.icon_location());
-    let lnk_file_icon_path = lnk_file
-        .icon_location()
-        .clone()
-        .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
+    let lnk_file = match ShellLink::open(file_path) {
+        Ok(s) => s,
+        Err(e) => return Err(CommandError::Lnk(file_path.to_str().unwrap().to_string())),
+    };
+
+    let lnk_file_icon_path = get_icon_file_path(app.clone(), lnk_file.icon_location())?;
+
     Ok(SearchDatabaseItem::new_app(
         lnk_file_name,
         lnk_file_icon_path,
@@ -40,54 +40,123 @@ pub fn parse_lnk(file_path: &PathBuf) -> Result<SearchDatabaseItem, lnk::Error> 
 }
 
 /// .urlファイルの情報を読み取る。
-pub fn parse_url(file_path: &PathBuf) -> Result<SearchDatabaseItem, Box<dyn Error>> {
+pub fn parse_url(
+    app: AppHandle,
+    file_path: &PathBuf,
+) -> Result<SearchDatabaseItem, Box<dyn std::error::Error>> {
     let mut config = Ini::new();
     let map = config.load(file_path)?;
-    let file_icon_path = config
-        .get("InternetShortcut", "IconFile")
-        .unwrap_or((get_error_icon_path().to_str().unwrap().to_string()));
-    let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
-    dbg!(&file_icon_path, &file_name, &file_path);
+
+    let file_icon_path =
+        get_icon_file_path(app.clone(), &config.get("InternetShortcut", "IconFile"))?;
+
+    let file_stem = file_path.file_stem().unwrap().to_str().unwrap().to_string();
+    trace!("url_file_path: {}", &file_path.to_str().unwrap());
+    trace!("url_file_icon_path: {}", &file_icon_path);
     Ok(SearchDatabaseItem::new_app(
-        file_name,
+        file_stem,
         file_icon_path,
         file_path.to_str().unwrap().to_string(),
     ))
 }
 
-#[cfg(test)]
-mod tests {
-    use std::{
-        env,
-        path::{Path, PathBuf},
+pub fn parse_exe(file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
+    let file_stem = file_path.file_stem().unwrap();
+    let target_file_path = match export_icon_from_exe(file_path, "png") {
+        Ok(path) => path,
+        Err(e) => return Err(e),
+    };
+    Ok(SearchDatabaseItem::new_app(
+        file_stem.to_str().unwrap().to_string(),
+        target_file_path.to_str().unwrap().to_string(),
+        file_path.to_str().unwrap().to_string(),
+    ))
+}
+
+fn get_icon_file_path(
+    app: AppHandle,
+    raw_icon_file_path: &Option<String>,
+) -> CommandResult<String> {
+    let default_file_icon_path = get_default_file_icon_path(app.clone())
+        .to_str()
+        .unwrap()
+        .to_string();
+    let raw_icon_file_path = match raw_icon_file_path {
+        Some(p) => p,
+        None => &default_file_icon_path,
+    };
+    // TODO: IMPORTANT! DELETE BELOW warn!
+    debug!("raw_icon_file_path: {}", &raw_icon_file_path);
+
+    let icon_extension = match PathBuf::from(&raw_icon_file_path).extension() {
+        Some(ext) => ext.to_str().unwrap().to_string(),
+        None => String::from(""),
     };
 
-    use super::{parse_lnk, parse_url};
-    use crate::core::db::search_database_store::SearchDatabaseItem;
-    use crate::core::utils::path::get_cargo_toml_dir;
+    let file_icon_path = match icon_extension.as_str() {
+        "exe" => export_icon_from_exe(&PathBuf::from(&raw_icon_file_path), "png")?
+            .to_str()
+            .unwrap()
+            .to_string(),
+        "" => raw_icon_file_path.to_owned(),
+        _ => raw_icon_file_path.to_owned(),
+    };
+    Ok(file_icon_path)
+}
 
-    #[test]
-    fn parse_lnk_test() {
-        let lnk_file_name = "Zoom.lnk";
-        let root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let data_path = root_path.join("tests/resources/fake_data");
-        let zoom_data_path = data_path.join(lnk_file_name);
-        let parse_res = parse_lnk(&zoom_data_path).expect("Failed to parse .lnk file.");
-        dbg!(&parse_res);
-        assert_eq!(parse_res.name, lnk_file_name);
+/// Export icon file from .exe file.
+///
+/// ## args:
+/// - `file_path`: path to the .exe file.
+/// - `extension`: icon extension. Ex. png, bmp, ...
+///
+/// ## return:
+/// - path to the icon file which was extracted from `file_path`.
+fn export_icon_from_exe(exe_file_path: &PathBuf, icon_extension: &str) -> CommandResult<PathBuf> {
+    let icons_dir = get_project_data_icons_dir()?;
+    let file_stem = exe_file_path.file_stem().unwrap();
+    let target_file_path = icons_dir.join(format!(
+        "{}.{}",
+        file_stem.to_str().unwrap(),
+        icon_extension
+    ));
+
+    macro_rules! raw_script {
+        () => {
+            "\
+            Add-Type -AssemblyName System.Drawing\n\
+            $icon = [System.Drawing.Icon]::ExtractAssociatedIcon(\"{}\")\n\
+            $icon.ToBitmap().Save(\"{}\")\
+            "
+        };
     }
+    let powershell_script = format!(
+        raw_script!(),
+        exe_file_path.to_str().unwrap(),
+        target_file_path.to_str().unwrap()
+    );
 
-    #[test]
-    fn parse_url_test() {
-        let path = get_cargo_toml_dir()
-            .join("tests")
-            .join("resources")
-            .join("fake_data")
-            .join("Arma 3.url");
-        let res = parse_url(&path).unwrap();
-        dbg!(&res);
-        assert_eq!(path.to_str().unwrap().to_string(), res.path); // file path check
-                                                                  // TODO: file_name check
-                                                                  // TODO: file_icon_path check
+    let ps = PsScriptBuilder::new()
+        .no_profile(true)
+        .non_interactive(true)
+        .hidden(false)
+        .print_commands(false)
+        .build();
+    match ps.run(powershell_script.as_str()) {
+        Ok(o) => {
+            debug!(
+                "Extracted icon to {} from {}",
+                exe_file_path.to_str().unwrap(),
+                target_file_path.to_str().unwrap()
+            );
+            return Ok(target_file_path);
+        }
+        Err(e) => {
+            error!(
+                "Failed to extract icon from {}",
+                exe_file_path.to_str().unwrap()
+            );
+            return Err(CommandError::PowerShell(e));
+        }
     }
 }

@@ -1,24 +1,34 @@
-use std::error;
-
 use serde::{Serialize, Serializer};
 use walkdir;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CommandError {
     #[error(transparent)]
-    KvError(#[from] kv::Error),
+    Kv(#[from] kv::Error),
 
     #[error(transparent)]
-    WalkdirError(#[from] walkdir::Error),
+    Walkdir(#[from] walkdir::Error),
 
     #[error(transparent)]
-    TauriError(#[from] tauri::api::Error),
+    TauriApi(#[from] tauri::api::Error),
 
     #[error(transparent)]
-    WindowsError(#[from] windows::core::Error),
+    TauriRuntime(#[from] tauri_runtime::Error),
 
     #[error(transparent)]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    PowerShell(#[from] powershell_script::PsError),
+
+    #[error("Failed to parse `{0}`.")]
+    Lnk(String),
+
+    #[error(transparent)]
+    ProjectDir(#[from] super::path::ProjectDirError),
+
+    #[error(transparent)]
+    Db(#[from] crate::core::commands::db_command::DbError),
 }
 
 impl Serialize for CommandError {

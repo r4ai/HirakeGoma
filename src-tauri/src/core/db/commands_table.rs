@@ -1,20 +1,39 @@
-use super::search_database_store::{SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable};
+use super::search_database_store::{
+    DbSearchTrait, SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable,
+};
 use kv::{Bucket, Json};
 use tauri::State;
 
 pub struct SearchDatabaseCommandsTable<'a> {
     pub bucket: Bucket<'a, String, Json<SearchDatabaseItem>>,
+    pub name: String,
 }
 
-impl SearchDatabaseTable<'_> for SearchDatabaseCommandsTable<'_> {
+impl SearchDatabaseTable<'_, SearchDatabaseStore, SearchDatabaseItem>
+    for SearchDatabaseCommandsTable<'_>
+{
     fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>> {
-        let bucket = &self.bucket;
-        bucket
+        &self.bucket
+    }
+
+    fn access_to_name(&self) -> &String {
+        &self.name
     }
 
     fn init(store: State<'_, SearchDatabaseStore>) -> Self {
         let bucket: Bucket<String, Json<SearchDatabaseItem>> =
             store.store.bucket(Some("commands")).unwrap();
-        Self { bucket }
+        let name = String::from("SearchDatabaseCommandsTable");
+        Self { bucket, name }
+    }
+}
+
+impl DbSearchTrait for SearchDatabaseCommandsTable<'_> {
+    fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>> {
+        &self.bucket
+    }
+
+    fn access_to_name(&self) -> &String {
+        &self.name
     }
 }

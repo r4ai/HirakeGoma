@@ -1,4 +1,4 @@
-use crate::core::utils::path::get_project_dir;
+use crate::core::utils::path::_get_project_dir;
 use kv::{Config, Store};
 use std::fs;
 use std::path::PathBuf;
@@ -20,7 +20,7 @@ impl SettingStore {
             let _ = fs::remove_dir_all(&path);
             path
         } else {
-            get_project_dir().unwrap().data_dir().join("setting")
+            _get_project_dir().unwrap().data_dir().join("setting")
         };
         dbg!(&config_path);
         let config = Config::new(config_path.clone());

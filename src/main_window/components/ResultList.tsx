@@ -3,6 +3,7 @@ import { useTheme, css } from "@emotion/react";
 import { invoke } from "@tauri-apps/api";
 import { FC, useEffect, ComponentPropsWithoutRef, Ref, RefObject, useState, MutableRefObject } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 interface Props {
   searchResults: SearchResults;
@@ -26,18 +27,34 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
       padding: 0px 7px;
     `,
     item: (i: number) => css`
-      padding: 0px 10px;
+      display: grid;
+      grid-template-columns: 57px 1fr;
+      grid-template-rows: auto auto;
+      padding: 0px 6px;
       margin-bottom: 10px;
       text-overflow: ellipsis;
       white-space: nowrap;
       background-color: ${i === selectedItemIndex ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0)"};
       cursor: pointer;
     `,
+    itemIcon: css`
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      height: 37px;
+      align-self: center;
+      justify-self: center;
+      padding: 10px 010px 10px 0px;
+      color: ${theme.colors.textColor};
+      font-size: 6px;
+    `,
     itemTitle: css`
+      grid-column: 2 / 3;
+      align-self: center;
       color: ${theme.colors.textColor};
       font-size: 18px;
     `,
     itemDescription: css`
+      grid-column: 2 / 3;
       color: ${theme.colors.descriptionTextColor};
       font-size: 10px;
     `
@@ -67,6 +84,8 @@ export const ResultList: FC<Props> = ({ searchResults, selectedItemIndex, setHid
             ref={resultListRefs.current[i]}
             tabIndex={i}
           >
+            {/* TODO: convertFileSrcの処理をindex生成時に行うようにする（これめちゃ重いから）。 */}
+            <img css={resultListCss.itemIcon} src={convertFileSrc(item.icon_path)} alt="" />
             <div css={resultListCss.itemTitle}>{item.name}</div>
             <div css={resultListCss.itemDescription}>{item.description}</div>
           </div>

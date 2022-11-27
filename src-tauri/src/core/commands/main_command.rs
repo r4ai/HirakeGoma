@@ -1,9 +1,13 @@
-use crate::core::db::{
-    main_table::SearchDatabaseMainTable,
-    search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
+use crate::core::{
+    db::{
+        applications_table::SearchDatabaseApplicationTable,
+        main_table::SearchDatabaseMainTable,
+        search_database_store::{DbSearchTrait, SearchDatabaseItem, SearchDatabaseTable},
+    },
+    utils::result::CommandResult,
 };
 use std::collections::HashMap;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 #[tauri::command]
 pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> Result<(), String> {
@@ -14,7 +18,7 @@ pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> R
 #[tauri::command]
 pub fn get_all_search_database_items(
     table: State<'_, SearchDatabaseMainTable>,
-) -> HashMap<String, SearchDatabaseItem> {
+) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
     table.get_all_items()
 }
 
@@ -48,4 +52,19 @@ pub fn search(
     min_score: i64,
 ) -> Vec<SearchDatabaseItem> {
     table.search(&keyword, min_score)
+}
+
+#[tauri::command]
+pub fn get_all_search_database_application_items(
+    table: State<'_, SearchDatabaseApplicationTable>,
+) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
+    table.get_all_items()
+}
+
+#[tauri::command]
+pub fn dbg_search_database_application_items(
+    table: State<'_, SearchDatabaseApplicationTable>,
+) -> Result<(), String> {
+    table.print_all_items();
+    Ok(())
 }

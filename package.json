@@ -1,7 +1,7 @@
 {
   "name": "hirake-goma",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -27,6 +27,7 @@
     "react-hotkeys-hook": "^4.0.4",
     "react-icons": "^4.4.0",
     "react-router-dom": "^6.4.1",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#dev",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

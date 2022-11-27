@@ -1,6 +1,7 @@
-use crate::core::utils::{path::get_project_dir, result::CommandResult};
+use crate::core::utils::{path::_get_project_dir, result::CommandResult};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
+use log::{debug, info};
 use std::{collections::HashMap, fmt::Debug, fs, path::PathBuf, vec};
 use tauri::State;
 
@@ -77,16 +78,17 @@ impl SearchDatabaseStore {
             let _ = fs::remove_dir_all(&path);
             path
         } else {
-            get_project_dir()
+            _get_project_dir()
                 .unwrap()
                 .data_dir()
                 .join("search_database")
         };
-        dbg!(&config_path);
+        info!(
+            "config_path of SearchDatabaseStore: {}",
+            &config_path.display()
+        );
         let config = Config::new(config_path.clone());
-        // dbg!(&db_cfg);
         let store = Store::new(config.clone()).expect("Failed to create store");
-        // dbg!(&db_store);
         Self {
             config,
             store,
@@ -95,48 +97,94 @@ impl SearchDatabaseStore {
     }
 }
 
-pub trait SearchDatabaseTable<'a> {
-    fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>>;
+pub trait SearchDatabaseTable<
+    'a,
+    S: Send + Sync + 'static,
+    I: serde::Serialize + serde::de::DeserializeOwned + Clone + Debug,
+>
+{
+    fn access_to_bucket(&self) -> &Bucket<'_, String, Json<I>>;
 
-    fn init(store: State<'_, SearchDatabaseStore>) -> Self;
+    fn access_to_name(&self) -> &String;
 
-    fn insert(&self, key: String, value: SearchDatabaseItem) -> Result<(), kv::Error> {
+    fn init(store: State<'_, S>) -> Self;
+
+    fn insert(&self, key: String, value: I) -> CommandResult<()> {
         let json_value = Json(value);
+        debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
         self.access_to_bucket().set(&key, &json_value)?;
         Ok(())
     }
 
-    fn get(&self, key: &String) -> Result<SearchDatabaseItem, kv::Error> {
+    /// If given key has already exist, change the value. If not, insert new item.
+    fn change(&self, key: String, value: I) -> CommandResult<()> {
+        let is_exist = self.access_to_bucket().contains(&key)?;
+        let json_value = Json(value);
+        if is_exist {
+            debug!("Remove `{}` key from the {}.", &key, &self.access_to_name());
+            self.access_to_bucket().remove(&key)?;
+            debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
+            self.access_to_bucket().set(&key, &json_value)?;
+        } else {
+            debug!("Set `{}` key to the {}.", &key, &self.access_to_name());
+            self.access_to_bucket().set(&key, &json_value)?;
+        };
+        Ok(())
+    }
+
+    fn get(&self, key: &String) -> CommandResult<I> {
+        debug!(
+            "Get value corresponding to `{}` key in the {}.",
+            &key,
+            &self.access_to_name()
+        );
         let res = self.access_to_bucket().get(key)?.unwrap().0;
         Ok(res)
     }
 
-    fn clear(&self) -> Result<(), kv::Error> {
-        self.access_to_bucket().clear()
+    fn clear(&self) -> CommandResult<()> {
+        debug!("Remove all items in the {}.", self.access_to_name());
+        self.access_to_bucket().clear()?;
+        Ok(())
     }
 
     fn print_all_items(&self) {
-        dbg!("START PRINTING ALL ITEMS");
+        debug!("Print all items in the {}.", self.access_to_name());
         for item_i in self.access_to_bucket().iter() {
             let item_i = item_i.unwrap();
             let key_i: String = item_i.key().unwrap();
-            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
-            dbg!(&key_i, &value_i.0);
+            dbg!(&key_i);
+            let value_i: Json<I> = item_i.value().unwrap();
+            dbg!(&value_i.0);
         }
     }
 
-    fn get_all_items(&self) -> HashMap<String, SearchDatabaseItem> {
-        let mut result: HashMap<String, SearchDatabaseItem> = HashMap::new();
+    fn get_all_items(&self) -> CommandResult<HashMap<String, I>> {
+        debug!("Get all items in the {}.", self.access_to_name());
+        let mut result: HashMap<String, I> = HashMap::new();
         for item_i in self.access_to_bucket().iter() {
-            let item_i = item_i.unwrap();
-            let key_i: String = item_i.key().unwrap();
-            let value_i: Json<SearchDatabaseItem> = item_i.value().unwrap();
+            let item_i = item_i?;
+            let key_i: String = item_i.key()?;
+            let value_i: Json<I> = item_i.value()?;
             result.insert(key_i, value_i.0);
         }
-        result
+        Ok(result)
     }
 
-    fn search(&self, keyword: &String, min_score: i64) -> Vec<SearchDatabaseItem> {
+    fn save(&self) -> CommandResult<()> {
+        debug!("Save {}.", self.access_to_name());
+        self.access_to_bucket().flush()?;
+        Ok(())
+    }
+}
+
+pub trait DbSearchTrait {
+    fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>>;
+
+    fn access_to_name(&self) -> &String;
+
+    fn search(&self, keyword: &str, min_score: i64) -> Vec<SearchDatabaseItem> {
+        debug!("Search {} in {}", keyword, self.access_to_name());
         let mut result: Vec<SearchDatabaseItem> = vec![];
         let matcher = SkimMatcherV2::default();
         for item_i in self.access_to_bucket().iter() {
@@ -165,10 +213,5 @@ pub trait SearchDatabaseTable<'a> {
             }
         }
         result
-    }
-
-    fn save(&self) -> CommandResult<()> {
-        self.access_to_bucket().flush()?;
-        Ok(())
     }
 }
