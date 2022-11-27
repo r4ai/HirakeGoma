@@ -23,6 +23,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
         let app_handle = app.clone();
         let db_table = app_handle.state::<SearchDatabaseApplicationTable>();
         let plugin_table = app_handle.state::<PluginAppsearchTable>();
+        db_table.clear()?;
         let paths = match plugin_table.bucket.get(&String::from("folder_paths"))? {
             None => {
                 return Err(CommandError::Kv(kv::Error::Message(String::from(
