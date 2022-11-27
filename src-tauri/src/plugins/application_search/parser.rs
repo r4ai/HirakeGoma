@@ -1,14 +1,10 @@
 use crate::core::db::search_database_store::SearchDatabaseItem;
-use crate::core::utils::path::{
-    get_default_file_icon_path, get_error_icon_path, get_project_data_dir,
-    get_project_data_icons_dir,
-};
+use crate::core::utils::path::{get_default_file_icon_path, get_project_data_icons_dir};
 use crate::core::utils::result::{CommandError, CommandResult};
 use configparser::ini::Ini;
 use lnk::ShellLink;
-use log::{debug, error, trace, warn};
+use log::{debug, error, trace};
 use powershell_script::PsScriptBuilder;
-use std::ffi::OsStr;
 use std::path::PathBuf;
 use tauri::AppHandle;
 
@@ -27,7 +23,7 @@ use tauri::AppHandle;
 /// assert_eq!(lnk_file_name, result.name);
 /// ```
 pub fn parse_lnk(app: AppHandle, file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
-    let lnk_file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
+    let lnk_file_name = file_path.file_stem().unwrap().to_str().unwrap().to_string();
     let lnk_file_path = file_path.to_str().unwrap().to_string();
     let lnk_file = match ShellLink::open(file_path) {
         Ok(s) => s,
@@ -90,7 +86,7 @@ fn get_icon_file_path(
         None => &default_file_icon_path,
     };
     // TODO: IMPORTANT! DELETE BELOW warn!
-    warn!("raw_icon_file_path: {}", &raw_icon_file_path);
+    debug!("raw_icon_file_path: {}", &raw_icon_file_path);
 
     let icon_extension = match PathBuf::from(&raw_icon_file_path).extension() {
         Some(ext) => ext.to_str().unwrap().to_string(),
