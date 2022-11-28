@@ -141,9 +141,13 @@ pub fn plugin_appsearch_upload_to_main_table(
 
 #[tauri::command]
 pub fn plugin_appsearch_open(path: String, app: AppHandle) -> CommandResult<()> {
-    let res = open(&app.shell_scope(), path.as_str(), None);
-    match res {
-        Ok(_) => Ok(()),
-        Err(e) => Err(CommandError::TauriApi(e)),
-    }
+    thread::spawn(move || {
+        let res = open(&app.shell_scope(), path.as_str(), None);
+        match res {
+            Ok(_) => Ok(()),
+            Err(e) => Err(CommandError::TauriApi(e)),
+        }
+    })
+    .join()
+    .unwrap()
 }
