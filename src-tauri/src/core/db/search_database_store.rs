@@ -116,6 +116,12 @@ pub trait SearchDatabaseTable<
         Ok(())
     }
 
+    fn remove(&self, key: &String) -> CommandResult<()> {
+        debug!("Remove `{}` key from {}.", key, &self.access_to_name());
+        self.access_to_bucket().remove(key)?;
+        Ok(())
+    }
+
     /// If given key has already exist, change the value. If not, insert new item.
     fn change(&self, key: String, value: I) -> CommandResult<()> {
         let is_exist = self.access_to_bucket().contains(&key)?;

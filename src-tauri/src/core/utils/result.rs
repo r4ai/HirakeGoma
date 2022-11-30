@@ -28,7 +28,7 @@ pub enum CommandError {
     ProjectDir(#[from] super::path::ProjectDirError),
 
     #[error(transparent)]
-    Db(#[from] crate::core::commands::db_command::DbError),
+    Db(#[from] crate::core::commands::search_db_command::DbError),
 }
 
 impl Serialize for CommandError {

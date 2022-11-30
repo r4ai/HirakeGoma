@@ -7,7 +7,7 @@ use crate::core::{
     utils::result::CommandResult,
 };
 use std::collections::HashMap;
-use tauri::{AppHandle, Manager, State};
+use tauri::State;
 
 #[tauri::command]
 pub fn dbg_search_database_items(table: State<'_, SearchDatabaseMainTable>) -> Result<(), String> {

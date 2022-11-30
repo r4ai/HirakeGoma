@@ -1,6 +1,6 @@
-use crate::{
-    core::utils::result::{CommandError, CommandResult},
-    plugins::plugin_store::PluginStore,
+use crate::core::{
+    db::plugin_store::PluginStore,
+    utils::result::{CommandError, CommandResult},
 };
 use kv::{Bucket, Json};
 use std::collections::HashMap;

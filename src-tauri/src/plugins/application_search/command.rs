@@ -70,12 +70,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
             let _ = db_table.save();
             debug!("END: parsing items in {}", path);
         }
-        // let apptable = app_handle
-        //     .state::<SearchDatabaseApplicationTable>()
-        //     .print_all_items();
-        if debug {
-            dbg!(debug);
-        }
+        app_handle.state::<PluginAppsearchTable>().save()?;
         Ok(())
     })
     .join()
@@ -97,7 +92,7 @@ pub fn plugin_appsearch_update_folder_path(
     table
         .bucket
         .set(&key, &Json(PluginAppsearchItem::FolderPaths(paths)))?;
-    table.print_all_items();
+    table.save()?;
     Ok(())
 }
 
@@ -127,6 +122,14 @@ pub fn plugin_appsearch_upload_to_main_table(
     main_table: State<'_, SearchDatabaseMainTable>,
 ) -> CommandResult<()> {
     info!("START: plugin_appsearch_upload_to_main_table command");
+    for item_i in main_table.bucket.iter() {
+        let item_i = item_i?;
+        let key_i: String = item_i.key()?;
+        let value_i = item_i.value::<Json<SearchDatabaseItem>>()?.0;
+        if value_i.item_type.as_str() == "Application" {
+            main_table.remove(&key_i)?;
+        }
+    }
     for item_i in app_table.bucket.iter() {
         let item_i = item_i?;
         let key_i: String = item_i.key()?;
@@ -135,6 +138,8 @@ pub fn plugin_appsearch_upload_to_main_table(
         let value_i = value_json_i.0;
         main_table.change(key_i, value_i)?;
     }
+    app_table.save()?;
+    main_table.save()?;
     info!("END: plugin_appsearch_upload_to_main_table command");
     Ok(())
 }

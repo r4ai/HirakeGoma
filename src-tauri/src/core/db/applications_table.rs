@@ -37,3 +37,7 @@ impl DbSearchTrait for SearchDatabaseApplicationTable<'_> {
         &self.name
     }
 }
+
+fn greet(name: String) -> String {
+    format!("おはよう{}！", name)
+}

@@ -1,5 +1,7 @@
 use crate::core::utils::path::_get_project_dir;
+use crate::core::utils::result::CommandResult;
 use kv::{Config, Store};
+use log::debug;
 use std::fs;
 use std::path::PathBuf;
 
@@ -22,11 +24,14 @@ impl SettingStore {
         } else {
             _get_project_dir().unwrap().data_dir().join("setting")
         };
-        dbg!(&config_path);
+        debug!(
+            "SettingStore's config_path: {}",
+            &config_path
+                .to_str()
+                .unwrap_or("Failed to translate config_path(&PathBuf) to &str.")
+        );
         let config = Config::new(config_path.clone());
-        // dbg!(&db_cfg);
         let store = Store::new(config.clone()).expect("Failed to create setting store");
-        // dbg!(&db_store);
         Self {
             config,
             store,

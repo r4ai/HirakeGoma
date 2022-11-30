@@ -1,10 +1,6 @@
 use std::time;
 
-use crate::core::db::search_database_store;
-use crate::plugins::application_search;
 use crate::plugins::application_search::table::PluginAppsearchTable;
-use crate::plugins::plugin_store;
-use crate::plugins::plugin_store::PluginStore;
 use chrono::Utc;
 use tauri::{
     App, AppHandle, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray,
@@ -15,15 +11,16 @@ use window_shadows::set_shadow;
 use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
 use super::commands::core_command::*;
-use super::commands::db_command::*;
 use super::commands::main_command::*;
+use super::commands::search_db_command::*;
 use super::commands::setting_command::*;
 use super::db::applications_table::SearchDatabaseApplicationTable;
 use super::db::commands_table::SearchDatabaseCommandsTable;
 use super::db::main_table::SearchDatabaseMainTable;
+use super::db::plugin_store::PluginStore;
 use super::db::search_database_store::SearchDatabaseTable;
 use super::db::setting_store::SettingStore;
-use super::db::setting_table_hotkey::{self, SettingTableHotkey};
+use super::db::setting_table_hotkey::SettingTableHotkey;
 use super::db::setting_table_theme::SettingTableTheme;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 use crate::plugins::application_search::command::*;

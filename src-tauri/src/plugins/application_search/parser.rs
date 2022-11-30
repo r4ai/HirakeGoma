@@ -62,10 +62,7 @@ pub fn parse_url(
 
 pub fn parse_exe(file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
     let file_stem = file_path.file_stem().unwrap();
-    let target_file_path = match export_icon_from_exe(file_path, "png") {
-        Ok(path) => path,
-        Err(e) => return Err(e),
-    };
+    let target_file_path = export_icon_from_exe(file_path, "png")?;
     Ok(SearchDatabaseItem::new_app(
         file_stem.to_str().unwrap().to_string(),
         target_file_path.to_str().unwrap().to_string(),
@@ -149,14 +146,15 @@ fn export_icon_from_exe(exe_file_path: &PathBuf, icon_extension: &str) -> Comman
                 exe_file_path.to_str().unwrap(),
                 target_file_path.to_str().unwrap()
             );
-            return Ok(target_file_path);
+            Ok(target_file_path)
         }
         Err(e) => {
             error!(
                 "Failed to extract icon from {}",
                 exe_file_path.to_str().unwrap()
             );
-            return Err(CommandError::PowerShell(e));
+            println!("{}", &e);
+            Err(CommandError::PowerShell(e))
         }
     }
 }
