@@ -46,15 +46,6 @@ pub fn clear_search_database(table: State<'_, SearchDatabaseMainTable>) -> Strin
 }
 
 #[tauri::command]
-pub fn search(
-    table: State<'_, SearchDatabaseMainTable>,
-    keyword: String,
-    min_score: i64,
-) -> Vec<SearchDatabaseItem> {
-    table.search(&keyword, min_score)
-}
-
-#[tauri::command]
 pub fn get_all_search_database_application_items(
     table: State<'_, SearchDatabaseApplicationTable>,
 ) -> CommandResult<HashMap<String, SearchDatabaseItem>> {
@@ -67,4 +58,13 @@ pub fn dbg_search_database_application_items(
 ) -> Result<(), String> {
     table.print_all_items();
     Ok(())
+}
+
+#[tauri::command]
+pub fn search(
+    table: State<'_, SearchDatabaseMainTable>,
+    keyword: String,
+    min_score: i64,
+) -> Vec<SearchDatabaseItem> {
+    table.search(&keyword, min_score)
 }
