@@ -1,4 +1,7 @@
-use crate::core::utils::{path::_get_project_dir, result::CommandResult};
+use crate::core::utils::{
+    path::_get_project_dir,
+    result::{CommandError, CommandResult, DbError},
+};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use kv::{Bucket, Config, Json, Store};
 use log::{debug, info};
@@ -97,7 +100,7 @@ impl SearchDatabaseStore {
     }
 }
 
-pub trait SearchDatabaseTable<
+pub trait SearchDatabaseTrait<
     'a,
     S: Send + Sync + 'static,
     I: serde::Serialize + serde::de::DeserializeOwned + Clone + Debug,
@@ -138,8 +141,10 @@ pub trait SearchDatabaseTable<
             &key,
             &self.access_to_name()
         );
-        let res = self.access_to_bucket().get(key)?.unwrap().0;
-        Ok(res)
+        match self.access_to_bucket().get(key)? {
+            Some(v) => Ok(v.0),
+            None => Err(CommandError::Db(DbError::GetItem(key.clone()))),
+        }
     }
 
     fn clear(&self) -> CommandResult<()> {

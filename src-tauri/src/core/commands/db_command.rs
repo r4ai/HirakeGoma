@@ -7,9 +7,9 @@ use crate::core::{
         applications_table::SearchDatabaseApplicationTable,
         commands_table::SearchDatabaseCommandsTable,
         main_table::SearchDatabaseMainTable,
-        search_database_store::{SearchDatabaseItem, SearchDatabaseTable},
+        search_database_store::{SearchDatabaseItem, SearchDatabaseTrait},
     },
-    utils::result::{CommandError, CommandResult},
+    utils::result::{CommandError, CommandResult, DbError},
 };
 
 /// ## Args
@@ -75,10 +75,4 @@ pub fn db_clear(table_name: String, app: AppHandle) -> CommandResult<()> {
         }
         _ => return Err(CommandError::Db(DbError::GetTable(table_name))),
     }
-}
-
-#[derive(Debug, thiserror::Error)]
-pub enum DbError {
-    #[error("Failed to get {0} table.")]
-    GetTable(String),
 }

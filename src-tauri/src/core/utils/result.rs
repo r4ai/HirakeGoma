@@ -28,7 +28,16 @@ pub enum CommandError {
     ProjectDir(#[from] super::path::ProjectDirError),
 
     #[error(transparent)]
-    Db(#[from] crate::core::commands::db_command::DbError),
+    Db(#[from] DbError),
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum DbError {
+    #[error("DbError: Failed to get {0} table.")]
+    GetTable(String),
+
+    #[error("DbError: Failed get get {0} item.")]
+    GetItem(String),
 }
 
 impl Serialize for CommandError {

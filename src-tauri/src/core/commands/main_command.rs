@@ -2,7 +2,7 @@ use crate::core::{
     db::{
         applications_table::SearchDatabaseApplicationTable,
         main_table::SearchDatabaseMainTable,
-        search_database_store::{DbSearchTrait, SearchDatabaseItem, SearchDatabaseTable},
+        search_database_store::{DbSearchTrait, SearchDatabaseItem, SearchDatabaseTrait},
     },
     utils::result::CommandResult,
 };
@@ -58,13 +58,4 @@ pub fn dbg_search_database_application_items(
 ) -> Result<(), String> {
     table.print_all_items();
     Ok(())
-}
-
-#[tauri::command]
-pub fn search(
-    table: State<'_, SearchDatabaseMainTable>,
-    keyword: String,
-    min_score: i64,
-) -> Vec<SearchDatabaseItem> {
-    table.search(&keyword, min_score)
 }

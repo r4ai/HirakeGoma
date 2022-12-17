@@ -1,5 +1,5 @@
 use super::search_database_store::{
-    DbSearchTrait, SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable,
+    DbSearchTrait, SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTrait,
 };
 use kv::{Bucket, Json};
 use tauri::State;
@@ -9,7 +9,7 @@ pub struct SearchDatabaseApplicationTable<'a> {
     pub name: String,
 }
 
-impl SearchDatabaseTable<'_, SearchDatabaseStore, SearchDatabaseItem>
+impl SearchDatabaseTrait<'_, SearchDatabaseStore, SearchDatabaseItem>
     for SearchDatabaseApplicationTable<'_>
 {
     fn access_to_bucket(&self) -> &Bucket<'_, String, Json<SearchDatabaseItem>> {

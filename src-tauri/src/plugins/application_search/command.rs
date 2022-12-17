@@ -2,7 +2,7 @@ use super::table::{PluginAppsearchItem, PluginAppsearchTable};
 use crate::core::db::applications_table::SearchDatabaseApplicationTable;
 use crate::core::db::main_table::SearchDatabaseMainTable;
 use crate::core::db::search_database_store::{
-    SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTable,
+    SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTrait,
 };
 use crate::core::utils::result::{CommandError, CommandResult};
 use crate::plugins::application_search::parser::{parse_exe, parse_lnk, parse_url};

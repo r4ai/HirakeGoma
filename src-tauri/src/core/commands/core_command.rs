@@ -8,7 +8,7 @@ use crate::{
     core::{
         db::{
             applications_table::SearchDatabaseApplicationTable,
-            main_table::SearchDatabaseMainTable, search_database_store::SearchDatabaseTable,
+            main_table::SearchDatabaseMainTable, search_database_store::SearchDatabaseTrait,
             setting_table_hotkey::SettingTableHotkey, setting_table_theme::SettingTableTheme,
         },
         utils::result::CommandResult,
