@@ -10,6 +10,9 @@ pub enum CommandError {
     Walkdir(#[from] walkdir::Error),
 
     #[error(transparent)]
+    Serde(#[from] serde_json::Error),
+
+    #[error(transparent)]
     TauriApi(#[from] tauri::api::Error),
 
     #[error(transparent)]

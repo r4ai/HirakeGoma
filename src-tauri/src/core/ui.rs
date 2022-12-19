@@ -1,18 +1,24 @@
+use std::fs;
 use std::time;
 
 use crate::core::db::search_database_store;
+use crate::core::utils::path::parse_json;
 use crate::plugins::application_search;
 use crate::plugins::application_search::table::PluginAppsearchTable;
-use crate::plugins::plugin_store;
 use crate::plugins::plugin_store::PluginStore;
 use chrono::Utc;
+use log::debug;
+use log::error;
+use log::info;
+use log::warn;
 use tauri::{
     App, AppHandle, CustomMenuItem, GlobalShortcutManager, Manager, State, SystemTray,
     SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, Window,
 };
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
+use walkdir::WalkDir;
 use window_shadows::set_shadow;
-use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
+use window_vibrancy::apply_blur;
 
 use super::commands::core_command::*;
 use super::commands::db_command::*;
@@ -24,8 +30,10 @@ use super::db::commands_table::SearchDatabaseCommandsTable;
 use super::db::main_table::SearchDatabaseMainTable;
 use super::db::search_database_store::SearchDatabaseTrait;
 use super::db::setting_store::SettingStore;
-use super::db::setting_table_hotkey::{self, SettingTableHotkey};
+use super::db::setting_table_hotkey::SettingTableHotkey;
 use super::db::setting_table_theme::SettingTableTheme;
+use super::utils::path::get_plugin_dir;
+use super::utils::result::CommandResult;
 use crate::core::db::search_database_store::SearchDatabaseStore;
 use crate::plugins::application_search::command::*;
 use tauri_plugin_log::{LogTarget, LoggerBuilder};
@@ -114,6 +122,68 @@ fn init_hotkey(app: &mut App) {
     }
 }
 
+fn init_plugin(app: &mut App) -> CommandResult<()> {
+    let app_handle = app.app_handle();
+    let plugin_dir = get_plugin_dir()?;
+    info!("Start loading plugins in `{}`", plugin_dir.display());
+    if !plugin_dir.exists() {
+        warn!(
+            "Plugin dir not found, automatically created: {}",
+            plugin_dir.display()
+        );
+        fs::create_dir_all(&plugin_dir)?;
+    }
+    for entry in fs::read_dir(plugin_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_dir() {
+            info!("Load plugin: {}", path.display());
+            let plugin_json = path.join("plugin.json");
+            let plugin_data = parse_json(plugin_json)?;
+
+            let activate_keyword = match plugin_data["ActivateKeyword"].as_str() {
+                Some(keyword) => keyword,
+                None => {
+                    error!("Failed to load plugin: {}", path.display());
+                    error!("Plugin `{}` don't have `ActivateKeyword`", path.display());
+                    continue;
+                }
+            };
+            let command = match plugin_data["Command"].as_str() {
+                Some(command) => command,
+                None => {
+                    error!("Failed to load plugin: {}", path.display());
+                    error!("Plugin `{}` don't have `Command`", path.display());
+                    continue;
+                }
+            };
+            let title = match plugin_data["Name"].as_str() {
+                Some(title) => title,
+                None => {
+                    error!("Failed to load plugin: {}", path.display());
+                    error!("Plugin `{}` don't have `Name`", path.display());
+                    continue;
+                }
+            };
+            let description = match plugin_data["Description"].as_str() {
+                Some(description) => description,
+                None => {
+                    error!("Failed to load plugin: {}", path.display());
+                    error!("Plugin `{}` don't have `Description`", path.display());
+                    continue;
+                }
+            };
+
+            debug!("activate_keyword: {}", activate_keyword);
+            debug!("command: {}", command);
+            debug!("title: {}", title);
+            debug!("description: {}", description);
+        }
+    }
+    Ok(())
+}
+
 pub fn init_app() {
     let settings = CustomMenuItem::new("settings".to_string(), "Settings");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -191,6 +261,7 @@ pub fn init_app() {
             init_store(app);
             init_window(app);
             init_hotkey(app);
+            init_plugin(app).expect("Failed to init plugin");
             Ok(())
         })
         .system_tray(tray)

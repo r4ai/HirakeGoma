@@ -81,7 +81,9 @@ pub fn search(
         None => {
             let res = command_table.get(&args[0]);
             match res {
-                Ok(r) => todo!(),
+                Ok(r) => {
+                    todo!()
+                }
                 Err(_) => main_table.search(&keyword, min_score),
             }
         }
