@@ -5,7 +5,7 @@ use crate::core::db::search_database_store::{
     SearchDatabaseItem, SearchDatabaseStore, SearchDatabaseTrait,
 };
 use crate::core::utils::result::{CommandError, CommandResult};
-use crate::plugins::application_search::parser::{parse_exe, parse_lnk, parse_url};
+use crate::plugins::application_search::parser::{parse_app, parse_exe, parse_lnk, parse_url};
 use kv::Json;
 use log::{debug, error, info, trace};
 use std::collections::HashMap;
@@ -53,6 +53,18 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                     {
                         debug!("Parse .exe of {}", &entry_path.display());
                         match parse_exe(&entry_path.to_path_buf()) {
+                            Ok(o) => o,
+                            Err(e) => {
+                                error!("{}", e);
+                                continue;
+                            }
+                        }
+                    }
+                } else if &entry_extension == "app" {
+                    #[cfg(target_os = "macos")]
+                    {
+                        debug!("Parse .app of {}", &entry_path.display());
+                        match parse_app(&entry_path.to_path_buf()) {
                             Ok(o) => o,
                             Err(e) => {
                                 error!("{}", e);

@@ -73,6 +73,43 @@ pub fn parse_exe(file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
     ))
 }
 
+pub fn parse_app(file_path: &PathBuf) -> CommandResult<SearchDatabaseItem> {
+    let file_stem = file_path.file_stem().unwrap();
+    let target_file_path = match export_icon_from_app(file_path, "png") {
+        Ok(path) => path,
+        Err(e) => return Err(e),
+    };
+    Ok(SearchDatabaseItem::new_app(
+        file_stem.to_str().unwrap().to_string(),
+        target_file_path.to_str().unwrap().to_string(),
+        file_path.to_str().unwrap().to_string(),
+    ))
+}
+
+fn get_icns_path(app_path: PathBuf) -> Option<PathBuf> {
+    let resources_path = app_path.join("Contents/Resources");
+    for entry in resources_path.read_dir().unwrap() {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if path.extension().unwrap() == "icns" {
+            return Some(path);
+        };
+    }
+    None
+}
+
+fn convert_icns_to_png(icns_path: PathBuf, out_path: PathBuf) -> std::process::Output {
+    std::process::Command::new("sips")
+        .arg("-s")
+        .arg("format")
+        .arg("png")
+        .arg(format!("{}", icns_path.display()))
+        .arg("--out")
+        .arg(format!("{}", out_path.display()))
+        .output()
+        .expect("Failed execute sips command")
+}
+
 fn get_icon_file_path(
     app: AppHandle,
     raw_icon_file_path: &Option<String>,
@@ -104,6 +141,23 @@ fn get_icon_file_path(
     Ok(file_icon_path)
 }
 
+fn export_icon_from_app(app_file_path: &PathBuf, icon_extension: &str) -> CommandResult<PathBuf> {
+    let icns_path = get_icns_path(app_file_path.clone()).unwrap();
+    let target_icon_path = get_project_data_icons_dir()?.join(format!(
+        "{}.{}",
+        app_file_path.file_stem().unwrap().to_str().unwrap(),
+        icon_extension
+    ));
+    let std_out = convert_icns_to_png(icns_path, target_icon_path);
+    if std_out.stderr.len() != 0 {
+        return Err(CommandError::App(
+            icns_path.file_stem().unwrap().to_str().unwrap().to_string(),
+            String::from(String::from_utf8(std_out.stderr).unwrap()),
+        ));
+    };
+    Ok(target_icon_path)
+}
+
 /// Export icon file from .exe file.
 ///
 /// ## args:
@@ -124,6 +178,7 @@ fn export_icon_from_exe(exe_file_path: &PathBuf, icon_extension: &str) -> Comman
     macro_rules! raw_script {
         () => {
             "\
+            $ErrorActionPreference = \"Continue\"\n\
             Add-Type -AssemblyName System.Drawing\n\
             $icon = [System.Drawing.Icon]::ExtractAssociatedIcon(\"{}\")\n\
             $icon.ToBitmap().Save(\"{}\")\

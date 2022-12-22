@@ -24,6 +24,9 @@ pub enum CommandError {
     #[error(transparent)]
     PowerShell(#[from] powershell_script::PsError),
 
+    #[error("Failed to convert {0}.icns to .png: {1}")]
+    App(String, String),
+
     #[error("Failed to parse `{0}`.")]
     Lnk(String),
 
