@@ -11,7 +11,6 @@ use log::{debug, error, info, trace};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
-use std::time::Duration;
 use tauri::api::shell::open;
 use tauri::{plugin, App, AppHandle, Manager, State};
 use walkdir::WalkDir;
@@ -42,38 +41,43 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                     Some(ext) => ext.to_str().unwrap().to_string(),
                     None => continue,
                 };
-                let entry_item = if &entry_extension == "lnk" {
-                    debug!("Parse .lnk of {}", &entry_path.display());
-                    parse_lnk(app.clone(), &entry_path.to_path_buf()).unwrap()
-                } else if &entry_extension == "url" {
-                    debug!("Parse .url of {}", &entry_path.display());
-                    parse_url(app.clone(), &entry_path.to_path_buf()).unwrap()
-                } else if &entry_extension == "exe" {
-                    #[cfg(target_os = "windows")]
-                    {
-                        debug!("Parse .exe of {}", &entry_path.display());
-                        match parse_exe(&entry_path.to_path_buf()) {
-                            Ok(o) => o,
-                            Err(e) => {
-                                error!("{}", e);
-                                continue;
+                let entry_item = match entry_extension.as_str() {
+                    "lnk" => {
+                        debug!("Parse .lnk of {}", &entry_path.display());
+                        parse_lnk(app.clone(), &entry_path.to_path_buf()).unwrap()
+                    }
+                    "url" => {
+                        debug!("Parse .url of {}", &entry_path.display());
+                        parse_url(app.clone(), &entry_path.to_path_buf()).unwrap()
+                    }
+                    "exe" => {
+                        if cfg!(target_os = "windows") {
+                            debug!("Parse .exe of {}", &entry_path.display());
+                            match parse_exe(&entry_path.to_path_buf()) {
+                                Ok(o) => o,
+                                Err(e) => {
+                                    error!("{}", e);
+                                    continue;
+                                }
                             }
+                        } else {
+                            continue;
                         }
                     }
-                } else if &entry_extension == "app" {
-                    #[cfg(target_os = "macos")]
-                    {
-                        debug!("Parse .app of {}", &entry_path.display());
-                        match parse_app(&entry_path.to_path_buf()) {
-                            Ok(o) => o,
-                            Err(e) => {
-                                error!("{}", e);
-                                continue;
+                    "app" => {
+                        if cfg!(target_os = "macos") {
+                            debug!("Parse .app of {}", &entry_path.display());
+                            match parse_app(&entry_path.to_path_buf()) {
+                                Ok(o) => o,
+                                Err(e) => {
+                                    error!("{}", e);
+                                    continue;
+                                }
                             }
+                        } else {
+                            continue;
                         }
                     }
-                } else {
-                    continue;
                 };
                 db_table
                     .change(entry_item.name.clone(), entry_item)
