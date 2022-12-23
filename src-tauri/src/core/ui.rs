@@ -18,7 +18,11 @@ use tauri::{
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use walkdir::WalkDir;
 use window_shadows::set_shadow;
+#[cfg(target_os = "windows")]
 use window_vibrancy::apply_blur;
+
+#[cfg(target_os = "macos")]
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 use super::commands::core_command::*;
 use super::commands::db_command::*;

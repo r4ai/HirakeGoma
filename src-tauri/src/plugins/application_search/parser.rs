@@ -148,11 +148,11 @@ fn export_icon_from_app(app_file_path: &PathBuf, icon_extension: &str) -> Comman
         app_file_path.file_stem().unwrap().to_str().unwrap(),
         icon_extension
     ));
-    let std_out = convert_icns_to_png(icns_path, target_icon_path);
-    if std_out.stderr.len() != 0 {
+    let std_out = convert_icns_to_png(icns_path.clone(), target_icon_path.clone());
+    if !std_out.stderr.is_empty() {
         return Err(CommandError::App(
             icns_path.file_stem().unwrap().to_str().unwrap().to_string(),
-            String::from(String::from_utf8(std_out.stderr).unwrap()),
+            String::from_utf8(std_out.stderr).unwrap(),
         ));
     };
     Ok(target_icon_path)

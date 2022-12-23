@@ -78,6 +78,9 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                             continue;
                         }
                     }
+                    _ => {
+                        continue;
+                    }
                 };
                 db_table
                     .change(entry_item.name.clone(), entry_item)
