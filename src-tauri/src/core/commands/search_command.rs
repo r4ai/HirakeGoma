@@ -79,12 +79,16 @@ pub fn search(
         Some(Operator::Calculator) => todo!(),
         Some(_) => todo!(),
         None => {
-            let res = command_table.get(&args[0]);
-            match res {
-                Ok(r) => {
-                    todo!()
+            if args.is_empty() {
+                main_table.search(&keyword, min_score)
+            } else {
+                let res = command_table.get(&args[0]);
+                match res {
+                    Ok(r) => {
+                        todo!()
+                    }
+                    Err(_) => main_table.search(&keyword, min_score),
                 }
-                Err(_) => main_table.search(&keyword, min_score),
             }
         }
     }

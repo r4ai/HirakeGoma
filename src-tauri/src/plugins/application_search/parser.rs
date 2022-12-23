@@ -30,7 +30,7 @@ pub fn parse_lnk(app: AppHandle, file_path: &PathBuf) -> CommandResult<SearchDat
         Err(e) => return Err(CommandError::Lnk(file_path.to_str().unwrap().to_string())),
     };
 
-    let lnk_file_icon_path = get_icon_file_path(app.clone(), lnk_file.icon_location())?;
+    let lnk_file_icon_path = get_icon_file_path(app, lnk_file.icon_location())?;
 
     Ok(SearchDatabaseItem::new_app(
         lnk_file_name,

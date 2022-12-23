@@ -7,7 +7,7 @@ use crate::core::db::search_database_store::{
 use crate::core::utils::result::{CommandError, CommandResult};
 use crate::plugins::application_search::parser::{parse_app, parse_exe, parse_lnk, parse_url};
 use kv::Json;
-use log::{debug, error, info, trace};
+use log::{debug, error, info, trace, warn};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
@@ -44,11 +44,23 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                 let entry_item = match entry_extension.as_str() {
                     "lnk" => {
                         debug!("Parse .lnk of {}", &entry_path.display());
-                        parse_lnk(app.clone(), &entry_path.to_path_buf()).unwrap()
+                        match parse_lnk(app.clone(), &entry_path.to_path_buf()) {
+                            Ok(res) => res,
+                            Err(e) => {
+                                warn!("Failed to parse .lnk: {}", e);
+                                continue;
+                            }
+                        }
                     }
                     "url" => {
                         debug!("Parse .url of {}", &entry_path.display());
-                        parse_url(app.clone(), &entry_path.to_path_buf()).unwrap()
+                        match parse_url(app.clone(), &entry_path.to_path_buf()) {
+                            Ok(res) => res,
+                            Err(e) => {
+                                warn!("Failed to parse .url: {}", e);
+                                continue;
+                            }
+                        }
                     }
                     "exe" => {
                         if cfg!(target_os = "windows") {
@@ -56,7 +68,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                             match parse_exe(&entry_path.to_path_buf()) {
                                 Ok(o) => o,
                                 Err(e) => {
-                                    error!("{}", e);
+                                    warn!("{}", e);
                                     continue;
                                 }
                             }
@@ -70,7 +82,7 @@ pub fn plugin_appsearch_generate_index(app: AppHandle, debug: bool) -> CommandRe
                             match parse_app(&entry_path.to_path_buf()) {
                                 Ok(o) => o,
                                 Err(e) => {
-                                    error!("{}", e);
+                                    warn!("{}", e);
                                     continue;
                                 }
                             }
