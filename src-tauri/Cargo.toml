@@ -11,7 +11,7 @@ version = "0.0.2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.2.1", features = [] }
+tauri-build = {version = "1.5.1", features = [] }
 
 [dependencies]
 anyhow = "1.0.66"
@@ -30,7 +30,7 @@ thiserror = "1.0.37"
 uuid = {version = "1.2.2", features = ["v4", "fast-rng", "macro-diagnostics"] }# not using
 walkdir = "2.3.2"
 window-shadows = "0.2.0"
-tauri-runtime = "0.12.1"
+tauri-runtime = "0.14.2"
 window-vibrancy = {version = "0.3.2"}
 log = "0.4.17"
 chrono = "0.4.23"
